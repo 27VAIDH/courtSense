@@ -4,6 +4,7 @@ import { useMatches, usePlayers } from '@/db/hooks'
 import type { Match } from '@/db/types'
 import MatchHistoryList from '@/components/matches/MatchHistoryList'
 import Button from '@/components/ui/Button'
+import WinRateByOpponent from '@/components/insights/WinRateByOpponent'
 
 function CurrentFormDots({ matches }: { matches: Match[] }) {
   const last5 = useMemo(() => {
@@ -126,7 +127,7 @@ export default function Dashboard() {
       <div className="mb-6">
         <h2 className="text-lg font-semibold text-text-secondary mb-3">Insights</h2>
         <div className="space-y-3" id="insight-cards-container">
-          {/* Insight cards will be rendered here by US-015 through US-022 */}
+          <WinRateByOpponent matches={matches} players={players} />
         </div>
       </div>
 
