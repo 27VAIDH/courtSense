@@ -27,6 +27,11 @@
 - Modal pattern: bottom-sheet style with `fixed inset-0 z-50 flex items-end` and `rounded-t-[20px] bg-surface-elevated`
 - Inline delete confirmation pattern: replace delete button with confirm/cancel buttons directly on the card
 - Venue components in `src/components/venues/` — same modal/card patterns as opponents
+- Match logging state: Zustand store in `src/stores/matchLogStore.ts` — persists selections across steps 1-3
+- Match logging components in `src/components/matchlog/` — StepIndicator, StepSetup (Step 1)
+- LogMatch page is full-screen (fixed inset-0 z-40) with tab bar hidden via useUIStore
+- Match logging flow uses `reset()` on exit to clear all state
+- Exit confirmation dialog shown only if user has made selections (hasSelection check)
 
 # Ralph Progress Log
 Started: Sat Feb  7 16:50:52 IST 2026
@@ -224,4 +229,39 @@ There are still stories with `passes: false` (US-007 through US-041), so another
   - "Home" badge uses `bg-primary/20 text-primary` pill style to indicate home court status
   - Venues use a 📍 pin emoji as the fixed icon instead of user-selected emojis
   - The `useVenues()` hook returns all venues; sort by `createdAt` descending in the component
+---
+
+## Iteration 4 - Sat Feb  7 17:50:57 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-174057/iter-4.log
+---
+US-007 is complete. Here's what was implemented:
+
+**US-007 - Venue management (add, edit, delete venues)**
+
+- **VenueManager component** (`src/components/venues/VenueManager.tsx`): Full CRUD for venues on the Profile page, following the same UX patterns as OpponentManager
+  - **Add**: "Add Venue" button opens a bottom-sheet modal with venue name input + Home Court toggle switch
+  - **List**: All venues displayed as cards with 📍 icon + name + "Home" badge (if `isHome=true`), sorted by `createdAt` descending
+  - **Edit**: Pencil icon opens edit modal with pre-filled name and toggle state
+  - **Delete**: Trash icon shows inline confirm/cancel buttons before deleting
+  - Home Court toggle uses an accessible `role="switch"` button with `aria-checked`
+- **Profile page** (`src/pages/Profile.tsx`): Updated to include VenueManager section below opponents with `mt-8` spacing
+- Typecheck passes, build succeeds
+- Committed as `feat: US-007 - Venue management (add, edit, delete venues)`
+
+There are still stories with `passes: false` (US-008 through US-041), so another iteration will pick up the next story.
+---
+
+## 2026-02-07 - US-008
+- What was implemented: Match logging Step 1 (Setup screen) — full-screen logging flow with opponent picker, date/time selector, venue picker, format toggle, exit confirmation
+- Files changed: src/stores/matchLogStore.ts (new), src/components/matchlog/StepIndicator.tsx (new), src/components/matchlog/StepSetup.tsx (new), src/pages/LogMatch.tsx (rewritten)
+- **Learnings for future iterations:**
+  - Match logging state lives in Zustand store `useMatchLogStore` — persists across steps 1-3, reset on exit
+  - LogMatch page is `fixed inset-0 z-40` to cover the entire screen including tab bar area
+  - Tab bar hidden/shown via `useUIStore` in useEffect with cleanup on unmount
+  - Inline add-opponent/venue modals in StepSetup reuse the same bottom-sheet pattern from OpponentManager/VenueManager
+  - Date picker trick: invisible datetime-local input overlaid on a styled button for native date picker
+  - Format change adjusts games array length (3 for Bo3, 5 for Bo5) in the store
+  - Exit confirmation only shows if `hasSelection` is true (opponentId !== null)
+  - Steps 2 and 3 have placeholder content — will be implemented in US-009 and US-010
 ---
