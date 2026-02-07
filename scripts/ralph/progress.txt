@@ -35,8 +35,11 @@
 - Score entry: `GameScore` type from matchLogStore, tight game = both scores >= 8, quick presets as tappable pills
 - Match result auto-calculated: count games where myScore > opponentScore vs opposite
 - Match save writes to both `matches` and `games` tables — use `db.games.bulkAdd()` for batch insert
-- Post-match save screen at route `/match/:id/saved` — tab bar hidden, shows confirmation
+- Post-match save screen at route `/match/:id/saved` — tab bar hidden, shows confirmation with animations
 - StepTagsSave component handles all step 3 UI + save logic — save button is inside the component, not in LogMatch bottom bar
+- canvas-confetti library for win celebrations — fire from both sides with custom colors
+- PostMatchSaved reads match/games/opponent from Dexie via useParams matchId — uses useMemo for derived data
+- Streak detection: filter matches by opponentId, count consecutive same-result matches from most recent
 
 # Ralph Progress Log
 Started: Sat Feb  7 16:50:52 IST 2026
@@ -342,4 +345,38 @@ There are still stories with `passes: false` (US-010 through US-041), so another
   - Post-match save navigates to `/match/:id/saved` with `replace: true` so back button doesn't return to the log flow
   - `isTight` on game records: both scores >= 8
   - Optional fields (energyLevel, vibe, tags, note) saved as `undefined` when not set — Dexie handles this gracefully
+---
+
+## Iteration 2 - Sat Feb  7 18:03:22 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-175709/iter-2.log
+---
+US-010 is complete. There are still stories with `passes: false` (US-011 through US-041), so another iteration will pick up the next story.
+
+**Summary of US-010 completion:**
+
+- **StepTagsSave component** (`src/components/matchlog/StepTagsSave.tsx`): Full Step 3 UI with:
+  - **Energy Level**: 3 tappable icons (Low/Medium/High) with toggle on/off, single-select
+  - **Match Vibe**: horizontal scrollable Chip row (Intense, Casual, Frustrating, Focused, Fun, Grind), single-select with toggle off
+  - **Quick Tags**: flex-wrap grid of Chip components (Good day, Off day, New strategy, Comeback, Dominated, Lucky win, Close), multi-select toggle
+  - **Match Note**: single-line text input with 140 char max, character counter
+  - **Save Match button**: large green button that saves to Dexie DB
+- **Save logic**: Creates match record in `matches` table with all data from steps 1-3, creates game records in `games` table for each played game via `bulkAdd()`, auto-calculates result as "W X-Y" or "L X-Y"
+- **Post-match screen** (`src/pages/PostMatchSaved.tsx`): Simple confirmation page at `/match/:id/saved` with tab bar hidden, "Done" button returns to Dashboard (US-011 will build the full experience with animations)
+- **LogMatch page updated**: Step 3 now shows `StepTagsSave` instead of placeholder, bottom bar shows only "Back" button on step 3
+- Typecheck passes, build succeeds
+- Committed as `feat: US-010 - Match logging — Step 3 (Quick tags & save)`
+---
+
+## 2026-02-07 - US-011
+- What was implemented: Post-match save experience with win confetti, loss blue pulse animation, streak toast, result display with opponent name, rally analysis placeholder
+- Files changed: src/pages/PostMatchSaved.tsx (rewritten), package.json (canvas-confetti added)
+- **Learnings for future iterations:**
+  - `canvas-confetti` library works well for celebratory particle effects — fire from both x:0 and x:1 origins for dual-sided burst
+  - `navigator.vibrate(200)` for haptic feedback on win — check availability first
+  - Streak detection: sort opponent matches by recency, count consecutive wins/losses from most recent
+  - Framer Motion `motion.div` with spring animations for bouncy emoji entrance, staggered delays for sequential reveals
+  - CSS `@keyframes` in `<style>` tag for loss pulse animation — respects `prefers-reduced-motion`
+  - `useRef` with `confettiFired` flag prevents re-firing confetti on re-renders
+  - Match data loaded via `useParams` matchId + Dexie hooks (useMatches, usePlayers, useGames)
 ---
