@@ -61,6 +61,8 @@
 - Insight unlock tracking: `useInsightStore` in `src/stores/insightStore.ts` — Zustand with localStorage persistence, tracks which insight IDs have been "seen unlocked"
 - InsightCardWrapper: wraps each insight card in Dashboard — detects first-time unlock and plays Framer Motion slide-up + glow animation, then marks as seen
 - Dashboard card ordering: `computeInsightStatuses()` calculates remaining-to-unlock for each card — unlocked cards render first, locked sorted by fewest remaining
+- Recommendation engine: `generateRecommendation()` in `src/lib/recommendations.ts` — pure function taking (matches, games, currentMatch), returns `{ emoji, headline, context }`
+- Recommendation stored as JSON string in `match.recommendationText` — parse with `JSON.parse()` to get `Recommendation` object
 
 # Ralph Progress Log
 Started: Sat Feb  7 16:50:52 IST 2026
@@ -1234,4 +1236,41 @@ There are still stories with `passes: false` (US-023 through US-041), so another
   - InsightCardWrapper marks insight as "seen" after 1.2s delay (after animation completes) to prevent animation replaying
   - Framer Motion `boxShadow` animation on a sibling overlay div creates a glow effect without affecting the card's own styles
   - Sort order: unlocked cards first (in their natural order), locked cards at bottom sorted by `remaining` ascending (closest to unlocking first)
+---
+
+## Iteration 1 - Sat Feb  7 23:42:42 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-233902/iter-1.log
+---
+US-023 is complete. There are still stories with `passes: false` (US-024 through US-041), so another iteration will pick up the next story.
+
+**Summary of US-023 completion:**
+
+- **New Zustand store** (`src/stores/insightStore.ts`): Tracks which insight cards have been "seen unlocked" using a `Set<InsightId>` persisted to localStorage. The `markSeen()` action saves immediately to prevent the unlock animation from replaying.
+
+- **InsightCardWrapper** (`src/components/insights/InsightCardWrapper.tsx`): Wraps each insight card and detects first-time unlocks. When an insight transitions from locked to unlocked for the first time:
+  - **Slide up animation**: `motion.div` with `initial={{ opacity: 0, y: 30 }}` → `animate={{ opacity: 1, y: 0 }}`
+  - **Glow border effect**: Animated `boxShadow` pulsing green (`rgba(0, 230, 118, 0.4)`) on a sibling overlay
+  - Marks the insight as "seen" after 1.2s so animation only plays once
+
+- **Dashboard rewritten** (`src/pages/Dashboard.tsx`):
+  - **`computeInsightStatuses()`**: Centralizes unlock condition logic for all 8 insight cards, calculating `remaining` (items needed to unlock) for each
+  - **Dynamic ordering**: Unlocked cards render first, locked cards at bottom sorted by fewest remaining (closest to unlocking first)
+  - **Reactive**: All calculations use Dexie `useLiveQuery` hooks — no manual refresh needed after match saves
+  - Each insight card still handles its own locked/unlocked rendering internally
+
+- Typecheck passes, build succeeds
+- Committed as `feat: US-023 - Progressive insight unlocking system`
+---
+
+## 2026-02-07 - US-024
+- What was implemented: Recommendation engine — pure function `generateRecommendation()` in `src/lib/recommendations.ts` with 7 prioritized rules, integrated into match save flow in StepTagsSave
+- Files changed: src/lib/recommendations.ts (new), src/components/matchlog/StepTagsSave.tsx (updated save handler)
+- **Learnings for future iterations:**
+  - Recommendation is a pure function taking (matches[], games[], currentMatch) — no React hooks, no DB access inside
+  - Rules evaluated in priority order: slow starter > low energy loss > tight game struggles > win streak > loss streak > opponent-specific > fallback
+  - Recommendation stored as `JSON.stringify({ emoji, headline, context })` in `match.recommendationText`
+  - Must fetch all matches and games from DB after saving the match record (so the current match is included) before generating the recommendation
+  - Use `db.matches.update(matchId, { recommendationText })` to add recommendation after initial save — avoids needing to know rec before insert
+  - Emoji strings use Unicode escapes (`\u{1F680}`) to avoid encoding issues in source files
 ---

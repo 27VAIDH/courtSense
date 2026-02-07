@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMatchLogStore } from '@/stores/matchLogStore'
 import { db } from '@/db/database'
+import { generateRecommendation } from '@/lib/recommendations'
 import Chip from '@/components/ui/Chip'
 import Button from '@/components/ui/Button'
 
@@ -77,6 +78,17 @@ export default function StepTagsSave() {
       }))
 
       await db.games.bulkAdd(gameRecords)
+
+      // Generate recommendation
+      const allMatches = await db.matches.toArray()
+      const allGames = await db.games.toArray()
+      const savedMatch = allMatches.find((m) => m.id === matchId)
+      if (savedMatch) {
+        const rec = generateRecommendation(allMatches, allGames, savedMatch)
+        await db.matches.update(matchId, {
+          recommendationText: JSON.stringify(rec),
+        })
+      }
 
       // Reset state and navigate to post-match screen
       reset()

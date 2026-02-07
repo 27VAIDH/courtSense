@@ -467,7 +467,7 @@
         "Typecheck passes"
       ],
       "priority": 24,
-      "passes": false,
+      "passes": true,
       "notes": "This is logic-only, no UI. UI is in US-025."
     },
     {
