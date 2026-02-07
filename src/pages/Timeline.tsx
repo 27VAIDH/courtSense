@@ -5,6 +5,8 @@ import type { Match, Player } from '@/db/types'
 import Button from '@/components/ui/Button'
 import WinLossRiver from '@/components/timeline/WinLossRiver'
 import RollingWinRate from '@/components/timeline/RollingWinRate'
+import ActivityHeatmap from '@/components/timeline/ActivityHeatmap'
+import RegularityStreak from '@/components/timeline/RegularityStreak'
 
 type TimeRange = '30d' | '3m' | '6m' | 'all'
 
@@ -117,6 +119,16 @@ export default function Timeline() {
       {/* Rolling Win Rate Chart */}
       <div className="mt-4">
         <RollingWinRate matches={filteredMatches} />
+      </div>
+
+      {/* Activity Heatmap */}
+      <div className="mt-4">
+        <ActivityHeatmap matches={matches} playersMap={playersMap} />
+      </div>
+
+      {/* Regularity Streak */}
+      <div className="mt-4">
+        <RegularityStreak matches={matches} />
       </div>
     </div>
   )
