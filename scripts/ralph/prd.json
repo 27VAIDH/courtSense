@@ -95,7 +95,7 @@
         "Verify in browser that dark theme displays correctly with Card, Button, and Chip components"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -114,7 +114,7 @@
         "Verify in browser that adding, editing, and deleting opponents works correctly"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "Sorting by most-recently-played will be updated once matches exist."
     },
     {
@@ -132,7 +132,7 @@
         "Verify in browser that adding, editing, and deleting venues works correctly"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

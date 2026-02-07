@@ -20,6 +20,13 @@
 - Layout components live in `src/components/layout/` — BottomTabBar
 - Bottom tab bar uses `env(safe-area-inset-bottom)` for iOS safe area padding
 - App root div has `pb-20` to prevent content from being hidden behind the fixed tab bar
+- Tailwind v4 custom theme: use `@theme { --color-xyz: #hex; }` in index.css — classes become `bg-xyz`, `text-xyz`, etc.
+- UI components in `src/components/ui/` — Card, Button, Chip (all with 48px min touch targets)
+- Global `@media (prefers-reduced-motion: reduce)` in index.css disables all animations
+- Feature components organized by domain: `src/components/opponents/`, `src/components/venues/`, etc.
+- Modal pattern: bottom-sheet style with `fixed inset-0 z-50 flex items-end` and `rounded-t-[20px] bg-surface-elevated`
+- Inline delete confirmation pattern: replace delete button with confirm/cancel buttons directly on the card
+- Venue components in `src/components/venues/` — same modal/card patterns as opponents
 
 # Ralph Progress Log
 Started: Sat Feb  7 16:50:52 IST 2026
@@ -116,4 +123,105 @@ US-003 is complete. There are still stories with `passes: false` (US-004 through
   - Use `env(safe-area-inset-bottom)` in inline style (not Tailwind) for iOS safe area — Tailwind v4 doesn't include this by default
   - The center "Log" tab is visually distinct with a larger icon inside a circular background
   - Tab bar visibility is a simple boolean in Zustand — call `hideTabBar()` when entering match logging flow
+---
+
+## Iteration 1 - Sat Feb  7 17:43:58 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-174057/iter-1.log
+---
+US-004 is complete. There are still stories with `passes: false` (US-005 through US-041), so another iteration will pick up the next story.
+
+**Summary of US-004 completion:**
+- Created `src/stores/uiStore.ts` — Zustand store with `tabBarVisible`, `showTabBar()`, and `hideTabBar()` for controlling tab bar visibility (needed for match logging flow)
+- Created `src/components/layout/BottomTabBar.tsx` — 5-tab bottom nav bar (Dashboard, Timeline, Log, Rivals, Profile) with:
+  - Log tab visually distinct: larger icon with circular accent-colored background (#00E676)
+  - Active tab highlighted with primary color #00E676
+  - Fixed to bottom with `env(safe-area-inset-bottom)` for iOS safe area
+  - 48px minimum touch targets on all tabs
+  - Controlled by Zustand store visibility flag
+- Created 5 placeholder page components in `src/pages/`
+- Updated `src/main.tsx` to wrap with `BrowserRouter`
+- Updated `src/App.tsx` with React Router `Routes` for all 5 routes (`/`, `/log`, `/timeline`, `/rivals`, `/profile`) plus `BottomTabBar`
+- Typecheck passes, build succeeds, lint clean
+- Committed as `feat: US-004 - App shell with bottom tab navigation`
+- PRD updated with `passes: true` for US-004
+- Progress log and codebase patterns updated
+---
+
+## 2026-02-07 - US-005
+- What was implemented: Dark theme design tokens via Tailwind CSS v4 @theme, global styles, and 3 reusable UI components (Card, Button, Chip)
+- Files changed: src/index.css (added @theme colors, global styles, reduced-motion media query), src/components/ui/Card.tsx (new), src/components/ui/Button.tsx (new), src/components/ui/Chip.tsx (new)
+- **Learnings for future iterations:**
+  - Tailwind CSS v4 uses `@theme` directive in CSS to define custom colors — no tailwind.config.ts needed
+  - Custom color names in `@theme { --color-xyz }` become utility classes like `bg-xyz`, `text-xyz`, `border-xyz`
+  - The `bg-surface`, `text-text-primary`, `text-text-secondary`, `bg-primary`, `text-win`, `text-loss`, `text-tight` classes are all available globally
+  - Card component: `rounded-[16px] bg-surface p-4` — accepts onClick for interactive cards
+  - Button component: primary (green bg, black text) and secondary (surface bg, white text) variants
+  - Chip component: selected state toggles between filled primary and outlined style
+---
+
+## Iteration 2 - Sat Feb  7 17:46:02 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-174057/iter-2.log
+---
+US-005 is complete. Here's what was implemented:
+
+**US-005 - Dark theme, design tokens, and base UI components**
+
+- **Design tokens** in `src/index.css` via Tailwind CSS v4 `@theme` directive: primary (#00E676), secondary (#448AFF), accent (#FF6D00), bg (#0A0A0A), surface (#1A1A1A), surface-elevated (#242424), text-primary (#FFFFFF), text-secondary (#B0B0B0), win (#00E676), loss (#FF5252), tight (#FFD600)
+- **Global styles**: dark background, system font stack (system-ui/-apple-system/SF Pro), antialiased rendering
+- **Reduced motion**: `@media (prefers-reduced-motion: reduce)` disables all animations globally
+- **Card** (`src/components/ui/Card.tsx`): surface background, 16px border-radius, p-4 padding, optional onClick
+- **Button** (`src/components/ui/Button.tsx`): primary (green) and secondary (surface) variants, 12px border-radius, 48px min height
+- **Chip** (`src/components/ui/Chip.tsx`): 20px border-radius, selectable state (filled vs outlined), 48px min touch target
+
+All checks pass (typecheck, build, lint). Committed as `feat: US-005 - Dark theme, design tokens, and base UI components`.
+
+There are still stories with `passes: false` (US-006 through US-041), so another iteration will pick up the next story.
+---
+
+## 2026-02-07 - US-006
+- What was implemented: Opponent management — add, edit, delete opponents on the Profile page
+- Files changed: src/components/opponents/OpponentManager.tsx (new), src/pages/Profile.tsx (updated from placeholder)
+- **Learnings for future iterations:**
+  - Bottom-sheet modals: use `fixed inset-0 z-50` overlay with `items-end` flex to anchor modal to bottom
+  - For delete confirmation, inline confirm/cancel buttons on the card work better than a separate dialog on mobile
+  - `usePlayers()` returns undefined during loading — filter and sort after null check
+  - Opponents = players where `isCurrentUser === false`, sorted by `createdAt` descending
+  - Emoji input with `maxLength={2}` accounts for emoji being 2 chars in some encodings
+  - Profile page uses `pb-24` bottom padding to account for the fixed tab bar
+---
+
+## Iteration 3 - Sat Feb  7 17:47:59 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-174057/iter-3.log
+---
+US-006 is complete. Here's what was implemented:
+
+**US-006 - Opponent management (add, edit, delete players)**
+
+- **OpponentManager component** (`src/components/opponents/OpponentManager.tsx`): Full CRUD for opponents on the Profile page
+  - **Add**: "Add Opponent" button opens a bottom-sheet modal with name + emoji inputs (emoji defaults to random sports emoji)
+  - **List**: All non-current-user players displayed as cards with emoji + name, sorted by `createdAt` descending
+  - **Edit**: Pencil icon on each card opens edit modal with pre-filled data
+  - **Delete**: Trash icon shows inline confirm/cancel buttons before deleting
+  - All operations use Dexie.js directly for immediate persistence
+- **Profile page** (`src/pages/Profile.tsx`): Updated from placeholder to include the OpponentManager section
+- All interactive elements have 48px minimum touch targets
+- Typecheck passes, build succeeds
+
+Committed as `feat: US-006 - Opponent management (add, edit, delete players)`.
+
+There are still stories with `passes: false` (US-007 through US-041), so another iteration will pick up the next story.
+---
+
+## 2026-02-07 - US-007
+- What was implemented: Venue management — add, edit, delete venues on the Profile page, below opponents section
+- Files changed: src/components/venues/VenueManager.tsx (new), src/pages/Profile.tsx (updated to include VenueManager)
+- **Learnings for future iterations:**
+  - VenueManager follows the exact same UX pattern as OpponentManager: bottom-sheet modal, inline delete confirmation
+  - Toggle/switch for boolean fields (isHome): use a styled `<button role="switch">` with `aria-checked` for accessibility
+  - "Home" badge uses `bg-primary/20 text-primary` pill style to indicate home court status
+  - Venues use a 📍 pin emoji as the fixed icon instead of user-selected emojis
+  - The `useVenues()` hook returns all venues; sort by `createdAt` descending in the component
 ---
