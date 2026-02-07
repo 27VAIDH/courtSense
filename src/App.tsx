@@ -7,6 +7,7 @@ import LogMatch from '@/pages/LogMatch'
 import Timeline from '@/pages/Timeline'
 import Rivals from '@/pages/Rivals'
 import Profile from '@/pages/Profile'
+import PostMatchSaved from '@/pages/PostMatchSaved'
 
 function App() {
   useEffect(() => {
@@ -21,6 +22,7 @@ function App() {
         <Route path="/timeline" element={<Timeline />} />
         <Route path="/rivals" element={<Rivals />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/match/:id/saved" element={<PostMatchSaved />} />
       </Routes>
       <BottomTabBar />
     </div>

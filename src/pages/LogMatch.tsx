@@ -5,6 +5,7 @@ import { useMatchLogStore } from '@/stores/matchLogStore'
 import StepIndicator from '@/components/matchlog/StepIndicator'
 import StepSetup from '@/components/matchlog/StepSetup'
 import StepScoreEntry from '@/components/matchlog/StepScoreEntry'
+import StepTagsSave from '@/components/matchlog/StepTagsSave'
 import Button from '@/components/ui/Button'
 
 export default function LogMatch() {
@@ -59,11 +60,7 @@ export default function LogMatch() {
       <div className="flex-1 overflow-y-auto">
         {step === 1 && <StepSetup />}
         {step === 2 && <StepScoreEntry />}
-        {step === 3 && (
-          <div className="flex flex-1 items-center justify-center">
-            <p className="text-text-secondary">Tags & Save (US-010)</p>
-          </div>
-        )}
+        {step === 3 && <StepTagsSave />}
       </div>
 
       {/* Bottom Action */}
@@ -77,7 +74,7 @@ export default function LogMatch() {
             Next
           </Button>
         )}
-        {step > 1 && (
+        {step === 2 && (
           <div className="flex gap-3">
             <Button variant="secondary" onClick={() => setStep(step - 1)} className="flex-1">
               Back
@@ -86,6 +83,11 @@ export default function LogMatch() {
               Next
             </Button>
           </div>
+        )}
+        {step === 3 && (
+          <Button variant="secondary" onClick={() => setStep(step - 1)} className="w-full">
+            Back
+          </Button>
         )}
       </div>
 

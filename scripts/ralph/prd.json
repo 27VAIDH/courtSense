@@ -194,7 +194,7 @@
         "Verify in browser that all tag selections work, save writes to IndexedDB, and navigation occurs after save"
       ],
       "priority": 10,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

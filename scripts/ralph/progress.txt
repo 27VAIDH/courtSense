@@ -34,6 +34,9 @@
 - Exit confirmation dialog shown only if user has made selections (hasSelection check)
 - Score entry: `GameScore` type from matchLogStore, tight game = both scores >= 8, quick presets as tappable pills
 - Match result auto-calculated: count games where myScore > opponentScore vs opposite
+- Match save writes to both `matches` and `games` tables — use `db.games.bulkAdd()` for batch insert
+- Post-match save screen at route `/match/:id/saved` — tab bar hidden, shows confirmation
+- StepTagsSave component handles all step 3 UI + save logic — save button is inside the component, not in LogMatch bottom bar
 
 # Ralph Progress Log
 Started: Sat Feb  7 16:50:52 IST 2026
@@ -303,4 +306,40 @@ US-008 is complete. There are still stories with `passes: false` (US-009 through
   - Collapsible games: when match is decided (enough wins), unplayed games show "Not needed" in dimmed state
   - Score buttons use `min-h-[48px] min-w-[48px]` for large tap targets on mobile
   - The opponent name is fetched via `usePlayers()` hook and matched by `opponentId` from the store
+---
+
+## Iteration 1 - Sat Feb  7 17:59:44 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-175709/iter-1.log
+---
+US-009 is complete. Here's what was implemented:
+
+**US-009 - Match logging — Step 2 (Score entry)**
+
+- **StepScoreEntry component** (`src/components/matchlog/StepScoreEntry.tsx`): Full score entry UI with:
+  - **Match Result Banner**: Auto-calculated "WIN 3-1" (green) or "LOSS 1-3" (red) that updates in real-time as scores change
+  - **Game Cards**: Vertical stack of 3 (Bo3) or 5 (Bo5) cards, each showing:
+    - "Game N" label with fire emoji for tight games (both scores >= 8)
+    - Two large score displays ("You" vs opponent name) with +/- buttons (48px min touch targets)
+  - **Quick Score Presets**: Tappable pills below each game card — 11-0, 11-5, 11-8, 11-9 — with highlight when matching current score
+  - **Collapsible Games**: When match is decided (enough wins), unplayed games show dimmed "Not needed" state
+  - **Opponent Name**: Fetched from Dexie via `usePlayers()` hook, matched by `opponentId`
+- **LogMatch page** (`src/pages/LogMatch.tsx`): Updated to render `StepScoreEntry` for step 2, replacing the placeholder. Back/Next buttons already handle step 2 navigation.
+- Typecheck passes, build succeeds
+- Committed as `feat: US-009 - Match logging — Step 2 (Score entry)`
+
+There are still stories with `passes: false` (US-010 through US-041), so another iteration will pick up the next story.
+---
+
+## 2026-02-07 - US-010
+- What was implemented: Match logging Step 3 (Quick tags & save) — energy level selector, match vibe picker, quick tags, match note, save to Dexie DB, post-match save screen
+- Files changed: src/components/matchlog/StepTagsSave.tsx (new), src/pages/PostMatchSaved.tsx (new), src/pages/LogMatch.tsx (updated step 3 + bottom nav), src/App.tsx (added /match/:id/saved route), scripts/ralph/prd.json (US-010 passes: true)
+- **Learnings for future iterations:**
+  - Save button lives inside StepTagsSave component (not in LogMatch bottom bar) — step 3 bottom bar only shows "Back"
+  - Match save writes to `matches` table then `db.games.bulkAdd()` for all played game records
+  - Result string format: "W 3-1" or "L 1-3" — calculated from game scores
+  - Only games with scores > 0 are saved (filters out unplayed games in Bo5 when match ends early)
+  - Post-match save navigates to `/match/:id/saved` with `replace: true` so back button doesn't return to the log flow
+  - `isTight` on game records: both scores >= 8
+  - Optional fields (energyLevel, vibe, tags, note) saved as `undefined` when not set — Dexie handles this gracefully
 ---
