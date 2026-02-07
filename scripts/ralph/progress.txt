@@ -40,6 +40,10 @@
 - canvas-confetti library for win celebrations — fire from both sides with custom colors
 - PostMatchSaved reads match/games/opponent from Dexie via useParams matchId — uses useMemo for derived data
 - Streak detection: filter matches by opponentId, count consecutive same-result matches from most recent
+- Match list components in `src/components/matches/` — MatchHistoryList renders sorted match cards with game scores
+- Match detail route: `/match/:id` renders MatchDetail page — placeholder until US-013 builds full detail view
+- `useGames()` without matchId returns ALL games — use Map<matchId, Game[]> for efficient lookup in list views
+- Relative date formatting: "Today", "Yesterday", then "Mon Jan 6" style for older dates
 
 # Ralph Progress Log
 Started: Sat Feb  7 16:50:52 IST 2026
@@ -379,4 +383,38 @@ US-010 is complete. There are still stories with `passes: false` (US-011 through
   - CSS `@keyframes` in `<style>` tag for loss pulse animation — respects `prefers-reduced-motion`
   - `useRef` with `confettiFired` flag prevents re-firing confetti on re-renders
   - Match data loaded via `useParams` matchId + Dexie hooks (useMatches, usePlayers, useGames)
+---
+
+## Iteration 3 - Sat Feb  7 18:06:03 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-175709/iter-3.log
+---
+US-011 is complete. There are still stories with `passes: false` (US-012 through US-041), so another iteration will pick up the next story.
+
+**Summary of US-011 completion:**
+
+- **Rewrote `src/pages/PostMatchSaved.tsx`** with full post-match experience:
+  - **Win animation**: `canvas-confetti` burst from both sides with custom colors (#00E676, #448AFF, #FF6D00, #FFD600) + `navigator.vibrate(200)` haptic feedback
+  - **Loss animation**: subtle blue pulse background animation (`rgba(68, 138, 255, 0.06)` pulsing at 3s intervals), empathetic not mocking
+  - **Result display**: large animated emoji (🏆 win / 💪 loss) with spring bounce, "WIN 3-1" or "LOSS 1-3" text colored green/red, opponent name + emoji, individual game scores
+  - **Streak Toast**: detects consecutive wins/losses against the same opponent — shows "W3 against Parth!" or "First win against Parth!" or "L2 — time to turn it around!"
+  - **Rally Analysis Placeholder**: "Want to add rally details? (30 sec)" link text (placeholder for US-029)
+  - **Done button**: navigates back to Dashboard with tab bar restored
+- **Framer Motion** staggered animations: emoji springs in, result fades up, opponent name slides in, streak toast scales in
+- **Accessibility**: `@media (prefers-reduced-motion: reduce)` disables pulse animation
+- **canvas-confetti** installed as new dependency
+- Typecheck passes, build succeeds
+- Committed as `feat: US-011 - Post-match save experience with animations`
+---
+
+## 2026-02-07 - US-012
+- What was implemented: Match history list on Dashboard — chronological match cards with opponent info, result, venue, game scores, tight game indicators, loading skeletons, empty state, and navigation to match detail
+- Files changed: src/components/matches/MatchHistoryList.tsx (new), src/pages/Dashboard.tsx (updated from placeholder), src/pages/MatchDetail.tsx (new placeholder for US-013), src/App.tsx (added /match/:id route)
+- **Learnings for future iterations:**
+  - `useGames()` without matchId returns ALL games — build a Map<matchId, Game[]> for efficient per-match lookup in list views
+  - `useLiveQuery` returns `undefined` while loading — show skeleton placeholders during this state
+  - Match cards are tappable Cards that navigate to `/match/:id` — detail view is a placeholder until US-013
+  - Relative date formatting: compare day difference for "Today"/"Yesterday", then fall back to locale date string
+  - Game scores displayed inline with flame emoji for tight games (isTight=true)
+  - Matches sorted by `createdAt` descending (newest first)
 ---

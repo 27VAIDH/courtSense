@@ -234,7 +234,7 @@
         "Verify in browser that match cards render correctly with test data"
       ],
       "priority": 12,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
