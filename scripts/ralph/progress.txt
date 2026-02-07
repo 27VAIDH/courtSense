@@ -51,6 +51,13 @@
 - Custom CSS bars (div with dynamic width%) preferred over Recharts BarChart for simple horizontal bars — more flexible styling on mobile
 - Recharts BarChart with Cell components allows per-bar coloring — use `fill` and `opacity` props on each Cell
 - Day of week mapping: `getDay()` returns 0=Sun..6=Sat — convert to Mon=0..Sun=6 with `jsDay === 0 ? 6 : jsDay - 1`
+- SVG circular progress ring: `strokeDashoffset = circumference - (pct/100) * circumference` with `rotate(-90)` transform to start from top
+- Dashboard passes `venues` prop to venue-related insight cards — `useVenues()` added alongside `useMatches()` and `usePlayers()`
+- Dashboard also passes `games` prop to game-level insight cards — `useGames()` (no matchId) returns ALL games for aggregate analysis
+- Recharts PieChart with inner/outer radius creates donut charts — overlay absolute-positioned text in center for percentage display
+- Deciding game = Game 3 in Bo3 or Game 5 in Bo5 — check that game was actually played (scores > 0) before counting
+- SVG semicircular gauge: path `M cx-r cy A r r 0 0 1 cx+r cy`, fill via `strokeDasharray=halfCirc` + `strokeDashoffset=halfCirc-(pct/100)*halfCirc`
+- Game 1 loss detection: find game with `gameNumber === 1` and `opponentScore > myScore` — check both scores > 0 first
 
 # Ralph Progress Log
 Started: Sat Feb  7 16:50:52 IST 2026
@@ -1024,4 +1031,172 @@ There are still stories with `passes: false` (US-017 through US-041), so another
   - Locked state includes a progress bar showing how close the user is to unlocking (matches.length / MIN)
   - Best day highlighted with accent color (#FF6D00) while other active days use primary (#00E676)
   - Days without matches get grayed out bar color (#242424) at 50% opacity
+---
+
+## Iteration 3 - Sat Feb  7 23:20:07 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-231301/iter-3.log
+---
+**US-017 is complete.** Here's what was implemented:
+
+**US-017 — Insight card: Day of Week Performance ("Best Days")**
+
+- **New component** `src/components/insights/BestDays.tsx`: 7-column bar chart using Recharts showing win rate per day of the week
+  - Each bar height represents win rate (0-100%) on that day
+  - Days with matches shown in primary color (#00E676), days without matches grayed out (#242424)
+  - Best performing day highlighted with accent color (#FF6D00) and labeled at top (e.g. "Tuesdays: 80%")
+  - Bar opacity scales with win rate for visual intensity
+  - Minimum 10 total matches required to show
+  - **Locked state** with dimmed placeholder bars, lock icon, "Log X more matches to unlock" text, and a progress bar showing how close the user is to unlocking
+- **Dashboard updated** (`src/pages/Dashboard.tsx`): BestDays rendered below EnergyImpact in the insight cards container
+- Typecheck passes, build succeeds
+- Committed as `feat: US-017 - Insight card — Day of Week Performance`
+
+There are still stories with `passes: false` (US-018 through US-041), so another iteration will pick up the next story.
+---
+
+## 2026-02-07 - US-018
+- What was implemented: Venue Effect insight card on Dashboard — side-by-side venue comparison cards with circular progress rings, home court badge, locked state when insufficient data
+- Files changed: src/components/insights/VenueEffect.tsx (new), src/pages/Dashboard.tsx (added useVenues import, VenueEffect render)
+- **Learnings for future iterations:**
+  - VenueEffect needs both `matches` and `venues` props — Dashboard now imports `useVenues()` in addition to `useMatches()` and `usePlayers()`
+  - Dashboard loading check now includes `venues === undefined` alongside matches and players
+  - SVG circular progress ring: calculate `strokeDashoffset = circumference - (percentage / 100) * circumference` with `rotate(-90)` to start from top
+  - Venue stats built by mapping venueId to a Map for O(1) lookup, then sorting by total matches descending
+  - Two locked conditions: (1) <5 total matches, (2) <2 unique venues with matches — different messaging for each
+  - Horizontal scroll with `overflow-x-auto` for venues list when many venues exist
+  - Home badge reuses the `bg-primary/20 text-primary` pill style from VenueManager
+---
+
+## Iteration 4 - Sat Feb  7 23:22:44 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-231301/iter-4.log
+---
+US-018 is complete. Here's what was implemented:
+
+**US-018 — Insight card: Venue Effect**
+
+- **New component** `src/components/insights/VenueEffect.tsx`: Side-by-side venue comparison cards, each showing:
+  - Venue name with truncation for long names
+  - SVG circular progress ring filled to win rate percentage, colored green (>50%), yellow (50%), or red (<50%)
+  - Home court badge (`Home` pill in green) for venues with `isHome=true`
+  - Win/loss record text (e.g. "5W - 2L")
+  - Horizontally scrollable for many venues
+  - Sorted by total matches played (most played venue first)
+  - **Locked state** when <5 total matches OR <2 unique venues: dimmed placeholder with lock icon and context-specific progress text
+- **Dashboard updated** (`src/pages/Dashboard.tsx`): Added `useVenues()` hook import, venues loading check, and `VenueEffect` rendered below BestDays in the insight cards container
+- Typecheck passes, build succeeds
+- Committed as `feat: US-018 - Insight card — Venue Effect`
+
+There are still stories with `passes: false` (US-019 through US-041), so another iteration will pick up the next story.
+---
+
+## 2026-02-07 - US-019
+- What was implemented: Deciding Game Performance insight card on Dashboard — donut chart (Recharts PieChart) showing win/loss split in deciding games, trend arrow, percentage display, locked state when <8 deciding games
+- Files changed: src/components/insights/DecidingGames.tsx (new), src/pages/Dashboard.tsx (added useGames import, games loading check, DecidingGames render)
+- **Learnings for future iterations:**
+  - Dashboard now imports `useGames()` (no matchId) to get ALL games — needed for game-level insight calculations
+  - Deciding game detection: Game 3 in Bo3, Game 5 in Bo5 — must verify game was actually played (scores > 0)
+  - Recharts PieChart with `innerRadius` and `outerRadius` creates a donut chart — use absolute-positioned div overlaying the chart for center percentage text
+  - Trend arrow: compare last 5 deciding game win rate vs overall — up/down/flat
+  - `games` is now part of Dashboard loading check alongside matches, players, venues
+---
+
+## Iteration 5 - Sat Feb  7 23:25:12 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-231301/iter-5.log
+---
+US-019 is complete. Here's what was implemented:
+
+**US-019 — Insight card: Deciding Game Performance**
+
+- **New component** `src/components/insights/DecidingGames.tsx`: Donut chart showing win/loss split in deciding games (Game 3 in Bo3, Game 5 in Bo5)
+  - Recharts PieChart with inner/outer radius for donut visualization
+  - Green (#00E676) for wins, red (#FF5252) for losses
+  - Center percentage display overlaid on the donut
+  - Win rate + trend arrow (up/down/flat based on last 5 deciding games vs overall)
+  - Win/loss count breakdown
+  - Only counts matches that actually went to the deciding game (scores > 0)
+  - **Locked state** when <8 deciding games: dimmed placeholder with lock icon and progress text
+- **Dashboard updated** (`src/pages/Dashboard.tsx`): Added `useGames()` hook, games loading check, and `DecidingGames` rendered below VenueEffect
+- Typecheck passes, build succeeds
+- Committed as `feat: US-019 - Insight card — Deciding Game Performance`
+
+There are still stories with `passes: false` (US-020 through US-041), so another iteration will pick up the next story.
+---
+
+## 2026-02-07 - US-020
+- What was implemented: Comeback Index insight card on Dashboard — semicircular gauge/meter visualization showing comeback rate (wins after losing Game 1), color zones (Weak/Average/Strong/Elite), needle pointer, 50% baseline mark, locked state when <10 matches
+- Files changed: src/components/insights/ComebackIndex.tsx (new), src/pages/Dashboard.tsx (added import + render)
+- **Learnings for future iterations:**
+  - SVG semicircular gauge: use `M cx-r cy A r r 0 0 1 cx+r cy` for a clean left-to-right semicircle path
+  - `strokeDasharray` + `strokeDashoffset` on the semicircle path creates a fill effect — offset = halfCirc - (pct/100) * halfCirc
+  - Zone coloring on arcs: use multiple overlapping paths with different dasharray offsets for each zone segment
+  - Needle angle: convert value% to radians as `(180 - (value/100) * 180) * PI / 180`, then compute endpoint with cos/sin
+  - Comeback calculation: filter matches where Game 1 was lost (opponentScore > myScore), then check if match result starts with 'W'
+  - Handle edge case where no Game 1 losses exist — show a congratulatory message instead of 0% gauge
+---
+
+## Iteration 6 - Sat Feb  7 23:28:22 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-231301/iter-6.log
+---
+**US-020 — Comeback Index** is complete. Here's what was implemented:
+
+- **New component** `src/components/insights/ComebackIndex.tsx`: Semicircular gauge/meter showing comeback rate (wins after losing Game 1)
+  - SVG gauge with needle pointer that rotates to the value position
+  - Color zones: 0-39 red (Weak), 40-59 yellow (Average), 60-79 green (Strong), 80-100 bright green (Elite)
+  - 50% baseline mark labeled "Avg"
+  - Context text: "After losing Game 1, you come back to win X% of matches"
+  - Stats row showing comeback wins and total Game 1 losses
+  - Edge case: if no Game 1 losses exist, shows congratulatory message
+  - **Locked state** when <10 total matches: dimmed gauge placeholder with lock icon and progress text
+- **Dashboard updated** (`src/pages/Dashboard.tsx`): ComebackIndex rendered below DecidingGames in the insight cards container
+- Typecheck passes, build succeeds
+- Committed as `feat: US-020 - Insight card — Comeback Index`
+- PRD updated with `passes: true` for US-020
+
+There are still stories with `passes: false` (US-021 through US-041), so another iteration will pick up the next story.
+---
+
+## 2026-02-07 - US-021
+- What was implemented: Current Form insight card on Dashboard — sparkline chart (Recharts LineChart) of last 10 match results, dashed overall win rate reference line, shaded areas above/below, summary text with trend label
+- Files changed: src/components/insights/CurrentForm.tsx (new), src/pages/Dashboard.tsx (added import + render)
+- **Learnings for future iterations:**
+  - Recharts `ReferenceArea` with `y1`/`y2` creates horizontal shaded bands — use `fillOpacity` for subtle background shading
+  - Recharts `ReferenceLine` with `strokeDasharray="4 4"` creates a clean dashed line for baseline comparisons
+  - Custom dot rendering: pass a function to `Line.dot` prop — cast props to get typed access to cx, cy, payload
+  - Trend determination: compare last10Pct to overallPct with ±10% threshold — "On an upswing!" / "In a dip" / "Steady"
+  - CurrentForm only needs `matches` prop (no games needed) — win/loss is derived from `match.result`
+---
+
+## Iteration 7 - Sat Feb  7 23:30:23 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-231301/iter-7.log
+---
+**US-021 — Insight card: Current Form** is complete. Here's what was implemented:
+
+- **New component** `src/components/insights/CurrentForm.tsx`: Sparkline chart showing last 10 match results with trend analysis
+  - **Recharts LineChart** with Y-axis 0 (loss) to 1 (win), connected dots colored green for wins, red for losses
+  - **Horizontal dashed reference line** at overall win rate percentage for comparison
+  - **Shaded areas**: light green above the overall win rate line, light red below
+  - **Summary text**: "Last 10: XW-YL (Z%) vs overall: A%"
+  - **Trend label**: "On an upswing!" (green) if last 10 > overall + 10%, "In a dip" (red) if < overall - 10%, "Steady" (yellow) otherwise
+  - **Locked state** when <10 total matches: dimmed placeholder with lock icon and "Log X more matches to unlock"
+- **Dashboard updated** (`src/pages/Dashboard.tsx`): CurrentForm rendered below ComebackIndex in the insight cards container
+- Typecheck passes, build succeeds
+- Committed as `feat: US-021 - Insight card — Current Form`
+
+There are still stories with `passes: false` (US-022 through US-041), so another iteration will pick up the next story.
+---
+
+## 2026-02-07 - US-022
+- What was implemented: Fast Starter Rating insight card on Dashboard — two connected SVG circles (Game 1 win % → Match conversion %), arrow colored by conversion rate, locked state when <8 matches
+- Files changed: src/components/insights/FastStarter.tsx (new), src/pages/Dashboard.tsx (added import + render)
+- **Learnings for future iterations:**
+  - SVG circle progress rings reusable for any percentage display — same pattern as VenueEffect circles
+  - Game 1 detection: find game with `gameNumber === 1` and check both scores > 0 before counting
+  - Conversion rate = matches won after winning Game 1 / total Game 1 wins
+  - Arrow color thresholds: >=70% green, >=50% yellow, <50% red
+  - FastStarter needs both `matches` and `games` props — same pattern as DecidingGames and ComebackIndex
 ---

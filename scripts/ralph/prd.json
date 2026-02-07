@@ -350,7 +350,7 @@
         "Verify in browser with test data"
       ],
       "priority": 18,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -369,7 +369,7 @@
         "Verify in browser with test data"
       ],
       "priority": 19,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -389,7 +389,7 @@
         "Verify in browser with test data"
       ],
       "priority": 20,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -409,7 +409,7 @@
         "Verify in browser with test data"
       ],
       "priority": 21,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -428,7 +428,7 @@
         "Verify in browser with test data"
       ],
       "priority": 22,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
