@@ -4,6 +4,7 @@ import { useUIStore } from '@/stores/uiStore'
 import { useMatchLogStore } from '@/stores/matchLogStore'
 import StepIndicator from '@/components/matchlog/StepIndicator'
 import StepSetup from '@/components/matchlog/StepSetup'
+import StepScoreEntry from '@/components/matchlog/StepScoreEntry'
 import Button from '@/components/ui/Button'
 
 export default function LogMatch() {
@@ -57,12 +58,7 @@ export default function LogMatch() {
       {/* Step Content */}
       <div className="flex-1 overflow-y-auto">
         {step === 1 && <StepSetup />}
-        {/* Steps 2 and 3 will be added in US-009 and US-010 */}
-        {step === 2 && (
-          <div className="flex flex-1 items-center justify-center">
-            <p className="text-text-secondary">Score Entry (US-009)</p>
-          </div>
-        )}
+        {step === 2 && <StepScoreEntry />}
         {step === 3 && (
           <div className="flex flex-1 items-center justify-center">
             <p className="text-text-secondary">Tags & Save (US-010)</p>

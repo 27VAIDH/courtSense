@@ -32,6 +32,8 @@
 - LogMatch page is full-screen (fixed inset-0 z-40) with tab bar hidden via useUIStore
 - Match logging flow uses `reset()` on exit to clear all state
 - Exit confirmation dialog shown only if user has made selections (hasSelection check)
+- Score entry: `GameScore` type from matchLogStore, tight game = both scores >= 8, quick presets as tappable pills
+- Match result auto-calculated: count games where myScore > opponentScore vs opposite
 
 # Ralph Progress Log
 Started: Sat Feb  7 16:50:52 IST 2026
@@ -264,4 +266,41 @@ There are still stories with `passes: false` (US-008 through US-041), so another
   - Format change adjusts games array length (3 for Bo3, 5 for Bo5) in the store
   - Exit confirmation only shows if `hasSelection` is true (opponentId !== null)
   - Steps 2 and 3 have placeholder content — will be implemented in US-009 and US-010
+---
+
+## Iteration 5 - Sat Feb  7 17:54:05 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-174057/iter-5.log
+---
+US-008 is complete. There are still stories with `passes: false` (US-009 through US-041), so another iteration will pick up the next story.
+
+**Summary of US-008 completion:**
+
+- **Zustand store** (`src/stores/matchLogStore.ts`): Match logging state management with all fields for steps 1-3 (opponent, date, venue, format, games, energy, vibe, tags, note), step navigation, and `reset()` for cleanup
+- **StepIndicator** (`src/components/matchlog/StepIndicator.tsx`): Shows "X of 3" with colored progress dots
+- **StepSetup** (`src/components/matchlog/StepSetup.tsx`): Step 1 with:
+  - **Opponent Picker**: horizontal scrollable Chip row with emoji + name, tap to select/deselect, "+" chip opens inline add-opponent modal
+  - **Date/Time**: auto-filled with current date/time, displayed as tappable pill ("Today, 7:30 PM"), opens native datetime-local input on tap
+  - **Venue Picker**: horizontal scrollable Chip row with 📍 + name, "+" chip opens inline add-venue modal
+  - **Format Selector**: segmented toggle between "Best of 3" and "Best of 5" (default Bo3)
+- **LogMatch page** (`src/pages/LogMatch.tsx`): Full-screen logging flow with:
+  - Tab bar hidden on mount, restored on unmount
+  - Close "✕" button with exit confirmation dialog if selections were made
+  - "Next" button disabled until opponent is selected
+  - Placeholder content for steps 2 and 3
+- Typecheck passes, build succeeds
+- Committed as `feat: US-008 - Match logging — Step 1 (Setup screen)`
+---
+
+## 2026-02-07 - US-009
+- What was implemented: Match logging Step 2 (Score entry) — vertical stack of game cards with +/- score buttons, quick score presets, tight game indicator, auto-calculated match result banner, collapsible unneeded games
+- Files changed: src/components/matchlog/StepScoreEntry.tsx (new), src/pages/LogMatch.tsx (updated to use StepScoreEntry)
+- **Learnings for future iterations:**
+  - `GameScore` type exported from matchLogStore for reuse in components
+  - Tight game detection: both scores >= 8 shows flame emoji on game card
+  - Match result auto-calculated from game wins (myScore > opponentScore counts as game win)
+  - Quick score presets use highlight style when current score matches: `border-primary bg-primary/20 text-primary`
+  - Collapsible games: when match is decided (enough wins), unplayed games show "Not needed" in dimmed state
+  - Score buttons use `min-h-[48px] min-w-[48px]` for large tap targets on mobile
+  - The opponent name is fetched via `usePlayers()` hook and matched by `opponentId` from the store
 ---

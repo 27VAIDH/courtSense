@@ -174,7 +174,7 @@
         "Verify in browser that score entry with +/- buttons and presets works, and result banner updates live"
       ],
       "priority": 9,
-      "passes": false,
+      "passes": true,
       "notes": "This is the most interaction-heavy screen. Focus on large tap targets and speed."
     },
     {
