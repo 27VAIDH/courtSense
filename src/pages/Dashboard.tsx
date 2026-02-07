@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useMatches, usePlayers, useVenues } from '@/db/hooks'
+import { useMatches, usePlayers, useVenues, useGames } from '@/db/hooks'
 import type { Match } from '@/db/types'
 import MatchHistoryList from '@/components/matches/MatchHistoryList'
 import Button from '@/components/ui/Button'
@@ -8,6 +8,7 @@ import WinRateByOpponent from '@/components/insights/WinRateByOpponent'
 import EnergyImpact from '@/components/insights/EnergyImpact'
 import BestDays from '@/components/insights/BestDays'
 import VenueEffect from '@/components/insights/VenueEffect'
+import DecidingGames from '@/components/insights/DecidingGames'
 
 function CurrentFormDots({ matches }: { matches: Match[] }) {
   const last5 = useMemo(() => {
@@ -40,6 +41,7 @@ export default function Dashboard() {
   const matches = useMatches()
   const players = usePlayers()
   const venues = useVenues()
+  const games = useGames()
   const navigate = useNavigate()
 
   const currentUser = useMemo(() => {
@@ -58,7 +60,7 @@ export default function Dashboard() {
     return { wins: w, losses: l }
   }, [matches])
 
-  const isLoading = matches === undefined || players === undefined || venues === undefined
+  const isLoading = matches === undefined || players === undefined || venues === undefined || games === undefined
 
   // Loading state
   if (isLoading) {
@@ -135,6 +137,7 @@ export default function Dashboard() {
           <EnergyImpact matches={matches} />
           <BestDays matches={matches} />
           <VenueEffect matches={matches} venues={venues} />
+          <DecidingGames matches={matches} games={games} />
         </div>
       </div>
 
