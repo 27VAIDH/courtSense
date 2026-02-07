@@ -41,7 +41,9 @@
 - PostMatchSaved reads match/games/opponent from Dexie via useParams matchId — uses useMemo for derived data
 - Streak detection: filter matches by opponentId, count consecutive same-result matches from most recent
 - Match list components in `src/components/matches/` — MatchHistoryList renders sorted match cards with game scores
-- Match detail route: `/match/:id` renders MatchDetail page — placeholder until US-013 builds full detail view
+- Match detail route: `/match/:id` renders MatchDetail page with full detail, edit, and delete
+- Match edit: inline edit mode in MatchDetail page — score editing with +/- buttons and presets, tags/vibe/energy/note editing, save overwrites existing records
+- Match delete: deletes both match + game records via `db.games.where('matchId').equals(id).delete()` then `db.matches.delete(id)`
 - `useGames()` without matchId returns ALL games — use Map<matchId, Game[]> for efficient lookup in list views
 - Relative date formatting: "Today", "Yesterday", then "Mon Jan 6" style for older dates
 
@@ -417,4 +419,42 @@ US-011 is complete. There are still stories with `passes: false` (US-012 through
   - Relative date formatting: compare day difference for "Today"/"Yesterday", then fall back to locale date string
   - Game scores displayed inline with flame emoji for tight games (isTight=true)
   - Matches sorted by `createdAt` descending (newest first)
+---
+
+## Iteration 4 - Sat Feb  7 18:08:35 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-175709/iter-4.log
+---
+US-012 is complete. There are still stories with `passes: false` (US-013 through US-041), so another iteration will pick up the next story.
+
+**Summary of US-012 completion:**
+
+- **MatchHistoryList component** (`src/components/matches/MatchHistoryList.tsx`): Displays all matches as tappable cards sorted by `createdAt` descending (newest first), each showing:
+  - Opponent emoji + name
+  - Relative date ("Today", "Yesterday", "Mon Jan 6")
+  - Result text ("W 3-1" / "L 1-3") colored green for win / red for loss
+  - Venue name in muted text
+  - Individual game scores with flame emoji for tight games (isTight=true)
+  - **Loading state**: 3 skeleton placeholder cards with pulse animation
+  - **Empty state**: "No matches yet" with racket emoji and green CTA button linking to /log
+  - Tapping a card navigates to `/match/:id`
+- **Dashboard page** (`src/pages/Dashboard.tsx`): Updated from placeholder to show "Match History" header + MatchHistoryList
+- **MatchDetail page** (`src/pages/MatchDetail.tsx`): Placeholder for US-013, with back navigation
+- **App.tsx**: Added `/match/:id` route for match detail navigation
+- Uses Dexie `useLiveQuery` hooks for reactive updates when new matches are saved
+- Typecheck passes, build succeeds
+- Committed as `feat: US-012 - Match history list`
+---
+
+## 2026-02-07 - US-013
+- What was implemented: Full match detail view with read-only display of all match data, inline edit mode for scores/tags/vibe/energy/note, and delete with confirmation dialog
+- Files changed: src/pages/MatchDetail.tsx (rewritten from placeholder)
+- **Learnings for future iterations:**
+  - Edit mode in match detail uses local component state (not Zustand store) since it's a self-contained form — no need to pollute the global match log store
+  - When editing game scores, delete all existing game records and re-create via `db.games.where('matchId').equals(id).delete()` + `db.games.bulkAdd()` — simpler than trying to update individual records
+  - `db.matches.update(id, { ...fields })` for partial match record updates — Dexie merges the update with existing record
+  - Match result string recalculated during edit save — ensures consistency if scores change
+  - The `Chip` and `Button` components from `src/components/ui/` are reusable across both the log flow and detail edit mode
+  - Loading state with skeleton placeholders prevents flash of "not found" while Dexie queries resolve
+  - Game scores in read-only view colored green/red based on who won each individual game
 ---

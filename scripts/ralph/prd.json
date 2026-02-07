@@ -255,7 +255,7 @@
         "Verify in browser that match detail renders correctly, edit saves changes, and delete removes the match"
       ],
       "priority": 13,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
