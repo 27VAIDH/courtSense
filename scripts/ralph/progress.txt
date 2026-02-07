@@ -1,3 +1,53 @@
+## Codebase Patterns
+- Tailwind CSS v4 uses `@tailwindcss/vite` plugin — no PostCSS/Autoprefixer config needed
+- Tailwind v4 CSS import: `@import "tailwindcss";` in index.css
+- Path alias `@/` maps to `src/` via both tsconfig.app.json and vite.config.ts
+- TypeScript strict mode enabled in tsconfig.app.json
+- Build command: `npm run build` (runs `tsc -b && vite build`)
+- Dexie reactive hooks: use `dexie-react-hooks` package (separate from `dexie`)
+- React Router DOM v7 installed (compatible with v6+ API)
+- PWA: `vite-plugin-pwa` with `registerType: 'autoUpdate'` — auto-registers SW and generates manifest
+- App icons are SVG-based in `public/icons/` — 192x192, 512x512, and apple-touch-icon
+- iOS PWA meta tags in index.html: apple-mobile-web-app-capable, black-translucent status bar, viewport-fit=cover
+
 # Ralph Progress Log
 Started: Sat Feb  7 16:50:52 IST 2026
+---
+
+## 2026-02-07 - US-001
+- What was implemented: Full project scaffolding with Vite + React + TypeScript, all required dependencies installed
+- Files changed: package.json, vite.config.ts, tsconfig.json, tsconfig.app.json, tsconfig.node.json, index.html, src/App.tsx, src/index.css, src/main.tsx, .gitignore
+- **Learnings for future iterations:**
+  - Tailwind CSS v4 does NOT need postcss.config.js or autoprefixer — the `@tailwindcss/vite` plugin handles everything
+  - `create-vite` v8 requires Node 20.19+ — use v6.x for Node 20.12
+  - The `ralph/` directory is a nested git repo — don't try to stage it in the main repo
+  - Need `@types/node` dev dependency for `path` import in vite.config.ts
+---
+
+## Iteration 1 - Sat Feb  7 17:30:35 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-172604/iter-1.log
+---
+US-001 is complete. There are still stories with `passes: false` (US-002 through US-041), so another iteration will pick up the next story.
+
+**Summary of US-001 completion:**
+- Scaffolded Vite + React + TypeScript project in the project root
+- Installed all required dependencies: Tailwind CSS v4, Zustand, Dexie.js + dexie-react-hooks, Framer Motion, Recharts, html2canvas, React Router DOM
+- Configured Tailwind CSS v4 with `@tailwindcss/vite` plugin
+- Configured tsconfig with strict mode and `@/` path alias mapping to `src/`
+- Build passes, dev server runs, typecheck passes
+- Committed as `feat: US-001 - Project scaffolding with full tech stack`
+- PRD updated with `passes: true` for US-001
+- Progress log updated with codebase patterns and learnings
+---
+
+## 2026-02-07 - US-002
+- What was implemented: PWA configuration for iOS home screen install
+- Files changed: package.json (vite-plugin-pwa added), vite.config.ts (VitePWA plugin configured), index.html (iOS meta tags, viewport-fit=cover), public/icons/icon-192x192.svg, public/icons/icon-512x512.svg, public/icons/apple-touch-icon.svg
+- **Learnings for future iterations:**
+  - `vite-plugin-pwa` with `registerType: 'autoUpdate'` handles SW registration automatically — no need to manually register in main.tsx
+  - The plugin generates `manifest.webmanifest`, `registerSW.js`, and `sw.js` in the dist output
+  - SVG icons work fine for PWA manifest icons — no need for PNG conversion
+  - Workbox `globPatterns` in the config controls which files get precached for offline use
+  - The manifest is auto-injected into the HTML by the plugin — no manual `<link rel="manifest">` needed
 ---

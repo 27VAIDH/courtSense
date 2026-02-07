@@ -21,7 +21,7 @@
         "Typecheck passes"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "This is the foundation — everything depends on this. Do NOT scaffold inside ralph/. Use the project root."
     },
     {
@@ -37,7 +37,7 @@
         "Typecheck passes"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
