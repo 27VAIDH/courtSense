@@ -1,7 +1,10 @@
+import OpponentManager from '@/components/opponents/OpponentManager'
+
 export default function Profile() {
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <h1 className="text-2xl font-bold text-white">Profile</h1>
+    <div className="min-h-screen px-4 pt-6 pb-24">
+      <h1 className="mb-6 text-2xl font-bold text-text-primary">Profile</h1>
+      <OpponentManager />
     </div>
   )
 }
