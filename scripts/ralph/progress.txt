@@ -46,6 +46,11 @@
 - Match delete: deletes both match + game records via `db.games.where('matchId').equals(id).delete()` then `db.matches.delete(id)`
 - `useGames()` without matchId returns ALL games — use Map<matchId, Game[]> for efficient lookup in list views
 - Relative date formatting: "Today", "Yesterday", then "Mon Jan 6" style for older dates
+- Insight card components live in `src/components/insights/` — receive matches/players as props from Dashboard
+- Insight cards use locked state pattern: dimmed overlay with lock icon + progress text when data threshold not met
+- Custom CSS bars (div with dynamic width%) preferred over Recharts BarChart for simple horizontal bars — more flexible styling on mobile
+- Recharts BarChart with Cell components allows per-bar coloring — use `fill` and `opacity` props on each Cell
+- Day of week mapping: `getDay()` returns 0=Sun..6=Sat — convert to Mon=0..Sun=6 with `jsDay === 0 ? 6 : jsDay - 1`
 
 # Ralph Progress Log
 Started: Sat Feb  7 16:50:52 IST 2026
@@ -504,4 +509,519 @@ US-013 is complete. There are still stories with `passes: false` (US-014 through
   - Dashboard has 3 loading skeletons: header, insight cards area, match history
   - Empty state shows welcome message with racket emoji and large green CTA button to /log
   - Match history section uses the existing MatchHistoryList component unchanged
+---
+
+## Iteration 6 - Sat Feb  7 18:15:46 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-175709/iter-6.log
+---
+US-014 is complete. There are still stories with `passes: false` (US-015 through US-041), so another iteration will pick up the next story.
+
+**Summary of US-014 completion:**
+
+- **Rewrote `src/pages/Dashboard.tsx`** from a simple match history wrapper into a full dashboard layout with:
+  - **Header section**: Player name from current user record, overall record as "XW - YL" computed from all matches
+  - **Current form indicator**: Last 5 match results displayed as colored W/L letters (green for win, red for loss)
+  - **Insight cards container**: Scrollable `space-y-3` section with "Insights" header — placeholder for US-015 through US-022 cards
+  - **Match history section**: Existing MatchHistoryList component below insights
+  - **Skeleton loading**: Three skeleton sections (header, insight cards, match history) shown while Dexie data loads
+  - **Empty state**: "Welcome to SquashIQ!" with racket emoji, encouraging text, and large green "Log First Match" CTA button
+- Typecheck passes, build succeeds
+- Committed as `feat: US-014 - Dashboard layout and header with stats`
+- PRD updated with `passes: true` for US-014
+- Progress log updated with learnings
+---
+
+## Iteration 7 - Sat Feb  7 18:16:09 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-175709/iter-7.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+❌ Error on line 79. Last command: "$TIMEOUT_BIN" "${ITER_TIMEOUT}" "$@"
+---
+
+## Iteration 8 - Sat Feb  7 18:16:15 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-175709/iter-8.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+❌ Error on line 79. Last command: "$TIMEOUT_BIN" "${ITER_TIMEOUT}" "$@"
+---
+
+## Iteration 9 - Sat Feb  7 18:16:20 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-175709/iter-9.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+❌ Error on line 79. Last command: "$TIMEOUT_BIN" "${ITER_TIMEOUT}" "$@"
+---
+
+## Iteration 10 - Sat Feb  7 18:16:25 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-175709/iter-10.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+❌ Error on line 79. Last command: "$TIMEOUT_BIN" "${ITER_TIMEOUT}" "$@"
+---
+
+## Iteration 11 - Sat Feb  7 18:16:30 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-175709/iter-11.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+❌ Error on line 79. Last command: "$TIMEOUT_BIN" "${ITER_TIMEOUT}" "$@"
+---
+
+## Iteration 12 - Sat Feb  7 18:16:35 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-175709/iter-12.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+❌ Error on line 79. Last command: "$TIMEOUT_BIN" "${ITER_TIMEOUT}" "$@"
+---
+
+## Iteration 13 - Sat Feb  7 18:16:41 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-175709/iter-13.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+❌ Error on line 79. Last command: "$TIMEOUT_BIN" "${ITER_TIMEOUT}" "$@"
+---
+
+## Iteration 14 - Sat Feb  7 18:16:46 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-175709/iter-14.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+❌ Error on line 79. Last command: "$TIMEOUT_BIN" "${ITER_TIMEOUT}" "$@"
+---
+
+## Iteration 15 - Sat Feb  7 18:16:51 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-175709/iter-15.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+❌ Error on line 79. Last command: "$TIMEOUT_BIN" "${ITER_TIMEOUT}" "$@"
+---
+
+## Iteration 16 - Sat Feb  7 18:16:57 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-175709/iter-16.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+❌ Error on line 79. Last command: "$TIMEOUT_BIN" "${ITER_TIMEOUT}" "$@"
+---
+
+## Iteration 17 - Sat Feb  7 18:17:02 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-175709/iter-17.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+❌ Error on line 79. Last command: "$TIMEOUT_BIN" "${ITER_TIMEOUT}" "$@"
+---
+
+## Iteration 18 - Sat Feb  7 18:17:07 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-175709/iter-18.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+❌ Error on line 79. Last command: "$TIMEOUT_BIN" "${ITER_TIMEOUT}" "$@"
+---
+
+## Iteration 19 - Sat Feb  7 18:17:12 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-175709/iter-19.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+❌ Error on line 79. Last command: "$TIMEOUT_BIN" "${ITER_TIMEOUT}" "$@"
+---
+
+## Iteration 20 - Sat Feb  7 18:17:17 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-175709/iter-20.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+❌ Error on line 79. Last command: "$TIMEOUT_BIN" "${ITER_TIMEOUT}" "$@"
+---
+
+## Iteration 21 - Sat Feb  7 18:17:22 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-175709/iter-21.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+❌ Error on line 79. Last command: "$TIMEOUT_BIN" "${ITER_TIMEOUT}" "$@"
+---
+
+## Iteration 1 - Sat Feb  7 18:21:55 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-1.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 2 - Sat Feb  7 18:22:03 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-2.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 3 - Sat Feb  7 18:22:11 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-3.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 4 - Sat Feb  7 18:22:19 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-4.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 5 - Sat Feb  7 18:22:28 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-5.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 6 - Sat Feb  7 18:22:36 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-6.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 7 - Sat Feb  7 18:22:45 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-7.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 8 - Sat Feb  7 18:22:52 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-8.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 9 - Sat Feb  7 18:23:01 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-9.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 10 - Sat Feb  7 18:23:09 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-10.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 11 - Sat Feb  7 18:23:17 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-11.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 12 - Sat Feb  7 18:23:25 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-12.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 13 - Sat Feb  7 18:23:33 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-13.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 14 - Sat Feb  7 18:23:41 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-14.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 15 - Sat Feb  7 18:23:49 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-15.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 16 - Sat Feb  7 18:23:57 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-16.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 17 - Sat Feb  7 18:24:06 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-17.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 18 - Sat Feb  7 18:24:15 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-18.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 19 - Sat Feb  7 18:24:23 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-19.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 20 - Sat Feb  7 18:24:31 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-20.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 21 - Sat Feb  7 18:24:40 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-21.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 22 - Sat Feb  7 18:24:48 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-22.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 23 - Sat Feb  7 18:24:57 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-23.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 24 - Sat Feb  7 18:25:06 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-24.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 25 - Sat Feb  7 18:25:14 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-25.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 26 - Sat Feb  7 18:25:23 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-26.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 27 - Sat Feb  7 18:25:32 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-27.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 28 - Sat Feb  7 18:25:40 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-28.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 29 - Sat Feb  7 18:25:48 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-29.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 30 - Sat Feb  7 18:25:56 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-30.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 31 - Sat Feb  7 18:26:04 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-31.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 32 - Sat Feb  7 18:26:12 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-32.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## Iteration 33 - Sat Feb  7 18:26:20 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-182149/iter-33.log
+---
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+You've hit your limit · resets 8:30pm (Asia/Calcutta)
+---
+
+## 2026-02-07 - US-015
+- What was implemented: Win Rate by Opponent insight card on Dashboard — horizontal bar chart per opponent with win rate, locked state when insufficient data
+- Files changed: src/components/insights/WinRateByOpponent.tsx (new), src/pages/Dashboard.tsx (added import + render)
+- **Learnings for future iterations:**
+  - Insight card components receive `matches` and `players` as props from Dashboard — avoids duplicate hook calls
+  - Custom CSS bars (div with dynamic width%) are more flexible than Recharts BarChart for simple horizontal bars on mobile
+  - Locked state pattern: `relative overflow-hidden` container with dimmed content + absolute centered overlay with lock icon
+  - Two locked states needed: (1) not enough total matches, (2) enough total but no opponent with enough H2H matches
+  - Color scheme: >50% green (#00E676), =50% yellow (#FFD600), <50% red (#FF5252) — with opacity scaling for intensity
+  - Minimum bar width of 4% prevents invisible bars for 0% win rate
+---
+
+## Iteration 1 - Sat Feb  7 23:15:40 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-231301/iter-1.log
+---
+US-015 is complete. Here's what was implemented:
+
+**US-015 — Insight card: Win Rate by Opponent**
+
+- **New component** `src/components/insights/WinRateByOpponent.tsx`: Horizontal bar chart showing win rate per opponent
+  - Each row: opponent emoji + name, colored bar proportional to win rate, record text (e.g. "7-3"), percentage
+  - Bar color: green for >50%, yellow for 50%, red for <50% — opacity scales with win rate
+  - Sorted by total matches played (most played opponent at top)
+  - Only shows opponents with 3+ matches
+  - **Locked state** when <3 total matches: dimmed card with lock icon and "Log X more matches to unlock"
+  - **Second locked state** when enough total matches but no opponent has 3+ H2H matches
+- **Dashboard updated** (`src/pages/Dashboard.tsx`): WinRateByOpponent rendered in the insight cards container
+- Typecheck passes, build succeeds
+- Committed as `feat: US-015 - Insight card — Win Rate by Opponent`
+
+There are still stories with `passes: false` (US-016 through US-041), so another iteration will pick up the next story.
+---
+
+## 2026-02-07 - US-016
+- What was implemented: Energy Impact insight card on Dashboard — three horizontal bars (Low/Medium/High) showing win rate per energy level, locked state when insufficient data
+- Files changed: src/components/insights/EnergyImpact.tsx (new), src/pages/Dashboard.tsx (added import + render)
+- **Learnings for future iterations:**
+  - Energy level is optional on matches — need to count tagged matches separately from total matches
+  - Two unlock conditions: (1) total matches >= 5 AND (2) at least 3 matches with energy tagged
+  - Locked state messaging differs based on which condition fails: "Log X more matches" vs "Tag energy on X more matches"
+  - Bars only render when that energy level has data (total > 0), otherwise show "No data" text
+  - Same color scheme as WinRateByOpponent: green >50%, yellow 50%, red <50% with opacity scaling
+---
+
+## Iteration 2 - Sat Feb  7 23:17:39 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-231301/iter-2.log
+---
+US-016 is complete. Here's what was implemented:
+
+**US-016 — Insight card: Energy Impact**
+
+- **New component** `src/components/insights/EnergyImpact.tsx`: Three horizontal bars showing win rate per energy level (Low/Medium/High)
+  - Each row: energy emoji + level name, colored bar proportional to win rate, win rate percentage + sample size (e.g. "78% (9)")
+  - Bar color: green for >50%, yellow for 50%, red for <50% with opacity scaling
+  - "No data" shown for energy levels with 0 matches
+  - **Locked state** when <5 total matches OR <3 energy-tagged matches: dimmed card with lock icon and context-specific progress text
+- **Dashboard updated** (`src/pages/Dashboard.tsx`): EnergyImpact rendered below WinRateByOpponent in the insight cards container
+- Typecheck passes, build succeeds
+- Committed as `feat: US-016 - Insight card — Energy Impact`
+
+There are still stories with `passes: false` (US-017 through US-041), so another iteration will pick up the next story.
+---
+
+## 2026-02-07 - US-017
+- What was implemented: Day of Week Performance insight card ("Best Days") on Dashboard — 7-column bar chart using Recharts showing win rate per day, best day highlighted with accent color, locked state with progress bar
+- Files changed: src/components/insights/BestDays.tsx (new), src/pages/Dashboard.tsx (added import + render)
+- **Learnings for future iterations:**
+  - Recharts BarChart with Cell components allows per-bar coloring — use `fill` and `opacity` props on each Cell
+  - `getDay()` returns 0=Sun..6=Sat — convert to Mon-first index with `jsDay === 0 ? 6 : jsDay - 1`
+  - Use `ResponsiveContainer` from Recharts with width="100%" for mobile-friendly charts
+  - Locked state includes a progress bar showing how close the user is to unlocking (matches.length / MIN)
+  - Best day highlighted with accent color (#FF6D00) while other active days use primary (#00E676)
+  - Days without matches get grayed out bar color (#242424) at 50% opacity
 ---

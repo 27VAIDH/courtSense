@@ -332,7 +332,7 @@
         "Verify in browser with test data"
       ],
       "priority": 17,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

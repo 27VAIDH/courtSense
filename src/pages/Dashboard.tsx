@@ -6,6 +6,7 @@ import MatchHistoryList from '@/components/matches/MatchHistoryList'
 import Button from '@/components/ui/Button'
 import WinRateByOpponent from '@/components/insights/WinRateByOpponent'
 import EnergyImpact from '@/components/insights/EnergyImpact'
+import BestDays from '@/components/insights/BestDays'
 
 function CurrentFormDots({ matches }: { matches: Match[] }) {
   const last5 = useMemo(() => {
@@ -130,6 +131,7 @@ export default function Dashboard() {
         <div className="space-y-3" id="insight-cards-container">
           <WinRateByOpponent matches={matches} players={players} />
           <EnergyImpact matches={matches} />
+          <BestDays matches={matches} />
         </div>
       </div>
 
