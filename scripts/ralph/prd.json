@@ -274,7 +274,7 @@
         "Verify in browser that dashboard renders with header stats and correct empty/loaded states"
       ],
       "priority": 14,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
