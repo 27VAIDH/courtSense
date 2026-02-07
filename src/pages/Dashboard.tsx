@@ -9,6 +9,7 @@ import EnergyImpact from '@/components/insights/EnergyImpact'
 import BestDays from '@/components/insights/BestDays'
 import VenueEffect from '@/components/insights/VenueEffect'
 import DecidingGames from '@/components/insights/DecidingGames'
+import ComebackIndex from '@/components/insights/ComebackIndex'
 
 function CurrentFormDots({ matches }: { matches: Match[] }) {
   const last5 = useMemo(() => {
@@ -138,6 +139,7 @@ export default function Dashboard() {
           <BestDays matches={matches} />
           <VenueEffect matches={matches} venues={venues} />
           <DecidingGames matches={matches} games={games} />
+          <ComebackIndex matches={matches} games={games} />
         </div>
       </div>
 
