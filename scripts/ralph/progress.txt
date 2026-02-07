@@ -65,6 +65,10 @@
 - Recommendation stored as JSON string in `match.recommendationText` — parse with `JSON.parse()` to get `Recommendation` object
 - RecommendationCard component in `src/components/recommendations/RecommendationCard.tsx` — tappable expand/collapse card with `compact` prop for dashboard pinned variant
 - Dashboard pinned recommendation: parses most recent match's `recommendationText` JSON and shows compact RecommendationCard with "Focus for next match:" label above insight cards
+- Timeline components in `src/components/timeline/` — domain-organized like insights/, recommendations/, etc.
+- Timeline page uses time range filtering with filterByTimeRange() utility — cutoff dates computed via Date constructor arithmetic
+- Recharts AreaChart with split fills for positive/negative: use two Area elements with dataKey functions returning 0 for out-of-range values, each with its own gradient fill, plus a third Area with fill="none" for the main line
+- Win/Loss River momentum: cumulative +1 for win, -1 for loss — Y-axis domain auto-scaled with padding
 
 # Ralph Progress Log
 Started: Sat Feb  7 16:50:52 IST 2026
@@ -1313,4 +1317,37 @@ US-024 is complete. There are still stories with `passes: false` (US-025 through
   - RecommendationCard supports `compact` and `label` props for dashboard use, and full-size for post-match/detail views
   - StepTagsSave already calls `generateRecommendation()` on save (done in US-024) — no save handler changes needed
   - Feature components organized by domain: `src/components/recommendations/` follows existing pattern (opponents/, venues/, insights/)
+---
+
+## Iteration 3 - Sat Feb  7 23:49:45 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-233902/iter-3.log
+---
+US-025 is complete. There are still stories with `passes: false` (US-026 through US-041), so another iteration will pick up the next story.
+
+**Summary of US-025 completion:**
+
+- **Created** `src/components/recommendations/RecommendationCard.tsx` — Reusable tappable expand/collapse card with emoji, headline, and expandable context text. Supports `compact` mode for dashboard use and `label` prop.
+- **Updated** `src/pages/PostMatchSaved.tsx` — Added recommendation card below the streak toast on the post-match save screen, parsing the JSON from `match.recommendationText`
+- **Updated** `src/pages/Dashboard.tsx` — Added pinned compact recommendation card at the top of the dashboard (above insight cards) showing the most recent match's recommendation with "Focus for next match:" label
+- **Updated** `src/pages/MatchDetail.tsx` — Replaced raw text display with proper `RecommendationCard` component that parses the JSON recommendation
+- Build passes, typecheck passes
+- Committed as `feat: US-025 - Post-match recommendation display`
+- PRD updated with `passes: true` for US-025
+- Progress log updated with codebase patterns and learnings
+---
+
+## 2026-02-07 - US-026
+- What was implemented: Timeline page with Win/Loss River chart — Recharts AreaChart with cumulative momentum score, time range selector (30d/3m/6m/All), green/red gradient fills, interactive tooltips, empty states
+- Files changed:
+  - `src/pages/Timeline.tsx` (rewritten from placeholder to full timeline page)
+  - `src/components/timeline/WinLossRiver.tsx` (new — AreaChart component)
+  - `scripts/ralph/prd.json` (US-026 passes: true)
+- **Learnings for future iterations:**
+  - Recharts AreaChart with split positive/negative fills: use two Area elements with dataKey functions that return 0 for out-of-range values, each with linear gradient fills (greenGrad/redGrad), plus a third Area with `fill="none"` for the visible stroke line
+  - Y-axis domain auto-scaled: compute min/max momentum values + 20% padding to prevent data points from hitting edges
+  - Time range filtering: compute cutoff date using Date constructor arithmetic (e.g. `new Date(now.getFullYear(), now.getMonth() - 3, now.getDate())`)
+  - Timeline page passes a `playersMap: Map<number, Player>` to child components for efficient O(1) opponent name lookups
+  - Empty state per-chart: WinLossRiver shows "No matches in this time range" when filtered data is empty (different from page-level empty state)
+  - Custom tooltip styling: match the codebase pattern with `bg-surface-elevated rounded-lg` and colored result text
 ---

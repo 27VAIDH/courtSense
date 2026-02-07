@@ -503,7 +503,7 @@
         "Verify in browser that the river chart renders and tooltips work with test data"
       ],
       "priority": 26,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
