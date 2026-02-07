@@ -1,5 +1,12 @@
 import { useEffect } from 'react'
+import { Routes, Route } from 'react-router-dom'
 import { ensureCurrentUser } from '@/db/database'
+import BottomTabBar from '@/components/layout/BottomTabBar'
+import Dashboard from '@/pages/Dashboard'
+import LogMatch from '@/pages/LogMatch'
+import Timeline from '@/pages/Timeline'
+import Rivals from '@/pages/Rivals'
+import Profile from '@/pages/Profile'
 
 function App() {
   useEffect(() => {
@@ -7,8 +14,15 @@ function App() {
   }, [])
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#0A0A0A] text-white">
-      <h1 className="text-3xl font-bold">SquashIQ</h1>
+    <div className="min-h-screen bg-[#0A0A0A] text-white pb-20">
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/log" element={<LogMatch />} />
+        <Route path="/timeline" element={<Timeline />} />
+        <Route path="/rivals" element={<Rivals />} />
+        <Route path="/profile" element={<Profile />} />
+      </Routes>
+      <BottomTabBar />
     </div>
   )
 }

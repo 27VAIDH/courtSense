@@ -57,7 +57,7 @@
         "Typecheck passes"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Use Dexie's useLiveQuery for reactive data. Export/import will be added in US-040."
     },
     {
@@ -76,7 +76,7 @@
         "Verify in browser that all 5 tabs navigate correctly and tab bar renders at bottom"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

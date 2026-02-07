@@ -9,6 +9,17 @@
 - PWA: `vite-plugin-pwa` with `registerType: 'autoUpdate'` — auto-registers SW and generates manifest
 - App icons are SVG-based in `public/icons/` — 192x192, 512x512, and apple-touch-icon
 - iOS PWA meta tags in index.html: apple-mobile-web-app-capable, black-translucent status bar, viewport-fit=cover
+- Dexie database in `src/db/database.ts` with name `squashiq-db` — tables: players, venues, matches, games, rally_analyses
+- TypeScript interfaces in `src/db/types.ts` — Player, Venue, Match, Game, RallyAnalysis
+- Reactive hooks in `src/db/hooks.ts` — usePlayers(), useVenues(), useMatches(), useGames(matchId?), useRallyAnalyses(matchId?)
+- Default current user auto-created via `ensureCurrentUser()` called in App.tsx useEffect
+- Dexie indexed boolean fields: use `.equals(1)` not `.equals(true)` for boolean queries (Dexie stores booleans as 0/1)
+- React Router: BrowserRouter wraps App in main.tsx, Routes in App.tsx
+- Tab bar visibility: controlled by `useUIStore` Zustand store in `src/stores/uiStore.ts` — call `hideTabBar()`/`showTabBar()`
+- Page components live in `src/pages/` — Dashboard, LogMatch, Timeline, Rivals, Profile
+- Layout components live in `src/components/layout/` — BottomTabBar
+- Bottom tab bar uses `env(safe-area-inset-bottom)` for iOS safe area padding
+- App root div has `pb-20` to prevent content from being hidden behind the fixed tab bar
 
 # Ralph Progress Log
 Started: Sat Feb  7 16:50:52 IST 2026
@@ -41,6 +52,16 @@ US-001 is complete. There are still stories with `passes: false` (US-002 through
 - Progress log updated with codebase patterns and learnings
 ---
 
+## 2026-02-07 - US-003
+- What was implemented: Database schema, TypeScript types, and data hooks
+- Files changed: src/db/types.ts (new), src/db/database.ts (new), src/db/hooks.ts (new), src/App.tsx (added ensureCurrentUser call)
+- **Learnings for future iterations:**
+  - Dexie stores boolean `true` as `1` in IndexedDB — use `.equals(1)` for boolean indexed queries
+  - `useLiveQuery` from `dexie-react-hooks` returns `undefined` while loading, not an empty array — handle loading state in consumers
+  - Dexie schema string format: `++id` for auto-increment, comma-separated indexed fields
+  - `ensureCurrentUser()` is async and called in App useEffect — it checks for existing current user before creating one
+---
+
 ## 2026-02-07 - US-002
 - What was implemented: PWA configuration for iOS home screen install
 - Files changed: package.json (vite-plugin-pwa added), vite.config.ts (VitePWA plugin configured), index.html (iOS meta tags, viewport-fit=cover), public/icons/icon-192x192.svg, public/icons/icon-512x512.svg, public/icons/apple-touch-icon.svg
@@ -50,4 +71,49 @@ US-001 is complete. There are still stories with `passes: false` (US-002 through
   - SVG icons work fine for PWA manifest icons — no need for PNG conversion
   - Workbox `globPatterns` in the config controls which files get precached for offline use
   - The manifest is auto-injected into the HTML by the plugin — no manual `<link rel="manifest">` needed
+---
+
+## Iteration 2 - Sat Feb  7 17:33:37 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-172604/iter-2.log
+---
+US-002 is complete. There are still stories with `passes: false` (US-003 through US-041), so another iteration will pick up the next story.
+
+**Summary of US-002 completion:**
+- Installed `vite-plugin-pwa` as dev dependency
+- Configured `VitePWA` plugin in `vite.config.ts` with full manifest (name, short_name, display standalone, orientation portrait, theme/background colors #0A0A0A)
+- Created SVG-based placeholder icons at 192x192, 512x512, and apple-touch-icon sizes in `public/icons/`
+- Updated `index.html` with iOS PWA meta tags: `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style=black-translucent`, `viewport-fit=cover`
+- Service worker auto-registered with `registerType: 'autoUpdate'` — caches app shell via Workbox with 11 precache entries
+- Typecheck passes, build succeeds
+- Committed as `feat: US-002 - PWA configuration for iOS home screen install`
+- PRD updated with `passes: true` for US-002
+- Progress log updated with codebase patterns and learnings
+---
+
+## Iteration 3 - Sat Feb  7 17:35:49 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-172604/iter-3.log
+---
+US-003 is complete. There are still stories with `passes: false` (US-004 through US-041), so another iteration will pick up the next story.
+
+**Summary of US-003 completion:**
+- Created `src/db/types.ts` with TypeScript interfaces: Player, Venue, Match, Game, RallyAnalysis
+- Created `src/db/database.ts` with Dexie.js database `squashiq-db` and all 5 tables (players, venues, matches, games, rally_analyses) with proper schemas
+- Created `src/db/hooks.ts` with reactive hooks using `useLiveQuery`: usePlayers(), useVenues(), useMatches(), useGames(matchId?), useRallyAnalyses(matchId?)
+- Updated `src/App.tsx` to call `ensureCurrentUser()` on first load, which auto-creates a default current user player record
+- Typecheck passes, build succeeds, lint clean
+- Committed as `feat: US-003 - Database schema, TypeScript types, and data hooks`
+- PRD updated with `passes: true` for US-003
+- Progress log and codebase patterns updated
+---
+
+## 2026-02-07 - US-004
+- What was implemented: App shell with bottom tab navigation — 5-tab bottom bar, React Router routes, placeholder pages, Zustand-controlled tab bar visibility
+- Files changed: src/App.tsx (rewrote with Routes + BottomTabBar), src/main.tsx (wrapped with BrowserRouter), src/stores/uiStore.ts (new), src/components/layout/BottomTabBar.tsx (new), src/pages/Dashboard.tsx (new), src/pages/LogMatch.tsx (new), src/pages/Timeline.tsx (new), src/pages/Rivals.tsx (new), src/pages/Profile.tsx (new)
+- **Learnings for future iterations:**
+  - NavLink from react-router-dom supports `end` prop for exact matching on `/` route
+  - Use `env(safe-area-inset-bottom)` in inline style (not Tailwind) for iOS safe area — Tailwind v4 doesn't include this by default
+  - The center "Log" tab is visually distinct with a larger icon inside a circular background
+  - Tab bar visibility is a simple boolean in Zustand — call `hideTabBar()` when entering match logging flow
 ---
