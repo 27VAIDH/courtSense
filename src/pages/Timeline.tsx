@@ -4,6 +4,7 @@ import { useMatches, usePlayers } from '@/db/hooks'
 import type { Match, Player } from '@/db/types'
 import Button from '@/components/ui/Button'
 import WinLossRiver from '@/components/timeline/WinLossRiver'
+import RollingWinRate from '@/components/timeline/RollingWinRate'
 
 type TimeRange = '30d' | '3m' | '6m' | 'all'
 
@@ -112,6 +113,11 @@ export default function Timeline() {
 
       {/* Win/Loss River Chart */}
       <WinLossRiver matches={filteredMatches} playersMap={playersMap} />
+
+      {/* Rolling Win Rate Chart */}
+      <div className="mt-4">
+        <RollingWinRate matches={filteredMatches} />
+      </div>
     </div>
   )
 }
