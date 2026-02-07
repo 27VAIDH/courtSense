@@ -2,9 +2,11 @@ import { useState, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useMatches, useGames, usePlayers, useVenues } from '@/db/hooks'
 import { db } from '@/db/database'
+import type { Recommendation } from '@/lib/recommendations'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import Chip from '@/components/ui/Chip'
+import RecommendationCard from '@/components/recommendations/RecommendationCard'
 
 const VIBES = ['Intense', 'Casual', 'Frustrating', 'Focused', 'Fun', 'Grind']
 const QUICK_TAGS = ['Good day', 'Off day', 'New strategy', 'Comeback', 'Dominated', 'Lucky win', 'Close']
@@ -82,6 +84,15 @@ export default function MatchDetail() {
     () => venues?.find((v) => v.id === match?.venueId),
     [venues, match?.venueId]
   )
+
+  const recommendation = useMemo((): Recommendation | null => {
+    if (!match?.recommendationText) return null
+    try {
+      return JSON.parse(match.recommendationText) as Recommendation
+    } catch {
+      return null
+    }
+  }, [match])
 
   // Loading state
   if (matches === undefined || allGames === undefined || players === undefined) {
@@ -569,12 +580,12 @@ export default function MatchDetail() {
       )}
 
       {/* Recommendation */}
-      {match.recommendationText && (
+      {recommendation && (
         <>
           <h2 className="mb-3 text-sm font-medium text-text-secondary">Recommendation</h2>
-          <Card className="mb-4 border-l-4 border-primary">
-            <p className="text-sm text-text-primary">{match.recommendationText}</p>
-          </Card>
+          <div className="mb-4">
+            <RecommendationCard recommendation={recommendation} />
+          </div>
         </>
       )}
 

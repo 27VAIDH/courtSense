@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useMatches, usePlayers, useVenues, useGames } from '@/db/hooks'
 import type { Match, Game } from '@/db/types'
 import type { InsightId } from '@/stores/insightStore'
+import type { Recommendation } from '@/lib/recommendations'
 import MatchHistoryList from '@/components/matches/MatchHistoryList'
 import Button from '@/components/ui/Button'
 import InsightCardWrapper from '@/components/insights/InsightCardWrapper'
@@ -14,6 +15,7 @@ import DecidingGames from '@/components/insights/DecidingGames'
 import ComebackIndex from '@/components/insights/ComebackIndex'
 import CurrentForm from '@/components/insights/CurrentForm'
 import FastStarter from '@/components/insights/FastStarter'
+import RecommendationCard from '@/components/recommendations/RecommendationCard'
 
 function CurrentFormDots({ matches }: { matches: Match[] }) {
   const last5 = useMemo(() => {
@@ -157,6 +159,21 @@ export default function Dashboard() {
     return computeInsightStatuses(matches, games)
   }, [matches, games])
 
+  // Most recent match recommendation
+  const latestRecommendation = useMemo((): Recommendation | null => {
+    if (!matches || matches.length === 0) return null
+    const sorted = [...matches].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    )
+    const latest = sorted[0]
+    if (!latest.recommendationText) return null
+    try {
+      return JSON.parse(latest.recommendationText) as Recommendation
+    } catch {
+      return null
+    }
+  }, [matches])
+
   // Sort: unlocked first, then locked sorted by fewest remaining
   const sortedInsights = useMemo(() => {
     const unlocked = insightStatuses.filter((s) => s.remaining === 0)
@@ -256,6 +273,15 @@ export default function Dashboard() {
           <CurrentFormDots matches={matches} />
         </div>
       </div>
+
+      {/* Pinned recommendation from most recent match */}
+      {latestRecommendation && (
+        <RecommendationCard
+          recommendation={latestRecommendation}
+          compact
+          label="Focus for next match:"
+        />
+      )}
 
       {/* Insight cards — dynamically ordered with unlock animations */}
       <div className="mb-6">

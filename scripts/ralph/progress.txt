@@ -63,6 +63,8 @@
 - Dashboard card ordering: `computeInsightStatuses()` calculates remaining-to-unlock for each card — unlocked cards render first, locked sorted by fewest remaining
 - Recommendation engine: `generateRecommendation()` in `src/lib/recommendations.ts` — pure function taking (matches, games, currentMatch), returns `{ emoji, headline, context }`
 - Recommendation stored as JSON string in `match.recommendationText` — parse with `JSON.parse()` to get `Recommendation` object
+- RecommendationCard component in `src/components/recommendations/RecommendationCard.tsx` — tappable expand/collapse card with `compact` prop for dashboard pinned variant
+- Dashboard pinned recommendation: parses most recent match's `recommendationText` JSON and shows compact RecommendationCard with "Focus for next match:" label above insight cards
 
 # Ralph Progress Log
 Started: Sat Feb  7 16:50:52 IST 2026
@@ -1273,4 +1275,42 @@ US-023 is complete. There are still stories with `passes: false` (US-024 through
   - Must fetch all matches and games from DB after saving the match record (so the current match is included) before generating the recommendation
   - Use `db.matches.update(matchId, { recommendationText })` to add recommendation after initial save — avoids needing to know rec before insert
   - Emoji strings use Unicode escapes (`\u{1F680}`) to avoid encoding issues in source files
+---
+
+## Iteration 2 - Sat Feb  7 23:45:39 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-233902/iter-2.log
+---
+US-024 is complete. There are still stories with `passes: false` (US-025 through US-041), so another iteration will pick up the next story.
+
+**Summary of US-024 completion:**
+
+- **New file** `src/lib/recommendations.ts`: Pure function `generateRecommendation(matches, games, currentMatch)` that returns `{ emoji, headline, context }` with 7 prioritized rules:
+  1. **Slow starter**: Lost Game 1 in 3+ of last 5 matches
+  2. **Low energy loss**: Last match tagged Low energy AND lost
+  3. **Tight game struggles**: Won <40% of tight games in last 10 games
+  4. **Win streak 3+**: Won 3+ consecutive matches
+  5. **Loss streak 3+**: Lost 3+ consecutive matches
+  6. **Opponent-specific**: Played same opponent 3+ times, losing >60%
+  7. **Fallback**: Generic motivational based on overall win rate
+
+- **Updated** `src/components/matchlog/StepTagsSave.tsx`: After saving match + games, fetches all data from DB, calls `generateRecommendation()`, and stores the result as a JSON string in the match's `recommendationText` field via `db.matches.update()`
+
+- Typecheck passes, build succeeds
+- Committed as `feat: US-024 - Recommendation engine (rule-based logic)`
+---
+
+## 2026-02-07 - US-025
+- What was implemented: Post-match recommendation display — recommendation card shown on post-match save screen, pinned on Dashboard, and in match detail view
+- Files changed:
+  - `src/components/recommendations/RecommendationCard.tsx` (new) — Reusable tappable expand/collapse recommendation card with compact variant
+  - `src/pages/PostMatchSaved.tsx` — Added RecommendationCard below streak toast, parses JSON from match.recommendationText
+  - `src/pages/Dashboard.tsx` — Added pinned compact RecommendationCard above insight cards showing most recent match recommendation with "Focus for next match:" label
+  - `src/pages/MatchDetail.tsx` — Replaced raw text display with RecommendationCard component that parses JSON recommendation
+  - `scripts/ralph/prd.json` — Marked US-025 as passes: true
+- **Learnings for future iterations:**
+  - Recommendation is stored as JSON string — always parse with try/catch when reading from `match.recommendationText`
+  - RecommendationCard supports `compact` and `label` props for dashboard use, and full-size for post-match/detail views
+  - StepTagsSave already calls `generateRecommendation()` on save (done in US-024) — no save handler changes needed
+  - Feature components organized by domain: `src/components/recommendations/` follows existing pattern (opponents/, venues/, insights/)
 ---

@@ -484,7 +484,7 @@
         "Verify in browser that recommendation card appears post-match and on dashboard"
       ],
       "priority": 25,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

@@ -5,6 +5,8 @@ import confetti from 'canvas-confetti'
 import { useUIStore } from '@/stores/uiStore'
 import { useMatches, usePlayers, useGames } from '@/db/hooks'
 import Button from '@/components/ui/Button'
+import RecommendationCard from '@/components/recommendations/RecommendationCard'
+import type { Recommendation } from '@/lib/recommendations'
 
 function getStreakText(
   matches: { opponentId: number; result: string }[],
@@ -73,6 +75,15 @@ export default function PostMatchSaved() {
       .map((g) => `${g.myScore}-${g.opponentScore}`)
       .join(', ')
   }, [games])
+
+  const recommendation = useMemo((): Recommendation | null => {
+    if (!currentMatch?.recommendationText) return null
+    try {
+      return JSON.parse(currentMatch.recommendationText) as Recommendation
+    } catch {
+      return null
+    }
+  }, [currentMatch])
 
   useEffect(() => {
     hideTabBar()
@@ -181,6 +192,18 @@ export default function PostMatchSaved() {
             transition={{ delay: 0.6, type: 'spring', stiffness: 200 }}
           >
             {isWin ? '🔥' : '💪'} {streakText}
+          </motion.div>
+        )}
+
+        {/* Recommendation Card */}
+        {recommendation && (
+          <motion.div
+            className="mb-6 w-full max-w-sm"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+          >
+            <RecommendationCard recommendation={recommendation} />
           </motion.div>
         )}
 
