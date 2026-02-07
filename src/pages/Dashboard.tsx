@@ -5,6 +5,7 @@ import type { Match } from '@/db/types'
 import MatchHistoryList from '@/components/matches/MatchHistoryList'
 import Button from '@/components/ui/Button'
 import WinRateByOpponent from '@/components/insights/WinRateByOpponent'
+import EnergyImpact from '@/components/insights/EnergyImpact'
 
 function CurrentFormDots({ matches }: { matches: Match[] }) {
   const last5 = useMemo(() => {
@@ -128,6 +129,7 @@ export default function Dashboard() {
         <h2 className="text-lg font-semibold text-text-secondary mb-3">Insights</h2>
         <div className="space-y-3" id="insight-cards-container">
           <WinRateByOpponent matches={matches} players={players} />
+          <EnergyImpact matches={matches} />
         </div>
       </div>
 

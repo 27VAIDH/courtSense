@@ -294,7 +294,7 @@
         "Verify in browser that bar chart renders correctly with test data"
       ],
       "priority": 15,
-      "passes": false,
+      "passes": true,
       "notes": "Tap-to-navigate to rivalry page will be connected in US-036."
     },
     {
@@ -313,7 +313,7 @@
         "Verify in browser with test data showing different energy levels"
       ],
       "priority": 16,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
