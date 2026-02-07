@@ -446,7 +446,7 @@
         "Verify in browser that locked and unlocked states render correctly, and unlock animation plays"
       ],
       "priority": 23,
-      "passes": false,
+      "passes": true,
       "notes": "This story refines the behavior already partially in US-015 through US-022. It adds the orchestration layer."
     },
     {
