@@ -1891,3 +1891,65 @@ The implementation follows all existing codebase patterns and is ready for the n
   - Fun facts generation: day-of-week patterns (never lost on Tuesday) require at least 2 matches on that day for statistical significance
   - When calculating best win/worst loss, filter games by win/loss first, then compute margin/deficit from game counts
 ---
+
+## Iteration 4 - Sun Feb  8 11:25:09 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260208-110806/iter-4.log
+---
+Great! US-036 is complete and there are still 5 more stories to work on (US-037 through US-041). Let me provide a summary:
+
+## Summary
+
+Successfully implemented **US-036: Rivalry pages (head-to-head opponent view)**
+
+### What was implemented:
+1. **Created RivalryDetail page** (`src/pages/RivalryDetail.tsx`):
+   - Header showing both players' emojis and names
+   - H2H record display (wins-losses) with large numbers
+   - Last 5 results shown as colored dots (W/L)
+   - Score History chart using Recharts LineChart showing cumulative H2H momentum
+   - Key Stats section: current streak, best win streak, tight games record, avg games/match, most common score
+   - Best Win card: highlights the most dominant victory
+   - Worst Loss card: shows the worst defeat
+   - Fun Facts: auto-generated insights like day-of-week patterns
+
+2. **Updated Rivals page** (`src/pages/Rivals.tsx`):
+   - Shows list of all opponents sorted by total matches played
+   - Each opponent card displays: emoji, name, H2H record, last match result
+   - Tappable cards navigate to the rivalry detail page
+   - Empty state with helpful messaging
+
+3. **Made Win Rate by Opponent insight card clickable**:
+   - Each opponent bar is now clickable and navigates to their rivalry page
+   - Added hover effects and active state styling
+
+4. **Added routing** in App.tsx for `/rivals/:opponentId`
+
+### Quality checks:
+✅ TypeScript compilation passes  
+✅ Build succeeds  
+✅ All code follows existing codebase patterns  
+✅ Committed with proper message format  
+✅ PRD updated to `passes: true`  
+✅ Progress logged with learnings
+
+There are **5 remaining stories** (US-037 through US-041) with `passes: false`, so another iteration will pick up the next story.
+---
+
+## 2026-02-08 11:26 - US-037
+- What was implemented: Friendly Leaderboards with 8 categories (Overall Record, Iron Man, Clutch King, Comeback Kid, Hot Streak, Consistency Crown, Most Improved, Rivalry Dominator)
+- Files changed: 
+  - src/lib/leaderboards.ts (new) - All leaderboard calculation logic
+  - src/components/leaderboards/LeaderboardCard.tsx (new) - LeaderboardCard component with category pills and ranked lists
+  - src/pages/Rivals.tsx - Integrated LeaderboardCard into Rivals page
+  - scripts/ralph/prd.json - Marked US-037 as complete
+- **Learnings for future iterations:**
+  - Chip component uses `children` prop, not `label` prop - this is consistent with React patterns
+  - Leaderboard calculations for opponents need to invert win/loss results since opponent data is derived from matches against the current user
+  - Single-device mode leaderboards work by computing opponent stats from matches against current user (opponent win rate = inverse of user's rate against them)
+  - For consistency calculations, standard deviation of rolling win rates provides a good measure of performance consistency
+  - Leaderboards are sorted by numeric value descending, with top 3 positions getting medal emojis (🥇🥈🥉)
+  - Category pills use horizontal scrollable layout with `overflow-x-auto` for mobile-friendly navigation
+  - Encouraging header text based on the leader keeps the UI positive and anti-toxic
+  - Current user entries are highlighted with primary color border and background for easy identification
+---

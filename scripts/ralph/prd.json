@@ -716,7 +716,7 @@
         "Verify in browser that category switching works and ranked lists display correctly"
       ],
       "priority": 37,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

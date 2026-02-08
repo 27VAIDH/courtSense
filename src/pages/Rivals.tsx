@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useMatches, usePlayers } from '@/db/hooks'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
+import LeaderboardCard from '@/components/leaderboards/LeaderboardCard'
 
 function formatDate(date: Date): string {
   const d = new Date(date)
@@ -94,12 +95,21 @@ export default function Rivals() {
       <div className="sticky top-0 z-10 bg-[#0A0A0A] border-b border-surface-elevated">
         <div className="p-4">
           <h1 className="text-2xl font-bold text-white">Rivals</h1>
-          <p className="text-sm text-text-secondary">Head-to-head records</p>
+          <p className="text-sm text-text-secondary">Head-to-head records & leaderboards</p>
         </div>
       </div>
 
+      {/* Leaderboards Section */}
+      <LeaderboardCard />
+
+      {/* Section Divider */}
+      <div className="px-4 pt-6 pb-2">
+        <h2 className="text-lg font-bold text-white">Your Rivals</h2>
+        <p className="text-xs text-text-secondary">Tap to view head-to-head details</p>
+      </div>
+
       {/* Opponents List */}
-      <div className="px-4 pt-4 space-y-3">
+      <div className="px-4 space-y-3">
         {opponentsList.map((opp) => (
           <Card
             key={opp.id}
