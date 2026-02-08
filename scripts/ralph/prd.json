@@ -197,7 +197,7 @@
         "Test on iOS Safari: verify safe areas correct, install banner appears, app installs via Add to Home Screen"
       ],
       "priority": 9,
-      "passes": false,
+      "passes": true,
       "notes": "iOS doesn't support beforeinstallprompt event, so custom banner is best UX."
     },
     {

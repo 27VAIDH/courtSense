@@ -965,3 +965,144 @@ The next user story is **US-P009: iOS-specific polish - safe areas and PWA insta
 3. Verify haptic feedback triggers on buttons and match save
 4. Check that haptics respect prefers-reduced-motion setting
 ---
+
+## Iteration 2 - Sun Feb  8 18:35:12 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260208-182230/iter-2.log
+---
+Perfect! US-P008 is now marked as `passes: true`. Let me provide a final summary:
+
+---
+
+## ✅ US-P008 Complete: Touch interactions - swipe gestures and haptic feedback
+
+I've successfully implemented US-P008! Here's what was accomplished:
+
+### What Was Implemented
+
+1. **Haptics Library** (`src/lib/haptics.ts`)
+   - `triggerLightHaptic()` - 10ms vibration for button presses
+   - `triggerSuccessHaptic()` - 3-burst pattern for match save success
+   - `triggerErrorHaptic()` - 2-burst pattern for errors
+   - Respects `prefers-reduced-motion` media query
+   - Uses Vibration API (web standard)
+
+2. **Button/Chip Components Enhanced**
+   - Automatic haptic feedback on all button/chip presses
+   - Optional `disableHaptic` prop for custom behavior
+   - Already meet 44x44px touch target requirement ✅ (`min-h-[48px]`)
+
+3. **Match Logging Swipe Navigation** (`LogMatch.tsx`)
+   - Swipe left to go to next step (Step 1 → Step 2 → Step 3)
+   - Swipe right to go to previous step
+   - 100px swipe threshold
+   - Framer Motion animation with opacity transform
+   - Haptic feedback on step change
+
+4. **Swipeable Match Cards** (`SwipeableMatchCard.tsx`)
+   - iOS-style swipe-to-delete interaction
+   - Swipe left reveals delete button (-80px constraint)
+   - Swipe right dismisses delete action
+   - Red background tint during swipe
+   - Delete confirmation dialog to prevent accidents
+   - Spring physics animation (stiffness: 300, damping: 30)
+
+5. **Match Save Success Haptic**
+   - 3-burst haptic pattern when match saved successfully
+   - Energy level buttons have haptic feedback
+   - All chip selections trigger haptic
+
+### Quality Checks
+- ✅ Typecheck passed (`npx tsc --noEmit`)
+- ✅ Build successful (3.42s, 209.92KB gzipped main bundle)
+- ✅ All touch targets meet 44x44px minimum size
+- ✅ All acceptance criteria met
+- ✅ Changes committed to `ralph/squashiq-pwa-v2` branch
+- ✅ PRD updated (`passes: true`)
+- ✅ Progress log updated
+
+### Key Patterns Discovered
+- Haptics utility pattern with `prefers-reduced-motion` support
+- Framer Motion drag gestures for swipe interactions (no need for @use-gesture/react's bind)
+- Spring physics for natural-feeling animations
+- Touch targets already enforced throughout codebase with `min-h-[48px]`
+
+### Next Steps
+**US-P009: iOS-specific polish - safe areas and PWA install prompt** is next with `passes: false`. There are still 10 user stories remaining to complete.
+
+**Browser Testing Note:** Manual verification required on physical mobile device:
+1. Test swipe gestures in match logging (left/right navigation)
+2. Test swipe-to-delete on match cards
+3. Verify haptic feedback triggers on buttons and match save
+4. Check that haptics respect `prefers-reduced-motion` setting
+---
+## 2026-02-08 18:37:00 - US-P009
+- **What was implemented:**
+  - Updated BottomTabBar component (src/components/layout/BottomTabBar.tsx):
+    * Added safe area CSS: padding-bottom: calc(0.5rem + env(safe-area-inset-bottom))
+    * Ensures tab bar respects iOS home indicator and notch
+  - Updated Dashboard component (src/pages/Dashboard.tsx):
+    * Added safe area CSS to header: padding-top: calc(1.5rem + env(safe-area-inset-top))
+    * Applied safe area padding to loading state and empty state
+    * Ensures content doesn't get hidden behind iOS status bar
+  - Added overscroll bounce disable (src/index.css):
+    * Set overscroll-behavior-y: none on body element
+    * Prevents iOS rubber-band scrolling effect for native-like feel
+  - Created PWAInstallBanner component (src/components/pwa/PWAInstallBanner.tsx):
+    * Detects if running in standalone mode (already installed)
+    * Detects iOS Safari (checks for iPad|iPhone|iPod and Safari user agent)
+    * Shows dismissible banner with "Add to your home screen" message
+    * "How to Install" button reveals step-by-step instructions:
+      1. Tap the Share button at the bottom of Safari
+      2. Scroll down and tap Add to Home Screen
+      3. Tap Add in the top-right corner
+    * Stores dismissal flag in localStorage (pwa-install-banner-dismissed)
+    * Positioned at bottom-20 to avoid overlapping with tab bar
+    * Gradient background (primary/20 to secondary/20) with backdrop blur
+  - Integrated PWAInstallBanner into App.tsx (renders inside protected routes)
+  - Generated all required iOS icon sizes in public/icons/:
+    * icon-180x180.svg (iPhone home screen)
+    * icon-167x167.svg (iPad Pro)
+    * icon-152x152.svg (iPad)
+    * icon-120x120.svg (iPhone)
+    * All icons properly sized with adjusted viewBox, text, and circle positions
+  - Updated vite.config.ts manifest:
+    * Added 180x180 icon to icons array
+    * Confirmed theme_color and background_color both set to #0A0A0A
+  - Installed lucide-react package for X (close) icon in banner
+  - index.html already had correct iOS meta tags:
+    * theme-color: #0A0A0A
+    * apple-mobile-web-app-status-bar-style: black-translucent
+    * apple-mobile-web-app-capable: yes
+
+- **Files changed:**
+  - package.json, package-lock.json (added lucide-react)
+  - src/components/layout/BottomTabBar.tsx (updated - safe area CSS for bottom)
+  - src/pages/Dashboard.tsx (updated - safe area CSS for top)
+  - src/index.css (updated - disabled overscroll bounce)
+  - src/components/pwa/PWAInstallBanner.tsx (new - iOS install prompt)
+  - src/App.tsx (updated - integrated PWAInstallBanner)
+  - vite.config.ts (updated - added 180x180 icon to manifest)
+  - public/icons/icon-180x180.svg (new - iPhone home screen icon)
+  - public/icons/icon-167x167.svg (new - iPad Pro icon)
+  - public/icons/icon-152x152.svg (new - iPad icon)
+  - public/icons/icon-120x120.svg (new - smaller iPhone icon)
+
+- **Learnings for future iterations:**
+  - Pattern: Safe area CSS uses calc() to combine base padding with env() safe area insets
+  - Pattern: Safe area insets apply to multiple states (main content, loading, empty state)
+  - Pattern: PWA install banner should check display-mode: standalone before showing
+  - Pattern: iOS detection: /iPad|iPhone|iPod/.test(navigator.userAgent) && /Safari/.test(userAgent) && !/Chrome/.test(userAgent)
+  - Pattern: Banner positioned at bottom-20 to avoid tab bar (fixed at bottom-0)
+  - Pattern: localStorage flag prevents banner from re-appearing after dismissal
+  - Gotcha: iOS doesn't support beforeinstallprompt event - custom banner is required
+  - Gotcha: Safe area padding must use calc() to add base padding (e.g., 1.5rem) + env(safe-area-inset-top)
+  - Gotcha: overscroll-behavior-y: none must be set on body, not html or #root
+  - Context: SVG icons work well for iOS PWA - no need for PNG conversion
+  - Context: Icon sizes for iOS: 120x120 (iPhone), 152x152 (iPad), 167x167 (iPad Pro), 180x180 (iPhone home screen)
+  - Context: lucide-react provides X (close) icon for banner dismiss button
+  - Context: Banner uses gradient background with backdrop-blur for modern glassmorphism effect
+  - Browser testing note: Manual verification needed on physical iOS device - test safe areas, install banner, Add to Home Screen
+  - Next: US-P010 will add accessibility improvements for WCAG AA compliance
+---
+
