@@ -20,6 +20,8 @@ import LossMethodDistribution from '@/components/insights/LossMethodDistribution
 import BestShotTrends from '@/components/insights/BestShotTrends'
 import ClutchRating from '@/components/insights/ClutchRating'
 import RecommendationCard from '@/components/recommendations/RecommendationCard'
+import MatchOfTheMonth from '@/components/nostalgia/MatchOfTheMonth'
+import OnThisDay from '@/components/nostalgia/OnThisDay'
 
 function CurrentFormDots({ matches }: { matches: Match[] }) {
   const last5 = useMemo(() => {
@@ -308,6 +310,15 @@ export default function Dashboard() {
           label="Focus for next match:"
         />
       )}
+
+      {/* Nostalgia cards */}
+      <MatchOfTheMonth
+        matches={matches}
+        games={games}
+        players={players}
+        venues={venues}
+      />
+      <OnThisDay matches={matches} players={players} venues={venues} />
 
       {/* Insight cards — dynamically ordered with unlock animations */}
       <div className="mb-6">
