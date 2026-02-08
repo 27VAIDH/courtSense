@@ -23,6 +23,9 @@ import RecommendationCard from '@/components/recommendations/RecommendationCard'
 import MatchOfTheMonth from '@/components/nostalgia/MatchOfTheMonth'
 import OnThisDay from '@/components/nostalgia/OnThisDay'
 import BackupReminder from '@/components/settings/BackupReminder'
+import SyncStatusIndicator from '@/components/sync/SyncStatusIndicator'
+import PullToRefresh from '@/components/sync/PullToRefresh'
+import SampleDataBanner from '@/components/sampleData/SampleDataBanner'
 
 function CurrentFormDots({ matches }: { matches: Match[] }) {
   const last5 = useMemo(() => {
@@ -209,7 +212,8 @@ export default function Dashboard() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="px-4 pt-6 pb-4">
+      <div className="px-4 pb-4" style={{ paddingTop: 'calc(1.5rem + env(safe-area-inset-top, 0px))' }} role="status" aria-live="polite">
+        <span className="sr-only">Loading dashboard...</span>
         {/* Header skeleton */}
         <div className="mb-6">
           <div className="h-7 w-40 animate-pulse rounded-lg bg-surface mb-2" />
@@ -242,7 +246,7 @@ export default function Dashboard() {
   // Empty state
   if (!hasMatches) {
     return (
-      <div className="flex flex-col items-center justify-center px-4 pt-20 text-center">
+      <div className="flex flex-col items-center justify-center px-4 text-center" style={{ paddingTop: 'calc(5rem + env(safe-area-inset-top, 0px))' }}>
         <span className="text-6xl mb-4">🏸</span>
         <h1 className="text-2xl font-bold text-text-primary mb-2">
           Welcome to SquashIQ!
@@ -288,63 +292,73 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="px-4 pt-6 pb-4">
-      {/* Header with stats */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-text-primary">
-          {currentUser?.name || 'Player'}
-        </h1>
-        <p className="text-lg text-text-secondary font-semibold mt-1">
-          {wins}W - {losses}L
-        </p>
-        <div className="mt-2 flex items-center gap-2">
-          <span className="text-xs text-text-secondary">Form:</span>
-          <CurrentFormDots matches={matches} />
-        </div>
-      </div>
+    <PullToRefresh>
+      <main className="px-4 pb-4" style={{ paddingTop: 'calc(1.5rem + env(safe-area-inset-top, 0px))' }}>
+        {/* Header with stats */}
+        <header className="mb-6">
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-text-primary">
+                {currentUser?.name || 'Player'}
+              </h1>
+              <p className="text-lg text-text-secondary font-semibold mt-1">
+                {wins}W - {losses}L
+              </p>
+              <div className="mt-2 flex items-center gap-2">
+                <span className="text-xs text-text-secondary">Form:</span>
+                <CurrentFormDots matches={matches} />
+              </div>
+            </div>
+            <SyncStatusIndicator />
+          </div>
+        </header>
 
-      {/* Backup Reminder Banner */}
-      <BackupReminder />
+        {/* Backup Reminder Banner */}
+        <BackupReminder />
 
-      {/* Pinned recommendation from most recent match */}
-      {latestRecommendation && (
-        <RecommendationCard
-          recommendation={latestRecommendation}
-          compact
-          label="Focus for next match:"
+        {/* Sample Data Banner */}
+        <SampleDataBanner />
+
+        {/* Pinned recommendation from most recent match */}
+        {latestRecommendation && (
+          <RecommendationCard
+            recommendation={latestRecommendation}
+            compact
+            label="Focus for next match:"
+          />
+        )}
+
+        {/* Nostalgia cards */}
+        <MatchOfTheMonth
+          matches={matches}
+          games={games}
+          players={players}
+          venues={venues}
         />
-      )}
+        <OnThisDay matches={matches} players={players} venues={venues} />
 
-      {/* Nostalgia cards */}
-      <MatchOfTheMonth
-        matches={matches}
-        games={games}
-        players={players}
-        venues={venues}
-      />
-      <OnThisDay matches={matches} players={players} venues={venues} />
-
-      {/* Insight cards — dynamically ordered with unlock animations */}
-      <div className="mb-6">
-        <h2 className="text-lg font-semibold text-text-secondary mb-3">Insights</h2>
-        <div className="space-y-3" id="insight-cards-container">
-          {sortedInsights.map((config) => (
-            <InsightCardWrapper
-              key={config.id}
-              id={config.id}
-              isUnlocked={config.remaining === 0}
-            >
-              {renderInsight(config.id)}
-            </InsightCardWrapper>
-          ))}
+        {/* Insight cards — dynamically ordered with unlock animations */}
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold text-text-secondary mb-3">Insights</h2>
+          <div className="space-y-3" id="insight-cards-container">
+            {sortedInsights.map((config) => (
+              <InsightCardWrapper
+                key={config.id}
+                id={config.id}
+                isUnlocked={config.remaining === 0}
+              >
+                {renderInsight(config.id)}
+              </InsightCardWrapper>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Match history */}
-      <div>
-        <h2 className="text-lg font-semibold text-text-secondary mb-3">Match History</h2>
-        <MatchHistoryList />
-      </div>
-    </div>
+        {/* Match history */}
+        <section>
+          <h2 className="text-lg font-semibold text-text-secondary mb-3">Match History</h2>
+          <MatchHistoryList />
+        </section>
+      </main>
+    </PullToRefresh>
   )
 }

@@ -1,0 +1,6 @@
+## Codebase Patterns
+
+(Add patterns discovered during implementation here. This section helps future iterations avoid repeating mistakes.)
+
+---
+

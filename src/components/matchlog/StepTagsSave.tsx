@@ -1,11 +1,15 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMatchLogStore } from '@/stores/matchLogStore'
 import { useBadgeStore } from '@/stores/badgeStore'
 import { useSettingsStore } from '@/stores/settingsStore'
+import { useAuthStore } from '@/stores/authStore'
 import { db } from '@/db/database'
 import { generateRecommendation } from '@/lib/recommendations'
 import { checkBadges } from '@/lib/badges'
+import { triggerSyncDebounced } from '@/lib/sync'
+import { uploadMatchPhoto } from '@/lib/photoUpload'
+import { triggerSuccessHaptic, triggerLightHaptic } from '@/lib/haptics'
 import Chip from '@/components/ui/Chip'
 import Button from '@/components/ui/Button'
 
@@ -30,16 +34,42 @@ export default function StepTagsSave() {
     vibe,
     tags,
     note,
+    photoFile,
     setEnergyLevel,
     setVibe,
     toggleTag,
     setNote,
+    setPhotoFile,
     reset,
   } = useMatchLogStore()
 
+  const user = useAuthStore((state) => state.user)
   const setEarnedBadges = useBadgeStore((state) => state.setEarnedBadges)
   const incrementMatchCount = useSettingsStore((state) => state.incrementMatchCount)
   const [saving, setSaving] = useState(false)
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  function handlePhotoSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (file) {
+      setPhotoFile(file)
+      // Create preview
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setPhotoPreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  function handleRemovePhoto() {
+    setPhotoFile(null)
+    setPhotoPreview(null)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
 
   async function handleSave() {
     if (!opponentId || saving) return
@@ -59,6 +89,18 @@ export default function StepTagsSave() {
       const isWin = myWins > oppWins
       const result = isWin ? `W ${myWins}-${oppWins}` : `L ${myWins}-${oppWins}`
 
+      // Upload photo if user is authenticated and photo is selected
+      let photoUrl: string | null = null
+      if (user && photoFile) {
+        try {
+          photoUrl = await uploadMatchPhoto(user.id, Date.now(), photoFile)
+          // If null, photo was queued for later upload
+        } catch (error) {
+          console.error('Photo upload failed, continuing with match save:', error)
+          // Don't block match save on photo failure
+        }
+      }
+
       // Save match record
       const matchId = await db.matches.add({
         date,
@@ -70,6 +112,7 @@ export default function StepTagsSave() {
         vibe: vibe ?? undefined,
         tags: tags.length > 0 ? tags : undefined,
         note: note.trim() || undefined,
+        photo_url: photoUrl ?? undefined,
         createdAt: new Date(),
       })
 
@@ -102,6 +145,12 @@ export default function StepTagsSave() {
       // Increment match count for backup reminder
       incrementMatchCount()
 
+      // Trigger sync after saving match
+      triggerSyncDebounced()
+
+      // Trigger success haptic feedback
+      triggerSuccessHaptic()
+
       // Reset state and navigate to post-match screen
       reset()
       navigate(`/match/${matchId}/saved`, { replace: true })
@@ -121,7 +170,10 @@ export default function StepTagsSave() {
             <button
               key={opt.level}
               type="button"
-              onClick={() => setEnergyLevel(energyLevel === opt.level ? null : opt.level)}
+              onClick={() => {
+                triggerLightHaptic()
+                setEnergyLevel(energyLevel === opt.level ? null : opt.level)
+              }}
               className={`flex min-h-[48px] flex-1 flex-col items-center justify-center rounded-[12px] transition-colors ${
                 energyLevel === opt.level
                   ? 'bg-primary/20 border-2 border-primary'
@@ -183,6 +235,44 @@ export default function StepTagsSave() {
         />
         {note.length > 0 && (
           <p className="mt-1 text-right text-xs text-text-secondary">{note.length}/140</p>
+        )}
+      </div>
+
+      {/* Photo Upload */}
+      <div className="mb-6">
+        <h3 className="mb-3 text-sm font-medium text-text-secondary">Match Photo (optional)</h3>
+        {!photoPreview ? (
+          <label className="flex min-h-[100px] cursor-pointer flex-col items-center justify-center rounded-[12px] border-2 border-dashed border-white/10 bg-surface transition-colors hover:border-primary/50">
+            <span className="text-3xl">📷</span>
+            <span className="mt-2 text-xs text-text-secondary">Tap to add photo</span>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handlePhotoSelect}
+              className="hidden"
+            />
+          </label>
+        ) : (
+          <div className="relative rounded-[12px] overflow-hidden">
+            <img
+              src={photoPreview}
+              alt="Match preview"
+              className="w-full h-auto max-h-[200px] object-cover"
+            />
+            <button
+              type="button"
+              onClick={handleRemovePhoto}
+              className="absolute top-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/70 text-white hover:bg-black"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+        {!navigator.onLine && photoFile && (
+          <p className="mt-2 text-xs text-yellow-500">
+            📤 Photo will upload when back online
+          </p>
         )}
       </div>
 

@@ -1,23 +1,40 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import { db } from '@/db/database'
 import { usePlayers } from '@/db/hooks'
 import { useSettingsStore } from '@/stores/settingsStore'
+import { useAuthStore } from '@/stores/authStore'
+import { clearSampleData, hasSampleData } from '@/lib/sampleData'
 
 interface SettingsProps {
   appVersion?: string
 }
 
 export default function Settings({ appVersion = '1.0.0' }: SettingsProps) {
+  const navigate = useNavigate()
   const players = usePlayers() ?? []
   const currentUser = players.find((p) => p.isCurrentUser)
   const [editingName, setEditingName] = useState(false)
   const [nameValue, setNameValue] = useState(currentUser?.name || 'Me')
   const [importing, setImporting] = useState(false)
   const [exporting, setExporting] = useState(false)
+  const [signingOut, setSigningOut] = useState(false)
+  const [hasSample, setHasSample] = useState(false)
+  const [clearingSampleData, setClearingSampleData] = useState(false)
 
   const { tightGameThreshold, setTightGameThreshold, recordExport } = useSettingsStore()
+  const { session, signOut } = useAuthStore()
+
+  // Check if sample data exists
+  useEffect(() => {
+    const checkSample = async () => {
+      const exists = await hasSampleData()
+      setHasSample(exists)
+    }
+    checkSample()
+  }, [clearingSampleData]) // Re-check after clearing
 
   const handleNameSave = async () => {
     if (currentUser?.id) {
@@ -165,6 +182,43 @@ export default function Settings({ appVersion = '1.0.0' }: SettingsProps) {
     }
   }
 
+  const handleClearSampleData = async () => {
+    const confirmed = window.confirm(
+      'Are you sure you want to delete all sample data? This cannot be undone.'
+    )
+    if (!confirmed) return
+
+    setClearingSampleData(true)
+    try {
+      await clearSampleData()
+      setHasSample(false)
+      alert('Sample data cleared successfully!')
+    } catch (error) {
+      console.error('Clear sample data failed:', error)
+      alert('Failed to clear sample data. Please try again.')
+    } finally {
+      setClearingSampleData(false)
+    }
+  }
+
+  const handleSignOut = async () => {
+    const confirmed = window.confirm(
+      'Are you sure you want to sign out? Your local data will remain on this device.'
+    )
+    if (!confirmed) return
+
+    setSigningOut(true)
+    try {
+      await signOut()
+      navigate('/auth', { replace: true })
+    } catch (error) {
+      console.error('Sign out error:', error)
+      alert('Failed to sign out. Please try again.')
+    } finally {
+      setSigningOut(false)
+    }
+  }
+
   return (
     <div className="mt-8">
       <h2 className="mb-4 text-xl font-semibold text-text-primary">Settings</h2>
@@ -261,8 +315,37 @@ export default function Settings({ appVersion = '1.0.0' }: SettingsProps) {
               className="hidden"
             />
           </label>
+
+          {hasSample && (
+            <Button
+              variant="secondary"
+              onClick={handleClearSampleData}
+              disabled={clearingSampleData}
+              className="w-full"
+            >
+              {clearingSampleData ? 'Clearing...' : '🗑️ Clear Sample Data'}
+            </Button>
+          )}
         </div>
       </Card>
+
+      {/* Account */}
+      {session && (
+        <Card className="mb-4">
+          <div className="mb-4 text-sm font-medium text-text-secondary">Account</div>
+          <div className="mb-3 text-sm text-text-secondary">
+            Signed in as {session.user.email}
+          </div>
+          <Button
+            variant="secondary"
+            onClick={handleSignOut}
+            disabled={signingOut}
+            className="w-full"
+          >
+            {signingOut ? 'Signing out...' : '🚪 Sign Out'}
+          </Button>
+        </Card>
+      )}
 
       {/* App Version */}
       <div className="mt-6 text-center text-sm text-text-secondary">

@@ -1,9 +1,13 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMatches, usePlayers } from '@/db/hooks'
+import { useAuthStore } from '@/stores/authStore'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
+import Chip from '@/components/ui/Chip'
 import LeaderboardCard from '@/components/leaderboards/LeaderboardCard'
+import GlobalLeaderboard from '@/components/leaderboards/GlobalLeaderboard'
+import GroupsList from '@/components/groups/GroupsList'
 
 function formatDate(date: Date): string {
   const d = new Date(date)
@@ -34,8 +38,10 @@ interface OpponentSummary {
 
 export default function Rivals() {
   const navigate = useNavigate()
+  const { user } = useAuthStore()
   const matches = useMatches()
   const players = usePlayers()
+  const [leaderboardMode, setLeaderboardMode] = useState<'local' | 'global'>('local')
 
   const opponentsList = useMemo(() => {
     if (!matches || !players) return []
@@ -108,8 +114,31 @@ export default function Rivals() {
         </div>
       </div>
 
+      {/* Leaderboard Mode Toggle */}
+      {user && (
+        <div className="px-4 pt-4 pb-2">
+          <div className="flex gap-2">
+            <Chip
+              selected={leaderboardMode === 'local'}
+              onClick={() => setLeaderboardMode('local')}
+            >
+              Local Rankings
+            </Chip>
+            <Chip
+              selected={leaderboardMode === 'global'}
+              onClick={() => setLeaderboardMode('global')}
+            >
+              Global Rankings
+            </Chip>
+          </div>
+        </div>
+      )}
+
       {/* Leaderboards Section */}
-      <LeaderboardCard />
+      {leaderboardMode === 'local' ? <LeaderboardCard /> : <GlobalLeaderboard />}
+
+      {/* Groups Section */}
+      {user && <GroupsList />}
 
       {/* Section Divider */}
       <div className="px-4 pt-6 pb-2">

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useMatches, useGames, usePlayers, useVenues, useRallyAnalyses } from '@/db/hooks'
 import { db } from '@/db/database'
 import type { Recommendation } from '@/lib/recommendations'
+import { deleteMatchPhoto } from '@/lib/photoUpload'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import Chip from '@/components/ui/Chip'
@@ -239,6 +240,11 @@ export default function MatchDetail() {
     setDeleting(true)
 
     try {
+      // Delete photo from storage if it exists
+      if (match?.photo_url) {
+        await deleteMatchPhoto(match.photo_url)
+      }
+
       await db.games.where('matchId').equals(matchId).delete()
       await db.matches.delete(matchId)
       navigate('/', { replace: true })
@@ -509,6 +515,18 @@ export default function MatchDetail() {
           <p className="mt-2 text-sm text-text-secondary">📍 {venue.name}</p>
         )}
       </Card>
+
+      {/* Match Photo */}
+      {(match.photo_url || match.photoBase64) && (
+        <div className="mb-4">
+          <img
+            src={match.photo_url || match.photoBase64}
+            alt="Match"
+            loading="lazy"
+            className="w-full rounded-[16px] object-cover max-h-[300px]"
+          />
+        </div>
+      )}
 
       {/* Game Scores */}
       <h2 className="mb-3 text-sm font-medium text-text-secondary">Game Scores</h2>

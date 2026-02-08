@@ -5,6 +5,9 @@ import BadgeGrid from '@/components/badges/BadgeGrid'
 import ArchetypeCard from '@/components/archetype/ArchetypeCard'
 import SeasonWrapped from '@/components/wrapped/SeasonWrapped'
 import Settings from '@/components/settings/Settings'
+import FriendSearch from '@/components/friends/FriendSearch'
+import FriendRequests from '@/components/friends/FriendRequests'
+import FriendsList from '@/components/friends/FriendsList'
 import Button from '@/components/ui/Button'
 import { useMatches, useGames, useRallyAnalyses, usePlayers } from '@/db/hooks'
 
@@ -43,6 +46,14 @@ export default function Profile() {
       </div>
 
       <BadgeGrid />
+
+      {/* Friends Section */}
+      <div className="mt-8 mb-8">
+        <FriendRequests />
+        <FriendSearch />
+        <FriendsList />
+      </div>
+
       <OpponentManager />
       <div className="mt-8">
         <VenueManager />

@@ -97,7 +97,14 @@ export default function CurrentForm({ matches }: CurrentFormProps) {
         Current Form
       </h3>
 
-      <div className="w-full h-24">
+      {/* Screen reader description */}
+      <div className="sr-only">
+        Your current form shows {last10Wins} wins and {last10Losses} losses in your last 10 matches,
+        for a {last10Pct}% win rate compared to your overall {overallPct}% win rate.
+        Your form is {trendLabel.toLowerCase()}.
+      </div>
+
+      <div className="w-full h-24" aria-hidden="true">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 8 }}>
             <XAxis dataKey="index" hide />

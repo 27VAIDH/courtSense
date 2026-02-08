@@ -1,0 +1,801 @@
+{
+  "project": "SquashIQ",
+  "branchName": "ralph/squashiq-v1",
+  "description": "SquashIQ — A Progressive Web App for squash match tracking, performance insights, and improvement recommendations. Local-first, zero backend, dark mode, mobile-only PWA.",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Project scaffolding with full tech stack",
+      "description": "As a developer, I need the project initialized with the correct tech stack so all subsequent features can be built on a solid foundation.",
+      "acceptanceCriteria": [
+        "Vite project created with React + TypeScript template in the project root (not inside ralph/ — use the courtSense/ root directory)",
+        "Tailwind CSS v4 installed and configured with PostCSS and Autoprefixer",
+        "Zustand installed for state management",
+        "Dexie.js installed for IndexedDB (npm install dexie)",
+        "Framer Motion installed for animations",
+        "Recharts installed for charting",
+        "html2canvas installed for shareable image generation",
+        "React Router DOM v6+ installed for client-side routing",
+        "tsconfig.json configured with strict mode and path aliases (@/ maps to src/)",
+        "Project builds and runs with npm run dev without errors",
+        "Typecheck passes"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": "This is the foundation — everything depends on this. Do NOT scaffold inside ralph/. Use the project root."
+    },
+    {
+      "id": "US-002",
+      "title": "PWA configuration for iOS home screen install",
+      "description": "As a user, I want to install SquashIQ on my iPhone home screen so it launches fullscreen like a native app and works offline.",
+      "acceptanceCriteria": [
+        "vite-plugin-pwa installed and configured in vite.config.ts",
+        "Web app manifest generated with: name 'SquashIQ', short_name 'SquashIQ', display 'standalone', orientation 'portrait', theme_color '#0A0A0A', background_color '#0A0A0A'",
+        "App icons provided at 192x192 and 512x512 (generate simple SVG-based placeholder icons with a squash racket or 'SQ' text)",
+        "index.html includes apple-mobile-web-app-capable meta tag, apple-mobile-web-app-status-bar-style set to 'black-translucent', viewport meta with viewport-fit=cover",
+        "Service worker registered and caches app shell for offline use",
+        "Typecheck passes"
+      ],
+      "priority": 2,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Database schema, TypeScript types, and data hooks",
+      "description": "As a developer, I need the local database schema and data access layer set up so match data can be stored and queried on-device.",
+      "acceptanceCriteria": [
+        "Dexie.js database initialized in src/db/database.ts with name 'squashiq-db'",
+        "players table with schema: ++id, name, emoji, isCurrentUser, createdAt",
+        "venues table with schema: ++id, name, isHome, createdAt",
+        "matches table with schema: ++id, date, opponentId, venueId, format, result, energyLevel, vibe, tags, note, photoBase64, recommendationText, createdAt",
+        "games table with schema: ++id, matchId, gameNumber, myScore, opponentScore, isTight",
+        "rally_analyses table with schema: ++id, matchId, winMethod, loseMethod, rallyLength, courtCoverage, bestShots, createdAt",
+        "TypeScript interfaces exported from src/db/types.ts for: Player, Venue, Match, Game, RallyAnalysis",
+        "Custom React hooks in src/db/hooks.ts using Dexie useLiveQuery: usePlayers(), useVenues(), useMatches(), useGames(matchId?), useRallyAnalyses(matchId?)",
+        "A default 'current user' player record with isCurrentUser=true auto-created on first app load if none exists",
+        "Typecheck passes"
+      ],
+      "priority": 3,
+      "passes": true,
+      "notes": "Use Dexie's useLiveQuery for reactive data. Export/import will be added in US-040."
+    },
+    {
+      "id": "US-004",
+      "title": "App shell with bottom tab navigation",
+      "description": "As a user, I want a bottom tab bar to navigate between app sections so I can quickly access any feature.",
+      "acceptanceCriteria": [
+        "Bottom tab bar component with 5 tabs: Dashboard, Log (center), Timeline, Rivals, Profile",
+        "Log tab is visually distinct — larger icon, accent color #00E676 — as the primary action button",
+        "React Router configured with routes: / (Dashboard), /log (New Match), /timeline (Timeline), /rivals (Rivals), /profile (Profile)",
+        "Active tab highlighted with primary color #00E676",
+        "Tab bar fixed to bottom with padding for iOS safe area insets using env(safe-area-inset-bottom)",
+        "Each route renders a placeholder page showing the section name centered on screen",
+        "Tab bar visibility controlled by a Zustand store so it can be hidden during match logging flow",
+        "Typecheck passes",
+        "Verify in browser that all 5 tabs navigate correctly and tab bar renders at bottom"
+      ],
+      "priority": 4,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-005",
+      "title": "Dark theme, design tokens, and base UI components",
+      "description": "As a user, I want a dark-mode UI optimized for post-match viewing so the app is comfortable to use after a match.",
+      "acceptanceCriteria": [
+        "Tailwind CSS extended with custom colors: primary (#00E676), secondary (#448AFF), accent (#FF6D00), bg (#0A0A0A), surface (#1A1A1A), surface-elevated (#242424), text-primary (#FFFFFF), text-secondary (#B0B0B0), win (#00E676), loss (#FF5252), tight (#FFD600)",
+        "Global styles: dark background #0A0A0A, white text, font-family system-ui/-apple-system/SF Pro",
+        "Reusable Card component in src/components/ui/Card.tsx: surface background, 16px border-radius, p-4 padding",
+        "Reusable Button component in src/components/ui/Button.tsx: primary (green bg) and secondary (surface bg) variants, 12px border-radius, min-h-[48px]",
+        "Reusable Chip component in src/components/ui/Chip.tsx: 20px border-radius, selectable state (outlined vs filled), used for tags and pickers",
+        "All interactive elements have minimum 48px touch targets",
+        "CSS includes @media (prefers-reduced-motion: reduce) to disable animations globally",
+        "Typecheck passes",
+        "Verify in browser that dark theme displays correctly with Card, Button, and Chip components"
+      ],
+      "priority": 5,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-006",
+      "title": "Opponent management (add, edit, delete players)",
+      "description": "As a player, I want to add and manage my regular opponents so I can quickly select them when logging matches.",
+      "acceptanceCriteria": [
+        "Manage Players section on Profile page (/profile)",
+        "Add Opponent button opens a modal/sheet with: text input for name, text input for emoji (single emoji character, default random from sports set)",
+        "New opponent saved to players table via Dexie.js with createdAt timestamp",
+        "Opponent list displays all non-current-user players as cards with emoji + name",
+        "Tap edit icon on an opponent card opens edit modal to change name/emoji",
+        "Delete button on opponent card shows confirmation dialog before removing from DB",
+        "List sorted by createdAt descending (newest first)",
+        "Typecheck passes",
+        "Verify in browser that adding, editing, and deleting opponents works correctly"
+      ],
+      "priority": 6,
+      "passes": true,
+      "notes": "Sorting by most-recently-played will be updated once matches exist."
+    },
+    {
+      "id": "US-007",
+      "title": "Venue management (add, edit, delete venues)",
+      "description": "As a player, I want to save my regular playing venues so I can quickly select them when logging matches.",
+      "acceptanceCriteria": [
+        "Manage Venues section on Profile page (/profile), below the players section",
+        "Add Venue button opens modal with: text input for venue name, toggle for 'Home Court' (boolean isHome)",
+        "New venue saved to venues table via Dexie.js with createdAt timestamp",
+        "Venue list displays all venues as cards showing name and 'Home' badge if isHome=true",
+        "Edit and delete functionality (same UX pattern as opponent management in US-006)",
+        "List sorted by createdAt descending",
+        "Typecheck passes",
+        "Verify in browser that adding, editing, and deleting venues works correctly"
+      ],
+      "priority": 7,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-008",
+      "title": "Match logging — Step 1 (Setup screen)",
+      "description": "As a player, I want to quickly select my opponent, venue, date, and match format so I can start entering scores within 10 seconds.",
+      "acceptanceCriteria": [
+        "Navigating to /log opens full-screen match logging flow with tab bar hidden",
+        "Step indicator at top showing '1 of 3' with progress dots",
+        "Opponent Picker: horizontal scrollable row of Chip components showing player emoji + name. Tap to select (filled/highlighted state). '+' chip at end opens inline add-opponent modal",
+        "Date/Time: auto-filled with current date/time, displayed as a tappable pill (e.g. 'Today, 7:30 PM'). Tap opens native datetime-local input",
+        "Venue Picker: horizontal scrollable row of Chip components below opponent. Most recent venue pre-selected if venues exist. '+' chip to add new venue inline",
+        "Format Selector: segmented toggle between 'Best of 3' and 'Best of 5', default 'Best of 3'",
+        "'Next' button (primary green) at bottom, disabled until an opponent is selected",
+        "'X' close button in top corner exits logging flow (with confirmation dialog if any selection was made)",
+        "All selections stored in component state (or Zustand store) to persist across steps",
+        "Typecheck passes",
+        "Verify in browser that opponent/venue selection, date picker, and format toggle work correctly"
+      ],
+      "priority": 8,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-009",
+      "title": "Match logging — Step 2 (Score entry)",
+      "description": "As a player, I want to enter game scores quickly with large tap targets so I can log my match while toweling off with sweaty fingers.",
+      "acceptanceCriteria": [
+        "Step indicator showing '2 of 3'",
+        "Vertical stack of game cards: 3 cards for Best of 3, 5 for Best of 5",
+        "Each game card shows: 'Game N' label, two large score displays side-by-side ('You' vs opponent name), +/- buttons around each score (min 48px touch targets)",
+        "Quick Score Presets below each game card: tappable pills '11-0', '11-5', '11-8', '11-9'. Tapping fills your score as the first number, opponent score as second",
+        "Tight Game Indicator: when both scores in a game are >= 8, a flame emoji appears on that game card and isTight is set to true",
+        "Match Result Banner at top: auto-calculated showing 'WIN 3-1' (green text) or 'LOSS 1-3' (red text), updates in real-time as scores change",
+        "Games without scores can be collapsed/hidden (for 3-0 wins where games 4-5 aren't needed)",
+        "Score validation: a completed game must have winning score >= 11 and lead by at least 2 (e.g. 11-9 valid, 11-10 invalid, 12-10 valid)",
+        "'Back' button returns to Step 1 preserving state. 'Next' button proceeds to Step 3",
+        "Typecheck passes",
+        "Verify in browser that score entry with +/- buttons and presets works, and result banner updates live"
+      ],
+      "priority": 9,
+      "passes": true,
+      "notes": "This is the most interaction-heavy screen. Focus on large tap targets and speed."
+    },
+    {
+      "id": "US-010",
+      "title": "Match logging — Step 3 (Quick tags & save)",
+      "description": "As a player, I want to optionally tag my match with energy level, vibe, and notes — but I can skip everything and save immediately.",
+      "acceptanceCriteria": [
+        "Step indicator showing '3 of 3'",
+        "'Save Match' button is large, green, and always visible at the bottom — this is the primary action",
+        "Energy Level: 3 tappable icons in a row with labels 'Low', 'Medium', 'High'. Tap to select, tap again to deselect. Single-select. Optional",
+        "Match Vibe: horizontal scrollable Chip components: 'Intense', 'Casual', 'Frustrating', 'Focused', 'Fun', 'Grind'. Single-select. Optional",
+        "Quick Tags: pill-style Chip components in a flex-wrap grid: 'Good day', 'Off day', 'New strategy', 'Comeback', 'Dominated', 'Lucky win', 'Close'. Multi-select (toggle). Optional",
+        "Match Note: single-line text input, placeholder 'Quick note... (optional)', maxLength 140",
+        "On 'Save Match' tap: create match record in matches table with all data from steps 1-3, create game records in games table for each game played, result field auto-calculated as 'W X-Y' or 'L X-Y'",
+        "After successful save: navigate to post-match save screen",
+        "Typecheck passes",
+        "Verify in browser that all tag selections work, save writes to IndexedDB, and navigation occurs after save"
+      ],
+      "priority": 10,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-011",
+      "title": "Post-match save experience with animations",
+      "description": "As a player, I want satisfying feedback after logging a match so the experience feels rewarding and I'm motivated to log consistently.",
+      "acceptanceCriteria": [
+        "Full-screen post-save view shown after match save",
+        "Win: confetti burst animation (CSS or canvas-confetti library) with navigator.vibrate(200) if available",
+        "Loss: subtle blue pulse background animation (empathetic, not mocking)",
+        "Match result displayed prominently: 'WIN 3-1' or 'LOSS 1-3' with opponent name",
+        "Streak Toast: if this is a consecutive win (2+) against the same opponent, show 'W{N} against {opponent}!'. If first ever win against opponent, show 'First win against {opponent}!'. If consecutive loss (2+), show 'L{N} — time to turn it around!'",
+        "Rally Analysis Prompt: optional link text 'Want to add rally details? (30 sec)' — for now just a placeholder that does nothing (rally UI built in US-029)",
+        "'Done' button at bottom navigates back to Dashboard (/)",
+        "Tab bar remains hidden on this screen",
+        "Typecheck passes",
+        "Verify in browser that win confetti and loss pulse animations play correctly"
+      ],
+      "priority": 11,
+      "passes": true,
+      "notes": "Recommendation card will be integrated here in US-025 once the engine exists."
+    },
+    {
+      "id": "US-012",
+      "title": "Match history list",
+      "description": "As a player, I want to see a chronological list of all my logged matches so I can review past results.",
+      "acceptanceCriteria": [
+        "Match history section displayed on Dashboard page below the header area (scrollable list)",
+        "Each match card shows: opponent emoji + name, date formatted as relative ('Today', 'Yesterday', 'Mon Jan 6'), result text ('W 3-1' or 'L 2-3') colored green for win / red for loss, venue name in muted text",
+        "Individual game scores shown as small text below result (e.g. '11-5, 8-11, 11-9')",
+        "Tight games show a flame emoji next to their score",
+        "Cards sorted newest first using createdAt",
+        "Tapping a match card navigates to /match/:id detail view (built in US-013)",
+        "Empty state when no matches: 'No matches yet — log your first match!' with a green CTA button linking to /log",
+        "Uses Dexie useLiveQuery to reactively update when new matches are saved",
+        "Typecheck passes",
+        "Verify in browser that match cards render correctly with test data"
+      ],
+      "priority": 12,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-013",
+      "title": "Match detail view with edit and delete",
+      "description": "As a player, I want to view full match details and be able to edit or delete a match.",
+      "acceptanceCriteria": [
+        "Route /match/:id renders full match detail view",
+        "Displays: opponent name + emoji, date/time, venue, format (Bo3/Bo5), overall result with color",
+        "All game scores displayed as larger cards (similar to score entry view but read-only)",
+        "Tags section showing: energy level, vibe, quick tags (if any were set)",
+        "Match note displayed if present",
+        "Recommendation text displayed if present (from US-025)",
+        "'Edit' button opens the match data in an editable form (reuse Step 2 and Step 3 components with pre-filled data). Save overwrites the existing match record",
+        "'Delete' button shows confirmation dialog ('Delete this match? This cannot be undone.'). On confirm, deletes match + associated game records from DB and navigates back to Dashboard",
+        "Back navigation arrow in header returns to previous page",
+        "Typecheck passes",
+        "Verify in browser that match detail renders correctly, edit saves changes, and delete removes the match"
+      ],
+      "priority": 13,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-014",
+      "title": "Dashboard layout and header with stats",
+      "description": "As a player, I want to see my overall stats and current form at a glance when I open the app.",
+      "acceptanceCriteria": [
+        "Dashboard is the default screen at route /",
+        "Header section shows: player name (from current user record), overall record as 'XW - YL' computed from all matches",
+        "Current form indicator: last 5 match results displayed as colored dots or letters (green W / red L), e.g. 'W W L W W'",
+        "Below header: scrollable container for insight cards (cards will be added in US-015 through US-022)",
+        "Below insight cards container: match history list (from US-012)",
+        "Skeleton loading placeholders shown while data is being queried from IndexedDB",
+        "Empty state when no matches: 'Welcome to SquashIQ! Log your first match to start seeing insights.' with large green CTA button linking to /log",
+        "Typecheck passes",
+        "Verify in browser that dashboard renders with header stats and correct empty/loaded states"
+      ],
+      "priority": 14,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-015",
+      "title": "Insight card — Win Rate by Opponent",
+      "description": "As a player, I want to see my win rate against each opponent so I know who I dominate and who challenges me.",
+      "acceptanceCriteria": [
+        "New insight card component rendered on Dashboard in the insight cards container",
+        "Card title: 'Win Rate by Opponent'",
+        "Horizontal bar chart (using Recharts BarChart): one bar per opponent, bar width proportional to win rate percentage",
+        "Bar color: green gradient for win rate > 50%, red gradient for < 50%",
+        "Each bar row shows: opponent emoji + name on left, record text (e.g. '7-3') and percentage on right",
+        "Bars sorted by total matches played (most played opponent at top)",
+        "Only shows opponents with 3+ matches against them",
+        "Card hidden entirely if fewer than 3 total matches logged — shows locked state instead (dimmed card with lock icon and text 'Log 3 matches to unlock')",
+        "Typecheck passes",
+        "Verify in browser that bar chart renders correctly with test data"
+      ],
+      "priority": 15,
+      "passes": true,
+      "notes": "Tap-to-navigate to rivalry page will be connected in US-036."
+    },
+    {
+      "id": "US-016",
+      "title": "Insight card — Energy Impact",
+      "description": "As a player, I want to see how my tagged energy level correlates with winning so I can prioritize preparation.",
+      "acceptanceCriteria": [
+        "Insight card on Dashboard with title 'Energy Impact'",
+        "Three horizontal bars representing Low / Medium / High energy levels",
+        "Each bar shows win rate percentage as text and as bar fill width",
+        "Bar color intensity scales with win rate (brighter green = higher win rate, red tint for low win rate)",
+        "Shows sample size next to each bar (e.g. 'High: 78% (9 matches)')",
+        "Only shown when: total matches >= 5 AND at least 3 matches have energy level tagged",
+        "Locked state with progress text when data insufficient",
+        "Typecheck passes",
+        "Verify in browser with test data showing different energy levels"
+      ],
+      "priority": 16,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-017",
+      "title": "Insight card — Day of Week Performance",
+      "description": "As a player, I want to see which days I perform best so I can spot scheduling patterns.",
+      "acceptanceCriteria": [
+        "Insight card on Dashboard with title 'Best Days'",
+        "7-column mini bar chart (Mon through Sun) using Recharts",
+        "Each bar height represents win rate on that day",
+        "Days with matches shown in primary color, days without matches grayed out",
+        "Best performing day highlighted with accent color and a label (e.g. 'Tuesdays: 80%')",
+        "Minimum 10 total matches to show this card",
+        "Locked state with progress bar when fewer than 10 matches",
+        "Typecheck passes",
+        "Verify in browser with test data"
+      ],
+      "priority": 17,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-018",
+      "title": "Insight card — Venue Effect",
+      "description": "As a player, I want to see if I perform differently at different venues.",
+      "acceptanceCriteria": [
+        "Insight card on Dashboard with title 'Venue Effect'",
+        "Side-by-side venue comparison cards, each showing: venue name, win rate as large percentage text, circular progress ring filled to win rate percentage",
+        "Circle colored green if win rate > 50%, red if < 50%",
+        "Home court badge shown on venues marked isHome",
+        "Minimum 5 total matches AND at least 2 different venues to show",
+        "Locked state when insufficient data",
+        "Typecheck passes",
+        "Verify in browser with test data"
+      ],
+      "priority": 18,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-019",
+      "title": "Insight card — Deciding Game Performance",
+      "description": "As a player, I want to see how I perform in final/deciding games so I know my clutch ability.",
+      "acceptanceCriteria": [
+        "Insight card on Dashboard with title 'Deciding Games'",
+        "Large percentage showing win rate in deciding games (Game 3 in Bo3, Game 5 in Bo5)",
+        "Donut/ring chart (Recharts PieChart) showing deciding game wins vs losses split",
+        "Trend arrow: up arrow if last 5 deciding games win rate > overall, down if less, flat if equal",
+        "Only counts matches where the deciding game was actually played (i.e., match went the full distance)",
+        "Minimum 8 matches where a deciding game occurred to show",
+        "Locked state when insufficient data",
+        "Typecheck passes",
+        "Verify in browser with test data"
+      ],
+      "priority": 19,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-020",
+      "title": "Insight card — Comeback Index",
+      "description": "As a player, I want to see how often I recover after losing Game 1 so I know my comeback strength.",
+      "acceptanceCriteria": [
+        "Insight card on Dashboard with title 'Comeback Index'",
+        "Gauge/meter visualization: semicircular arc from 0 to 100 with a needle/pointer",
+        "Value calculated as: (matches won after losing Game 1 / total matches where Game 1 was lost) * 100",
+        "50 line marked as 'Average' baseline on the gauge",
+        "Color zones on gauge: 0-39 red (weak), 40-59 yellow (average), 60-79 green (strong), 80-100 bright green (elite)",
+        "Text below gauge: 'After losing Game 1, you come back to win X% of matches'",
+        "Minimum 10 total matches to show (need enough games where Game 1 was lost)",
+        "Locked state when insufficient data",
+        "Typecheck passes",
+        "Verify in browser with test data"
+      ],
+      "priority": 20,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-021",
+      "title": "Insight card — Current Form",
+      "description": "As a player, I want to see my recent form compared to my overall record so I know if I'm improving.",
+      "acceptanceCriteria": [
+        "Insight card on Dashboard with title 'Current Form'",
+        "Sparkline chart (Recharts LineChart, small) of last 10 match results: Y-axis 0 (loss) to 1 (win), plotted as connected dots",
+        "Horizontal dashed line at overall win rate percentage for comparison",
+        "Area above overall line shaded light green, below shaded light red",
+        "Summary text: 'Last 10: XW-YL (Z%) vs overall: A%'",
+        "Label text: 'On an upswing!' if last 10 > overall + 10%, 'In a dip' if last 10 < overall - 10%, 'Steady' otherwise",
+        "Minimum 10 total matches to show",
+        "Locked state when fewer than 10 matches",
+        "Typecheck passes",
+        "Verify in browser with test data"
+      ],
+      "priority": 21,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-022",
+      "title": "Insight card — Fast Starter Rating",
+      "description": "As a player, I want to see how often I win Game 1 and whether that translates to match wins.",
+      "acceptanceCriteria": [
+        "Insight card on Dashboard with title 'Fast Starter'",
+        "Two connected circles visualization: left circle shows Game 1 win %, right circle shows match conversion % (when Game 1 won, how often match is won)",
+        "Arrow connecting the two circles, colored green if conversion > 70%, yellow if 50-70%, red if < 50%",
+        "Example text: 'Win Game 1: 72% → Convert to match win: 60%'",
+        "Circles can be simple SVG circles with percentage text centered inside",
+        "Minimum 8 total matches to show",
+        "Locked state when insufficient data",
+        "Typecheck passes",
+        "Verify in browser with test data"
+      ],
+      "priority": 22,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-023",
+      "title": "Progressive insight unlocking system",
+      "description": "As a player, I want insights to gradually appear as I log more matches so the app feels like it's growing with me.",
+      "acceptanceCriteria": [
+        "Each insight card component checks its own minimum data threshold before rendering",
+        "Cards below threshold render a 'locked' state: dimmed/blurred overlay, lock icon centered, progress bar showing 'Log X more matches to unlock', encouraging text",
+        "When a new insight unlocks (data threshold met for the first time), the card animates in with Framer Motion — slide up + subtle glow border effect",
+        "Unlock tracking: store which insights have been 'seen unlocked' in a Zustand store (persisted to localStorage) so the unlock animation only plays once per insight",
+        "Dashboard card ordering: unlocked cards first (sorted by most recently updated data), locked cards at bottom (sorted by closest to unlocking — fewest matches remaining)",
+        "All insight calculations run reactively after each match save via Dexie useLiveQuery — no manual refresh needed",
+        "Typecheck passes",
+        "Verify in browser that locked and unlocked states render correctly, and unlock animation plays"
+      ],
+      "priority": 23,
+      "passes": true,
+      "notes": "This story refines the behavior already partially in US-015 through US-022. It adds the orchestration layer."
+    },
+    {
+      "id": "US-024",
+      "title": "Recommendation engine (rule-based logic)",
+      "description": "As a player, I want one specific, actionable recommendation after every match so I can improve without being overwhelmed.",
+      "acceptanceCriteria": [
+        "Pure function in src/lib/recommendations.ts: generateRecommendation(matches: Match[], games: Game[], currentMatch: Match) => { emoji: string, headline: string, context: string }",
+        "Rules evaluated in priority order — first matching rule generates the recommendation (only ONE per match):",
+        "Rule 1 (Slow starter): Lost Game 1 in 3+ of last 5 matches → emoji: '🚀', headline: 'Start faster next time', context: 'You lost Game 1 in X of your last Y matches but still won Z of those. Imagine your record if you also took Game 1.'",
+        "Rule 2 (Low energy loss): Last match tagged Low energy AND result is loss → emoji: '🔋', headline: 'Energy first today', context: 'Last match you tagged low energy and lost. Hydrate and warm up properly.'",
+        "Rule 3 (Tight game struggles): Won <40% of tight games (isTight=true) in last 10 games → emoji: '🧊', headline: 'Simplify in tight moments', context: 'Your tight game win rate is X%. Go with your most confident shot when it matters.'",
+        "Rule 4 (Win streak 3+): Won 3+ consecutive matches → emoji: '🔥', headline: 'Ride the wave', context: 'You are on a X-match win streak. Stay focused on process, not outcome.'",
+        "Rule 5 (Loss streak 3+): Lost 3+ consecutive matches → emoji: '🔄', headline: 'Reset and refocus', context: 'Every match is a fresh start. What felt good last time you won?'",
+        "Rule 6 (Opponent-specific): Played same opponent 3+ times and losing >60% → emoji: '🔀', headline: 'Mix it up against {opponent}', context: 'Your record against them is X-Y. They may have figured out your pattern.'",
+        "Rule 7 (Fallback): Generic motivational message. If win rate > 50%: emoji '💪', headline 'Keep building', context 'Your overall form is strong at X%. Stay consistent.' If <= 50%: emoji '📈', headline 'Progress takes time', context 'Every match is a data point. You are learning.'",
+        "After match save, recommendation is generated and stored in the match record's recommendationText field as JSON string",
+        "Typecheck passes"
+      ],
+      "priority": 24,
+      "passes": true,
+      "notes": "This is logic-only, no UI. UI is in US-025."
+    },
+    {
+      "id": "US-025",
+      "title": "Post-match recommendation display",
+      "description": "As a player, I want to see my recommendation after saving a match and as a reminder on the dashboard.",
+      "acceptanceCriteria": [
+        "Post-match save screen (US-011) now shows a recommendation card below the result: dark Card with green left border, large emoji, bold headline text, muted context text",
+        "Recommendation generated by calling generateRecommendation() during match save (US-010 save handler updated to call the engine)",
+        "Card is tappable to expand/collapse the context text (starts collapsed showing only emoji + headline)",
+        "Dashboard pinned reminder: if the most recent match has a recommendation, show it as a compact card pinned at the very top of Dashboard (above insight cards) with label 'Focus for next match:'",
+        "Recommendation visible in match detail view (US-013) in a dedicated section",
+        "Typecheck passes",
+        "Verify in browser that recommendation card appears post-match and on dashboard"
+      ],
+      "priority": 25,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-026",
+      "title": "Timeline page with Win/Loss River chart",
+      "description": "As a player, I want to see my results visualized as a flowing river chart so I can see momentum and streaks over time.",
+      "acceptanceCriteria": [
+        "Timeline tab (/timeline) renders the timeline page with tab bar visible",
+        "Time range selector at top: horizontal pill tabs for 'Last 30 days', 'Last 3 months', 'Last 6 months', 'All time'. Default: 'All time'",
+        "Win/Loss River: Recharts AreaChart where X-axis is match dates, Y-axis is a cumulative momentum score (starts at 0, +1 for win, -1 for loss)",
+        "Area fill: green gradient above 0 line (winning streaks), red gradient below 0 line (losing periods)",
+        "Tap/click any data point to see tooltip with: opponent name, result, date",
+        "Time range selector filters the data shown in the chart",
+        "Empty state when no matches: 'Your squash journey starts here. Log your first match!' with CTA to /log",
+        "Typecheck passes",
+        "Verify in browser that the river chart renders and tooltips work with test data"
+      ],
+      "priority": 26,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-027",
+      "title": "Timeline — Rolling Win Rate chart",
+      "description": "As a player, I want to see my rolling win rate plotted over time so I can track my improvement trajectory.",
+      "acceptanceCriteria": [
+        "Rolling Win Rate chart added to Timeline page below the Win/Loss River",
+        "Recharts LineChart: X-axis is match number/date, Y-axis is win rate percentage (0-100%)",
+        "Line shows the rolling win rate over a window of the last 10 matches, plotted at each match point",
+        "Horizontal dashed reference line at 50% baseline labeled '50%'",
+        "Area above 50% line shaded light green, below shaded light red (using Recharts ReferenceArea or gradient)",
+        "Respects the same time range selector from US-026",
+        "Minimum 10 matches to render this chart (show locked preview with 'Log X more matches' otherwise)",
+        "Typecheck passes",
+        "Verify in browser with test data"
+      ],
+      "priority": 27,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-028",
+      "title": "Timeline — Activity Heatmap and Regularity Streak",
+      "description": "As a player, I want to see my playing frequency and consistency visualized to stay motivated.",
+      "acceptanceCriteria": [
+        "Activity Heatmap section on Timeline page below the charts",
+        "GitHub-style calendar grid: each cell represents one day, last 3 months shown by default",
+        "Cell color intensity based on matches played that day: 0 = dark gray (#1A1A1A), 1 = light green, 2+ = brighter green",
+        "Day labels on left (Mon, Wed, Fri), month labels on top",
+        "Heatmap is horizontally scrollable if more than 3 months of data",
+        "Tapping a day cell shows a small popup/tooltip listing matches played that day (opponent + result)",
+        "Regularity Streak below heatmap: 'X week streak — keep it going!' showing consecutive weeks with at least 1 match",
+        "If streak is broken: 'Your X-week streak ended. Start a new one today!'",
+        "If no matches yet: show empty heatmap grid with encouraging text",
+        "Typecheck passes",
+        "Verify in browser that heatmap cells render with correct colors and streak displays correctly"
+      ],
+      "priority": 28,
+      "passes": true,
+      "notes": "Can use a custom SVG grid component or a lightweight library like react-activity-calendar."
+    },
+    {
+      "id": "US-029",
+      "title": "Timeline — Milestone detection and display",
+      "description": "As a player, I want auto-detected milestones on my timeline so I can celebrate achievements.",
+      "acceptanceCriteria": [
+        "Milestone detection engine in src/lib/milestones.ts: function detectMilestones(matches: Match[], games: Game[]) => Milestone[]",
+        "Detects these milestone types: first win against each opponent, win streaks of 3+, match count milestones (10, 25, 50, 100), win rate crossing 50%/60%/70% (sustained over 5+ matches), head-to-head record flipping against an opponent",
+        "Each Milestone has: type, title (e.g. 'First Win vs Hemang'), date, icon/emoji, description",
+        "Milestones displayed as marker dots on the Win/Loss River chart at their corresponding date positions",
+        "Scrollable milestone list section below heatmap showing all achievements chronologically (newest first)",
+        "Each milestone rendered as a small card with: icon, title, date, one-line description",
+        "Milestones recalculated after every new match save",
+        "Typecheck passes",
+        "Verify in browser that milestones appear on chart and in list with test data"
+      ],
+      "priority": 29,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-030",
+      "title": "Rally Pattern Analyzer — swipeable card UI",
+      "description": "As a player improving my game, I want to quickly recall how a match felt through swipeable cards so I can track rally patterns.",
+      "acceptanceCriteria": [
+        "Accessible from: (a) post-match save screen as 'Add Rally Details' button, (b) match detail view as 'Add Rally Analysis' button",
+        "Full-screen overlay/modal with 5 sequential cards, navigated by horizontal swipe (Framer Motion drag) or tap-to-advance",
+        "Card 1: 'How did you win most points?' — options: 'Winners / Kill shots', 'Opponent errors', 'Long rallies / Outlasted them', 'Serve dominance', 'Drop shots / Deception'. Single-select",
+        "Card 2: 'How did you lose most points?' — options: 'Unforced errors', 'Opponent winners', 'Lost long rallies', 'Poor serves', 'Bad positioning'. Single-select",
+        "Card 3: 'Average rally length felt like...' — options: 'Short (1-4 shots)', 'Medium (5-10 shots)', 'Long (10+ shots)'. Single-select",
+        "Card 4: 'Your court coverage today?' — options: 'Dominated the T', 'Stuck in back corners', 'Good movement overall', 'Sluggish / Heavy legs'. Single-select",
+        "Card 5: 'Which shot felt best today?' — options: 'Forehand drive', 'Backhand drive', 'Drop shot', 'Boast', 'Lob', 'Serve', 'Volley'. Multi-select, max 2",
+        "Progress dots at bottom showing current position (1-5)",
+        "'Skip' button on each card to advance without answering",
+        "'Done' button on final card saves to rally_analyses table in Dexie.js linked to the matchId",
+        "Typecheck passes",
+        "Verify in browser that swipe navigation, selection, skip, and save all work correctly"
+      ],
+      "priority": 30,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-031",
+      "title": "Rally insights generation and display",
+      "description": "As a player, I want to see insights from my rally analysis data to understand my play style trends.",
+      "acceptanceCriteria": [
+        "Play Style Classification function in src/lib/rallyInsights.ts: determines per-match style from rally data — 'Aggressive Attacker', 'Patient Constructor', 'Retriever', 'Serve & Volley', 'All-Court Player'",
+        "Classification logic: based on win method + rally length + court coverage combination (e.g. Winners + Short rallies + Dominated T = Aggressive Attacker)",
+        "Win Method Distribution: Recharts PieChart (donut) on Dashboard as a new insight card showing distribution of win methods across all analyzed matches",
+        "Loss Method Distribution: separate donut chart insight card for loss methods — biggest slice highlighted with bold text and an improvement suggestion (e.g. 'Unforced errors: 45% — focus on consistency')",
+        "Best Shot Trends: insight card with bubbles/circles for each shot type — size proportional to how frequently tagged as 'best'. Larger = more frequent",
+        "Minimum 5 rally analyses to show any rally insight cards (locked preview otherwise)",
+        "Typecheck passes",
+        "Verify in browser that donut charts and shot bubbles render with test data"
+      ],
+      "priority": 31,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-032",
+      "title": "Pressure Performance — 8-8+ Index display",
+      "description": "As a competitive player, I want to see my clutch rating in tight games to understand my mental toughness.",
+      "acceptanceCriteria": [
+        "New insight card on Dashboard (or dedicated section) with title '8-8+ Index'",
+        "Clutch Rating displayed as large animated number (0-100) using Framer Motion counter animation",
+        "Calculated as: (tight games won / total tight games where isTight=true) * 100",
+        "Trend arrow: up/down/flat comparing last 5 tight games vs overall",
+        "Rating label: 0-39 'Cold' (blue), 40-59 'Neutral' (yellow), 60-79 'Hot' (orange), 80-100 'Ice Veins' (cyan) — with matching color",
+        "Clutch by Opponent: expandable section showing 8-8+ Index per opponent in a table format (opponent name | index | tight games count)",
+        "Clutch by Game Number: shows tight game win rate broken down by game position (Game 1, Game 2, Game 3, etc.)",
+        "Minimum 5 tight games total to show (locked preview otherwise)",
+        "Typecheck passes",
+        "Verify in browser that clutch rating animates and breakdown tables display correctly"
+      ],
+      "priority": 32,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-033",
+      "title": "Pressure badges system",
+      "description": "As a player, I want to earn badges for pressure-related achievements so tight games feel rewarding.",
+      "acceptanceCriteria": [
+        "Badge definitions in src/lib/badges.ts with 5 badges: Ice Veins (Rare, win 5+ tight games in a row), Clutch King (Epic, 8-8+ Index above 80 for 10+ tight games), Comeback Artist (Legendary, win match after 0-2 down with at least one tight game), Heartbreaker (Rare, win 3+ tight games in single Bo5 match), Pressure Cooker (Common, play 5+ tight games in one week)",
+        "Badge detection function: checkBadges(matches: Match[], games: Game[]) => EarnedBadge[] — runs after every match save",
+        "Badge display on Profile tab: grid of all 5 badges. Earned badges shown in full color with rarity label. Unearned badges grayed out with criteria description text",
+        "Each badge card shows: icon/emoji, name, rarity label (colored: Common=gray, Rare=blue, Epic=purple, Legendary=gold), criteria text, date earned (if earned)",
+        "Toast notification (Framer Motion slide-in from top) when a new badge is earned after match save",
+        "Earned badges persisted in Zustand store backed by localStorage",
+        "Typecheck passes",
+        "Verify in browser that badge grid renders with both earned and unearned states, and toast appears"
+      ],
+      "priority": 33,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-034",
+      "title": "Player Archetype Engine (determination logic)",
+      "description": "As a player, I want to be assigned a dynamic play-style archetype based on my data.",
+      "acceptanceCriteria": [
+        "Archetype definitions in src/lib/archetypes.ts with 6 archetypes: The Assassin (#FF1744), The Wall (#2979FF), The Strategist (#7C4DFF), The Closer (#00E676), The Streaker (#FF6D00), The Chameleon (#00BFA5)",
+        "Each archetype has: name, color, description, strength, weakness_hint, and a radar_profile object with scores for 6 traits (aggression, fitness, consistency, clutch, adaptability, deception) each 0-100",
+        "Determination function: determineArchetype(matches, games, rallyAnalyses) => { primary: Archetype, secondary: Archetype | null, traitScores: TraitScores }",
+        "Trait scoring algorithm: aggression (from win methods — winners/kill shots), fitness (from rally length — long rallies), consistency (from win rate variance — lower variance = higher), clutch (from 8-8+ Index), adaptability (from opponent-specific win rate variance — lower variance = higher), deception (from best shots — drop shots/boasts)",
+        "Primary archetype = highest matching score. Secondary shown if within 10% of primary score",
+        "Recalculated after every match that has rally analysis data",
+        "Minimum 10 matches AND 5 rally analyses required to determine archetype",
+        "Typecheck passes"
+      ],
+      "priority": 34,
+      "passes": true,
+      "notes": "This is logic-only. Display is in US-035."
+    },
+    {
+      "id": "US-035",
+      "title": "Archetype display with radar chart",
+      "description": "As a player, I want to see my archetype beautifully displayed with a radar chart of my traits.",
+      "acceptanceCriteria": [
+        "Archetype Card on Profile tab: full-width Card component with archetype color as top border/accent",
+        "Card shows: archetype name in large text (colored), description text, 'Strength: ...' text, 'Growth area: ...' text",
+        "Radar Chart: Recharts RadarChart with 6 axes (aggression, fitness, consistency, clutch, adaptability, deception). Filled polygon area in archetype color with 30% opacity",
+        "If secondary archetype exists (within 10%), show a smaller text below: 'Secondary: The {name}'",
+        "Evolution Timeline: horizontal row of archetype badges showing changes over time (e.g. circles with archetype color and month label: 'Jan: Wall → Mar: Strategist'). Stored in localStorage as array of {archetype, date} entries",
+        "Locked state when minimum data not met: show blurred archetype card with text 'Log 10 matches with rally analysis to discover your archetype'",
+        "Typecheck passes",
+        "Verify in browser that archetype card, radar chart, and evolution timeline render correctly"
+      ],
+      "priority": 35,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-036",
+      "title": "Rivalry pages (head-to-head opponent view)",
+      "description": "As a player, I want a dedicated head-to-head page for each opponent to deep-dive into our rivalry.",
+      "acceptanceCriteria": [
+        "Rivals tab (/rivals) shows a list of all opponents sorted by total matches played (most played first)",
+        "Each opponent row shows: emoji, name, H2H record (e.g. '7-3'), last match result",
+        "Tapping an opponent navigates to /rivals/:opponentId rivalry detail page",
+        "Rivalry page header: both player emojis and names, all-time record (e.g. 'You 7 - 3 Parth'), last 5 H2H results as colored dots",
+        "Score History: Recharts line chart showing H2H cumulative result over time",
+        "Key Stats section: current win streak, best win streak, tight games record against this opponent, average games per match, most common final score",
+        "Best Win card: most dominant victory (largest score margin)",
+        "Worst Loss card: worst defeat (largest score deficit)",
+        "Fun Facts: 1-2 auto-generated facts (e.g. 'You have never lost to Parth on a Tuesday' or 'Average match goes to 4 games')",
+        "Typecheck passes",
+        "Verify in browser that rivalry page renders with all sections using test data"
+      ],
+      "priority": 36,
+      "passes": true,
+      "notes": "Also connect the Win Rate by Opponent insight card (US-015) to navigate here on tap."
+    },
+    {
+      "id": "US-037",
+      "title": "Friendly Leaderboards",
+      "description": "As part of a friend group, I want leaderboards across multiple categories so everyone has their moment.",
+      "acceptanceCriteria": [
+        "Leaderboard section on Rivals tab below the opponent list (or as a toggleable sub-section)",
+        "Horizontal scrollable category pills at top: Overall Record, Iron Man, Clutch King, Comeback Kid, Hot Streak, Consistency Crown, Most Improved, Rivalry Dominator",
+        "One category visible at a time. Tapping a pill switches the displayed leaderboard",
+        "Each category shows a ranked list: position number (1, 2, 3...), player emoji + name, metric value (e.g. '78% win rate', '12 matches')",
+        "V1 single-device mode: leaderboard computed from local data. Current user stats from their matches. Opponents ranked by stats derived from matches against current user (opponent win rate = inverse of user's rate against them)",
+        "Category calculations: Overall Record (win rate, min 5 matches), Iron Man (matches this calendar month), Clutch King (highest 8-8+ Index, min 5 tight games), Comeback Kid (wins after losing Game 1), Hot Streak (current consecutive win count), Consistency Crown (lowest win rate standard deviation over last 20), Most Improved (win rate change last 30d vs prior 30d), Rivalry Dominator (best H2H record vs most-played opponent)",
+        "Anti-toxicity: encouraging header copy (e.g. '{name} is on fire this month!'), no negative rankings",
+        "Typecheck passes",
+        "Verify in browser that category switching works and ranked lists display correctly"
+      ],
+      "priority": 37,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-038",
+      "title": "Match of the Month and On This Day",
+      "description": "As a player, I want nostalgic highlights that surface memorable matches on my dashboard.",
+      "acceptanceCriteria": [
+        "Match of the Month: auto-selects most dramatic match each calendar month based on scoring: closest total score difference gets +3 points, most games played gets +2, if result is a win against opponent with >50% record against you gets +2 (upset bonus), comeback (won after losing Game 1) gets +1",
+        "Match of the Month card on Dashboard: story-style Card with auto-generated title (e.g. 'The {opponent} Thriller' or 'The {venue} Classic'), match details, and a dramatic emoji",
+        "Only shown when 4+ matches exist in the current or most recent month",
+        "On This Day: checks if any match occurred exactly 1, 3, 6, or 12 months ago today. If so, shows a card on Dashboard: '{X} months ago today, you {won/lost} against {opponent} {score} at {venue}'",
+        "Both are passive discovery cards — shown on Dashboard when applicable, dismissed on tap or with an X button",
+        "Typecheck passes",
+        "Verify in browser that Match of the Month and On This Day cards render with test data"
+      ],
+      "priority": 38,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-039",
+      "title": "Season Wrapped (shareable summary cards)",
+      "description": "As a player, I want a Spotify Wrapped-style summary of my squash season to celebrate and share.",
+      "acceptanceCriteria": [
+        "Accessible from Profile tab as 'Season Wrapped' button (only shown when 20+ matches exist)",
+        "Opens full-screen swipeable story experience (Framer Motion AnimatePresence with horizontal swipe)",
+        "6 sequential full-screen cards with dark gradient backgrounds:",
+        "Card 1 'Your Quarter in Numbers': total matches, total games, total tight games, estimated hours (matches * 0.5)",
+        "Card 2 'Win Rate Journey': simple line chart of win rate over time (reuse sparkline pattern)",
+        "Card 3 'Biggest Rival': most-played opponent emoji + name, H2H record, fun stat",
+        "Card 4 'Best Month': month name + win rate, number of matches",
+        "Card 5 'Clutch Moments': tight games count, 8-8+ Index, most dramatic tight game",
+        "Card 6 'Headline Stat': one standout stat (highest win streak, best opponent conquest, most matches in a week, etc.)",
+        "Each card has a 'Share' button that uses html2canvas to generate a 1080x1920 image with a subtle 'SquashIQ' watermark, then triggers navigator.share() or downloads the image",
+        "Progress dots at bottom showing card position",
+        "Typecheck passes",
+        "Verify in browser that all 6 wrapped cards render and share button generates an image"
+      ],
+      "priority": 39,
+      "passes": true,
+      "notes": "This is a larger story but the cards are all similar in structure. The key complexity is html2canvas integration."
+    },
+    {
+      "id": "US-040",
+      "title": "Data export, import, and settings",
+      "description": "As a player, I want to export my data and manage app settings so I never lose my match history.",
+      "acceptanceCriteria": [
+        "Settings section on Profile tab with clear section headers",
+        "Player name edit: tappable text that opens inline edit, saves to current user player record",
+        "Tight game threshold setting: number input defaulting to 8, with explanation text 'Games where both players score this or higher are counted as tight games'",
+        "'Export Data' button: reads all Dexie.js tables (players, venues, matches, games, rally_analyses), creates a JSON object with all data, triggers download as 'squashiq-backup-{date}.json' or native share sheet",
+        "'Import Data' button: opens file picker for .json files, shows confirmation dialog 'This will merge with your existing data. Continue?', on confirm reads JSON and inserts records into Dexie.js tables (skip duplicates by id)",
+        "App version displayed at bottom of settings (read from package.json or hardcode '1.0.0')",
+        "Auto-backup reminder: track match count since last export in localStorage. After every 10 new matches since last export, show a dismissible banner on Dashboard: 'Back up your data — you have logged X matches since your last export'",
+        "Typecheck passes",
+        "Verify in browser that export produces valid JSON, import loads data, and settings save correctly"
+      ],
+      "priority": 40,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-041",
+      "title": "Empty states and onboarding flow",
+      "description": "As a new user, I want clear guidance and encouraging empty states so I know what to do next.",
+      "acceptanceCriteria": [
+        "Every screen has a designed empty state (not blank white/dark screen):",
+        "Dashboard (no matches): centered illustration icon (e.g. 🏸 or racket SVG), 'Welcome to SquashIQ!', 'Log your first match to start seeing insights', large green CTA button 'Log First Match' linking to /log",
+        "Timeline (no matches): 'Your squash journey starts here' with a timeline illustration and CTA",
+        "Rivals (no opponents): 'Add your first opponent to start tracking rivalries' with CTA to /profile (manage players)",
+        "Match History (no matches): 'No matches yet. Let's fix that!' with CTA to /log",
+        "First-time onboarding: 3-screen swipeable intro (Framer Motion): Screen 1 'Log matches in 60 seconds' with speed icon, Screen 2 'Discover what makes you win' with chart icon, Screen 3 'Track your improvement' with trending-up icon + green 'Get Started' button that navigates to /log",
+        "Onboarding shown only on first ever app load — flag 'onboarding-complete' stored in localStorage. Subsequent loads skip to Dashboard",
+        "Typecheck passes",
+        "Verify in browser that onboarding plays on first load, all empty states render on each tab"
+      ],
+      "priority": 41,
+      "passes": true,
+      "notes": "This is the final polish story. All other features should be complete before this."
+    }
+  ]
+}
