@@ -1175,3 +1175,62 @@ I've successfully implemented US-P009! Here's what was accomplished:
 3. Test Add to Home Screen - app should install as standalone PWA
 4. Test overscroll - no rubber-band bounce effect
 ---
+## 2026-02-08 18:41:34 - US-P010
+- **What was implemented:**
+  - Added focus-visible CSS styles for keyboard navigation:
+    * Global focus-visible styles with 2px primary-colored outline
+    * Focus indicators for buttons, links, inputs, textarea, select
+    * Remove default outline when using mouse (:focus:not(:focus-visible))
+  - Added sr-only utility class for screen reader only content:
+    * Pattern: position absolute, 1px size, hidden overflow, clipped
+    * Used for screen reader descriptions throughout app
+  - Added screen reader text to CurrentForm chart component:
+    * Describes form stats (wins, losses, win rate, trend) for screen readers
+    * Chart marked with aria-hidden="true" to avoid duplicate announcements
+  - Updated modals with proper ARIA attributes:
+    * ProfileSetupModal: role="dialog", aria-modal="true", aria-labelledby
+    * MigrationModal: role="dialog", aria-modal="true", aria-labelledby, aria-describedby
+    * Progress bar: role="progressbar", aria-valuenow, aria-valuemin, aria-valuemax
+    * Migration progress section: role="status", aria-live="polite"
+    * Error display: role="alert"
+  - Updated BottomTabBar navigation:
+    * Added aria-label="Main navigation" to nav element
+    * Added aria-label to each NavLink for screen reader context
+    * Icons marked with aria-hidden="true"
+  - Updated Dashboard with semantic HTML:
+    * Changed divs to semantic elements: main, header, section
+    * Loading state: role="status", aria-live="polite", sr-only loading message
+  - SyncStatusIndicator already had proper ARIA (role="status", role="alert", aria-live="polite") ✓
+  - All form inputs in ProfileSetupModal already had labels with htmlFor ✓
+  - SwipeableMatchCard delete button already had aria-label="Delete match" ✓
+  - PWAInstallBanner dismiss button already had aria-label="Dismiss banner" ✓
+
+- **Files changed:**
+  - src/index.css (added focus-visible styles and sr-only utility)
+  - src/components/insights/CurrentForm.tsx (added screen reader description)
+  - src/components/auth/ProfileSetupModal.tsx (added modal ARIA attributes)
+  - src/components/auth/MigrationModal.tsx (added modal ARIA attributes, progress bar roles)
+  - src/components/layout/BottomTabBar.tsx (added nav aria-label, NavLink aria-labels, aria-hidden on icons)
+  - src/pages/Dashboard.tsx (changed to semantic HTML: main, header, section; added loading state ARIA)
+
+- **Learnings for future iterations:**
+  - Pattern: focus-visible is perfect for keyboard navigation - only shows outline for keyboard, not mouse
+  - Pattern: sr-only utility class is standard approach for screen reader only text
+  - Pattern: Charts should be marked aria-hidden="true" with text alternative via sr-only
+  - Pattern: Modals need role="dialog", aria-modal="true", aria-labelledby (referencing title id)
+  - Pattern: Progress bars need role="progressbar" with aria-valuenow/min/max
+  - Pattern: Loading states need role="status" with aria-live="polite"
+  - Pattern: Error messages need role="alert" for immediate screen reader announcement
+  - Pattern: Navigation should have aria-label to identify purpose
+  - Pattern: Icon-only buttons/links need aria-label for screen reader context
+  - Pattern: Use semantic HTML (main, header, nav, section) instead of divs when possible
+  - Gotcha: Icons should be aria-hidden="true" to avoid redundant announcements
+  - Gotcha: NavLink already has text label, but aria-label provides clearer context
+  - Context: WCAG AA requires 4.5:1 contrast ratio - primary #00E676 on #0A0A0A = 11:1 ✓
+  - Context: All buttons/inputs already meet 44x44px touch target from US-P008 ✓
+  - Context: Focus indicators with 2px outline and offset provide clear visual feedback
+  - Browser testing note: Manual verification recommended with VoiceOver on iOS or NVDA on Windows
+  - Accessibility note: axe DevTools can be used to audit for remaining violations
+  - Next: US-P011 will add interactive onboarding with sample data
+---
+

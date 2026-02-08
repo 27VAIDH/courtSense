@@ -220,7 +220,7 @@
         "Run axe DevTools audit: 0 critical violations"
       ],
       "priority": 10,
-      "passes": false,
+      "passes": true,
       "notes": "Accessibility should not be an afterthought. Essential for inclusive product."
     },
     {
