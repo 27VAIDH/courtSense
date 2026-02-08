@@ -2,85 +2,14 @@ import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useInView } from 'react-intersection-observer'
 import { useMatches, useGames, usePlayers, useVenues } from '@/db/hooks'
-import type { Match, Game, Player, Venue } from '@/db/types'
-import Card from '@/components/ui/Card'
+import { db } from '@/db/database'
+import type { Game, Player, Venue } from '@/db/types'
+import SwipeableMatchCard from '@/components/matches/SwipeableMatchCard'
 import Button from '@/components/ui/Button'
+import { triggerLightHaptic } from '@/lib/haptics'
 
 const INITIAL_LOAD = 20
 const LOAD_MORE = 20
-
-function formatRelativeDate(date: Date): string {
-  const now = new Date()
-  const d = new Date(date)
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-  const matchDay = new Date(d.getFullYear(), d.getMonth(), d.getDate())
-  const diffDays = Math.floor((today.getTime() - matchDay.getTime()) / (1000 * 60 * 60 * 24))
-
-  if (diffDays === 0) return 'Today'
-  if (diffDays === 1) return 'Yesterday'
-  if (diffDays < 7) {
-    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
-  }
-  return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
-}
-
-function getGameScoresText(games: Game[]): { text: string; tightIndices: Set<number> } {
-  const sorted = [...games].sort((a, b) => a.gameNumber - b.gameNumber)
-  const tightIndices = new Set<number>()
-  const parts = sorted.map((g, i) => {
-    if (g.isTight) tightIndices.add(i)
-    return `${g.myScore}-${g.opponentScore}`
-  })
-  return { text: parts.join(', '), tightIndices }
-}
-
-interface MatchCardProps {
-  match: Match
-  games: Game[]
-  opponent: Player | undefined
-  venue: Venue | undefined
-  onClick: () => void
-}
-
-function MatchCard({ match, games, opponent, venue, onClick }: MatchCardProps) {
-  const isWin = match.result.startsWith('W')
-  const { tightIndices } = useMemo(() => getGameScoresText(games), [games])
-  const sortedGames = useMemo(
-    () => [...games].sort((a, b) => a.gameNumber - b.gameNumber),
-    [games]
-  )
-
-  return (
-    <Card className="cursor-pointer active:opacity-80" onClick={onClick}>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <span className="text-2xl">{opponent?.emoji || '👤'}</span>
-          <div>
-            <p className="font-semibold text-text-primary">{opponent?.name || 'Unknown'}</p>
-            <p className="text-sm text-text-secondary">{formatRelativeDate(match.date)}</p>
-          </div>
-        </div>
-        <div className="text-right">
-          <p className={`text-lg font-bold ${isWin ? 'text-win' : 'text-loss'}`}>
-            {match.result}
-          </p>
-          {venue && <p className="text-xs text-text-secondary">{venue.name}</p>}
-        </div>
-      </div>
-      {sortedGames.length > 0 && (
-        <div className="mt-2 flex gap-2 text-sm text-text-secondary">
-          {sortedGames.map((g, i) => (
-            <span key={g.id ?? i}>
-              {g.myScore}-{g.opponentScore}
-              {tightIndices.has(i) && ' 🔥'}
-              {i < sortedGames.length - 1 && ','}
-            </span>
-          ))}
-        </div>
-      )}
-    </Card>
-  )
-}
 
 export default function MatchHistoryList() {
   const matches = useMatches()
@@ -89,6 +18,7 @@ export default function MatchHistoryList() {
   const venues = useVenues()
   const navigate = useNavigate()
   const [displayCount, setDisplayCount] = useState(INITIAL_LOAD)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<number | null>(null)
 
   const sortedMatches = useMemo(() => {
     if (!matches) return undefined
@@ -143,6 +73,20 @@ export default function MatchHistoryList() {
     return map
   }, [venues])
 
+  async function handleDeleteMatch(matchId: number) {
+    try {
+      // Delete games and rally analyses associated with this match
+      await db.games.where('matchId').equals(matchId).delete()
+      await db.rally_analyses.where('matchId').equals(matchId).delete()
+      // Delete the match itself
+      await db.matches.delete(matchId)
+      triggerLightHaptic()
+      setShowDeleteConfirm(null)
+    } catch (error) {
+      console.error('Failed to delete match:', error)
+    }
+  }
+
   // Loading state
   if (displayedMatches === undefined) {
     return (
@@ -171,27 +115,57 @@ export default function MatchHistoryList() {
   }
 
   return (
-    <div className="space-y-3">
-      {displayedMatches.map((match) => (
-        <MatchCard
-          key={match.id}
-          match={match}
-          games={gamesByMatch.get(match.id!) || []}
-          opponent={playersById.get(match.opponentId)}
-          venue={venuesById.get(match.venueId)}
-          onClick={() => navigate(`/match/${match.id}`)}
-        />
-      ))}
-      {hasMore && (
-        <div ref={loadMoreRef} className="py-4 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary"></div>
+    <>
+      <div className="space-y-3">
+        {displayedMatches.map((match) => (
+          <SwipeableMatchCard
+            key={match.id}
+            match={match}
+            games={gamesByMatch.get(match.id!) || []}
+            opponent={playersById.get(match.opponentId)}
+            venue={venuesById.get(match.venueId)}
+            onClick={() => navigate(`/match/${match.id}`)}
+            onDelete={() => setShowDeleteConfirm(match.id!)}
+          />
+        ))}
+        {hasMore && (
+          <div ref={loadMoreRef} className="py-4 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary"></div>
+          </div>
+        )}
+        {!hasMore && sortedMatches && sortedMatches.length > INITIAL_LOAD && (
+          <p className="text-xs text-text-secondary text-center py-4">
+            All {sortedMatches.length} matches loaded
+          </p>
+        )}
+      </div>
+
+      {/* Delete Confirmation Dialog */}
+      {showDeleteConfirm !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-sm rounded-[16px] bg-surface-elevated p-6">
+            <h3 className="mb-2 text-lg font-semibold text-text-primary">Delete match?</h3>
+            <p className="mb-6 text-sm text-text-secondary">
+              This will permanently delete the match and all associated game data.
+            </p>
+            <div className="flex gap-3">
+              <Button
+                variant="secondary"
+                onClick={() => setShowDeleteConfirm(null)}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => handleDeleteMatch(showDeleteConfirm)}
+                className="flex-1 !bg-loss"
+              >
+                Delete
+              </Button>
+            </div>
+          </div>
         </div>
       )}
-      {!hasMore && sortedMatches && sortedMatches.length > INITIAL_LOAD && (
-        <p className="text-xs text-text-secondary text-center py-4">
-          All {sortedMatches.length} matches loaded
-        </p>
-      )}
-    </div>
+    </>
   )
 }

@@ -9,6 +9,7 @@ import { generateRecommendation } from '@/lib/recommendations'
 import { checkBadges } from '@/lib/badges'
 import { triggerSyncDebounced } from '@/lib/sync'
 import { uploadMatchPhoto } from '@/lib/photoUpload'
+import { triggerSuccessHaptic, triggerLightHaptic } from '@/lib/haptics'
 import Chip from '@/components/ui/Chip'
 import Button from '@/components/ui/Button'
 
@@ -147,6 +148,9 @@ export default function StepTagsSave() {
       // Trigger sync after saving match
       triggerSyncDebounced()
 
+      // Trigger success haptic feedback
+      triggerSuccessHaptic()
+
       // Reset state and navigate to post-match screen
       reset()
       navigate(`/match/${matchId}/saved`, { replace: true })
@@ -166,7 +170,10 @@ export default function StepTagsSave() {
             <button
               key={opt.level}
               type="button"
-              onClick={() => setEnergyLevel(energyLevel === opt.level ? null : opt.level)}
+              onClick={() => {
+                triggerLightHaptic()
+                setEnergyLevel(energyLevel === opt.level ? null : opt.level)
+              }}
               className={`flex min-h-[48px] flex-1 flex-col items-center justify-center rounded-[12px] transition-colors ${
                 energyLevel === opt.level
                   ? 'bg-primary/20 border-2 border-primary'

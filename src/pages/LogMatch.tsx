@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { motion, useMotionValue, useTransform } from 'framer-motion'
 import { useUIStore } from '@/stores/uiStore'
 import { useMatchLogStore } from '@/stores/matchLogStore'
 import StepIndicator from '@/components/matchlog/StepIndicator'
@@ -7,6 +8,7 @@ import StepSetup from '@/components/matchlog/StepSetup'
 import StepScoreEntry from '@/components/matchlog/StepScoreEntry'
 import StepTagsSave from '@/components/matchlog/StepTagsSave'
 import Button from '@/components/ui/Button'
+import { triggerLightHaptic } from '@/lib/haptics'
 
 export default function LogMatch() {
   const navigate = useNavigate()
@@ -16,6 +18,10 @@ export default function LogMatch() {
 
   // Track if any selection was made (for exit confirmation)
   const hasSelection = opponentId !== null
+
+  // Swipe animation with Framer Motion
+  const x = useMotionValue(0)
+  const opacity = useTransform(x, [-100, 0, 100], [0.5, 1, 0.5])
 
   useEffect(() => {
     hideTabBar()
@@ -38,6 +44,25 @@ export default function LogMatch() {
 
   function handleNext() {
     setStep(step + 1)
+    triggerLightHaptic()
+  }
+
+  function handleBack() {
+    setStep(step - 1)
+    triggerLightHaptic()
+  }
+
+  function handleDragEnd(_event: MouseEvent | TouchEvent | PointerEvent, info: { offset: { x: number } }) {
+    const threshold = 100
+
+    // Swipe left (next step)
+    if (info.offset.x < -threshold && step < 3) {
+      handleNext()
+    }
+    // Swipe right (previous step)
+    else if (info.offset.x > threshold && step > 1) {
+      handleBack()
+    }
   }
 
   return (
@@ -57,11 +82,18 @@ export default function LogMatch() {
       </div>
 
       {/* Step Content */}
-      <div className="flex-1 overflow-y-auto">
+      <motion.div
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.2}
+        onDragEnd={handleDragEnd}
+        className="flex-1 overflow-y-auto touch-pan-y"
+        style={{ x, opacity }}
+      >
         {step === 1 && <StepSetup />}
         {step === 2 && <StepScoreEntry />}
         {step === 3 && <StepTagsSave />}
-      </div>
+      </motion.div>
 
       {/* Bottom Action */}
       <div className="px-4 pb-4" style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}>
@@ -76,7 +108,7 @@ export default function LogMatch() {
         )}
         {step === 2 && (
           <div className="flex gap-3">
-            <Button variant="secondary" onClick={() => setStep(step - 1)} className="flex-1">
+            <Button variant="secondary" onClick={handleBack} className="flex-1">
               Back
             </Button>
             <Button onClick={handleNext} className="flex-1">
@@ -85,7 +117,7 @@ export default function LogMatch() {
           </div>
         )}
         {step === 3 && (
-          <Button variant="secondary" onClick={() => setStep(step - 1)} className="w-full">
+          <Button variant="secondary" onClick={handleBack} className="w-full">
             Back
           </Button>
         )}
