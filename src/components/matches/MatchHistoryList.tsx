@@ -1,10 +1,11 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useInView } from 'react-intersection-observer'
 import { useMatches, useGames, usePlayers, useVenues } from '@/db/hooks'
 import { db } from '@/db/database'
-import type { Game, Player, Venue } from '@/db/types'
+import type { Match, Game, Player, Venue } from '@/db/types'
 import SwipeableMatchCard from '@/components/matches/SwipeableMatchCard'
+import MatchSearchFilter from '@/components/matches/MatchSearchFilter'
 import Button from '@/components/ui/Button'
 import { triggerLightHaptic } from '@/lib/haptics'
 
@@ -19,6 +20,7 @@ export default function MatchHistoryList() {
   const navigate = useNavigate()
   const [displayCount, setDisplayCount] = useState(INITIAL_LOAD)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<number | null>(null)
+  const [filteredMatches, setFilteredMatches] = useState<Match[]>([])
 
   const sortedMatches = useMemo(() => {
     if (!matches) return undefined
@@ -27,12 +29,32 @@ export default function MatchHistoryList() {
     )
   }, [matches])
 
-  const displayedMatches = useMemo(() => {
+  // Use filtered matches if filters are active, otherwise use all sorted matches
+  const matchesToDisplay = useMemo(() => {
+    // If matches haven't loaded yet, return undefined
     if (!sortedMatches) return undefined
-    return sortedMatches.slice(0, displayCount)
-  }, [sortedMatches, displayCount])
 
-  const hasMore = sortedMatches && displayCount < sortedMatches.length
+    // If no filters are active (filteredMatches is empty array from initial state),
+    // use all sorted matches. Otherwise use filtered results.
+    return filteredMatches.length > 0 || matches?.length === 0 ? filteredMatches : sortedMatches
+  }, [sortedMatches, filteredMatches, matches])
+
+  const handleFilteredMatchesChange = useCallback((filtered: Match[]) => {
+    // Sort filtered matches by date (newest first)
+    const sorted = [...filtered].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    )
+    setFilteredMatches(sorted)
+    // Reset display count when filters change
+    setDisplayCount(INITIAL_LOAD)
+  }, [])
+
+  const displayedMatches = useMemo(() => {
+    if (!matchesToDisplay) return undefined
+    return matchesToDisplay.slice(0, displayCount)
+  }, [matchesToDisplay, displayCount])
+
+  const hasMore = matchesToDisplay && displayCount < matchesToDisplay.length
 
   // Infinite scroll trigger
   const { ref: loadMoreRef } = useInView({
@@ -98,8 +120,35 @@ export default function MatchHistoryList() {
     )
   }
 
+  // Check if we have filters active (when filteredMatches is set but different from all matches)
+  const hasActiveFilters = filteredMatches.length > 0 && filteredMatches.length !== sortedMatches?.length
+
   // Empty state
   if (displayedMatches.length === 0) {
+    // If filters are active and no results, show filter-specific empty state
+    if (hasActiveFilters || (sortedMatches && sortedMatches.length > 0)) {
+      return (
+        <>
+          {matches && players && venues && (
+            <MatchSearchFilter
+              matches={matches}
+              players={players}
+              venues={venues}
+              onFilteredMatchesChange={handleFilteredMatchesChange}
+            />
+          )}
+          <div className="flex flex-col items-center py-12 text-center">
+            <span className="text-6xl mb-4">🔍</span>
+            <p className="text-lg font-semibold text-text-primary mb-2">No matches found</p>
+            <p className="text-text-secondary mb-6 max-w-[240px]">
+              Try adjusting your search or filters
+            </p>
+          </div>
+        </>
+      )
+    }
+
+    // No matches at all
     return (
       <div className="flex flex-col items-center py-12 text-center">
         <span className="text-6xl mb-4">🏸</span>
@@ -116,6 +165,16 @@ export default function MatchHistoryList() {
 
   return (
     <>
+      {/* Search and Filter UI */}
+      {matches && players && venues && (
+        <MatchSearchFilter
+          matches={matches}
+          players={players}
+          venues={venues}
+          onFilteredMatchesChange={handleFilteredMatchesChange}
+        />
+      )}
+
       <div className="space-y-3">
         {displayedMatches.map((match) => (
           <SwipeableMatchCard
@@ -133,9 +192,9 @@ export default function MatchHistoryList() {
             <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary"></div>
           </div>
         )}
-        {!hasMore && sortedMatches && sortedMatches.length > INITIAL_LOAD && (
+        {!hasMore && matchesToDisplay && matchesToDisplay.length > INITIAL_LOAD && (
           <p className="text-xs text-text-secondary text-center py-4">
-            All {sortedMatches.length} matches loaded
+            All {matchesToDisplay.length} matches loaded
           </p>
         )}
       </div>
