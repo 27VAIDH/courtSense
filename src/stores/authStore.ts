@@ -7,9 +7,11 @@ interface AuthState {
   session: Session | null
   loading: boolean
   initialized: boolean
+  profileComplete: boolean
   setUser: (user: User | null) => void
   setSession: (session: Session | null) => void
   setLoading: (loading: boolean) => void
+  setProfileComplete: (complete: boolean) => void
   initialize: () => Promise<void>
   signOut: () => Promise<void>
 }
@@ -19,10 +21,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   session: null,
   loading: true,
   initialized: false,
+  profileComplete: false,
 
   setUser: (user) => set({ user }),
   setSession: (session) => set({ session, user: session?.user ?? null }),
   setLoading: (loading) => set({ loading }),
+  setProfileComplete: (complete) => set({ profileComplete: complete }),
 
   initialize: async () => {
     if (get().initialized) return
@@ -51,7 +55,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       set({ loading: true })
       await supabase.auth.signOut()
-      set({ user: null, session: null })
+      set({ user: null, session: null, profileComplete: false })
 
       // Clear other stores if needed
       // This will be called from the Settings page
