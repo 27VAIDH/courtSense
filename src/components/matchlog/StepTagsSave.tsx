@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMatchLogStore } from '@/stores/matchLogStore'
+import { useBadgeStore } from '@/stores/badgeStore'
 import { db } from '@/db/database'
 import { generateRecommendation } from '@/lib/recommendations'
+import { checkBadges } from '@/lib/badges'
 import Chip from '@/components/ui/Chip'
 import Button from '@/components/ui/Button'
 
@@ -34,6 +36,7 @@ export default function StepTagsSave() {
     reset,
   } = useMatchLogStore()
 
+  const setEarnedBadges = useBadgeStore((state) => state.setEarnedBadges)
   const [saving, setSaving] = useState(false)
 
   async function handleSave() {
@@ -89,6 +92,10 @@ export default function StepTagsSave() {
           recommendationText: JSON.stringify(rec),
         })
       }
+
+      // Check for badges
+      const earnedBadges = checkBadges(allMatches, allGames)
+      setEarnedBadges(earnedBadges)
 
       // Reset state and navigate to post-match screen
       reset()

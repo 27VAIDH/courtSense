@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { ensureCurrentUser } from '@/db/database'
 import BottomTabBar from '@/components/layout/BottomTabBar'
+import BadgeToast from '@/components/badges/BadgeToast'
 import Dashboard from '@/pages/Dashboard'
 import LogMatch from '@/pages/LogMatch'
 import Timeline from '@/pages/Timeline'
@@ -27,6 +28,7 @@ function App() {
         <Route path="/match/:id/saved" element={<PostMatchSaved />} />
       </Routes>
       <BottomTabBar />
+      <BadgeToast />
     </div>
   )
 }
