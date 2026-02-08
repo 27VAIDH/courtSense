@@ -1,0 +1,43 @@
+Good! The next story is US-036. My work on US-035 is complete. Let me create a summary of what was accomplished:
+
+## Summary
+
+I successfully implemented **US-035: Archetype display with radar chart**. Here's what was completed:
+
+### Implementation Details:
+
+1. **Created ArchetypeCard component** (`src/components/archetype/ArchetypeCard.tsx`):
+   - Full-width card with dynamic archetype color border
+   - Displays archetype name, description, strength, and growth area
+   - 6-trait radar chart using Recharts (aggression, fitness, consistency, clutch, adaptability, deception)
+   - Shows secondary archetype when within 10% match score
+   - Locked state when minimum data requirements not met (10 matches + 5 rally analyses)
+
+2. **Created ArchetypeEvolution component** (`src/components/archetype/ArchetypeEvolution.tsx`):
+   - Displays archetype changes over time
+   - Shows badges with archetype initial and month/year labels
+   - Only displays when archetype has changed at least once
+
+3. **Created archetypeHistoryStore** (`src/stores/archetypeHistoryStore.ts`):
+   - Zustand store with localStorage persistence
+   - Tracks archetype changes with dates
+   - Prevents duplicate entries for same archetype
+
+4. **Updated Card component** (`src/components/ui/Card.tsx`):
+   - Added optional `style` prop for inline styles
+   - Enables dynamic border coloring for archetype card
+
+5. **Updated Profile page** (`src/pages/Profile.tsx`):
+   - Added ArchetypeCard above BadgeGrid
+   - Fetches matches, games, and rally analyses data
+   - Handles undefined values from hooks
+
+### Quality Checks:
+✅ TypeScript compilation passes  
+✅ Build completes successfully  
+✅ All acceptance criteria met  
+✅ Committed with proper message format  
+✅ PRD updated to mark US-035 as passing  
+✅ Progress logged in progress.txt
+
+The implementation follows all existing codebase patterns and is ready for the next iteration to pick up US-036.

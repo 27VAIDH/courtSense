@@ -1,0 +1,11 @@
+US-003 is complete. There are still stories with `passes: false` (US-004 through US-041), so another iteration will pick up the next story.
+
+**Summary of US-003 completion:**
+- Created `src/db/types.ts` with TypeScript interfaces: Player, Venue, Match, Game, RallyAnalysis
+- Created `src/db/database.ts` with Dexie.js database `squashiq-db` and all 5 tables (players, venues, matches, games, rally_analyses) with proper schemas
+- Created `src/db/hooks.ts` with reactive hooks using `useLiveQuery`: usePlayers(), useVenues(), useMatches(), useGames(matchId?), useRallyAnalyses(matchId?)
+- Updated `src/App.tsx` to call `ensureCurrentUser()` on first load, which auto-creates a default current user player record
+- Typecheck passes, build succeeds, lint clean
+- Committed as `feat: US-003 - Database schema, TypeScript types, and data hooks`
+- PRD updated with `passes: true` for US-003
+- Progress log and codebase patterns updated

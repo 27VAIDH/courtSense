@@ -1,0 +1,17 @@
+US-009 is complete. Here's what was implemented:
+
+**US-009 - Match logging — Step 2 (Score entry)**
+
+- **StepScoreEntry component** (`src/components/matchlog/StepScoreEntry.tsx`): Full score entry UI with:
+  - **Match Result Banner**: Auto-calculated "WIN 3-1" (green) or "LOSS 1-3" (red) that updates in real-time as scores change
+  - **Game Cards**: Vertical stack of 3 (Bo3) or 5 (Bo5) cards, each showing:
+    - "Game N" label with fire emoji for tight games (both scores >= 8)
+    - Two large score displays ("You" vs opponent name) with +/- buttons (48px min touch targets)
+  - **Quick Score Presets**: Tappable pills below each game card — 11-0, 11-5, 11-8, 11-9 — with highlight when matching current score
+  - **Collapsible Games**: When match is decided (enough wins), unplayed games show dimmed "Not needed" state
+  - **Opponent Name**: Fetched from Dexie via `usePlayers()` hook, matched by `opponentId`
+- **LogMatch page** (`src/pages/LogMatch.tsx`): Updated to render `StepScoreEntry` for step 2, replacing the placeholder. Back/Next buttons already handle step 2 navigation.
+- Typecheck passes, build succeeds
+- Committed as `feat: US-009 - Match logging — Step 2 (Score entry)`
+
+There are still stories with `passes: false` (US-010 through US-041), so another iteration will pick up the next story.

@@ -1,0 +1,14 @@
+**US-022 — Insight card: Fast Starter Rating** is complete.
+
+**What was implemented:**
+- **New component** `src/components/insights/FastStarter.tsx`: Two connected SVG circles showing the Game 1 win % → match conversion % pipeline
+  - Left circle: Game 1 win rate with progress ring (green >50%, red <50%)
+  - Right circle: match conversion rate when Game 1 was won
+  - Connecting arrow colored by conversion quality: green (≥70%), yellow (≥50%), red (<50%)
+  - Summary text: "Win Game 1: X% → Convert to match win: Y%"
+  - **Locked state** when <8 total matches: dimmed placeholder with lock icon and progress text
+- **Dashboard updated** (`src/pages/Dashboard.tsx`): FastStarter rendered below CurrentForm in the insight cards container
+- Typecheck passes, build succeeds
+- Committed as `feat: US-022 - Insight card — Fast Starter Rating`
+
+There are still stories with `passes: false` (US-023 through US-041), so another iteration will pick up the next story.

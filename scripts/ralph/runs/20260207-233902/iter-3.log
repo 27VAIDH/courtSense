@@ -1,0 +1,12 @@
+US-025 is complete. There are still stories with `passes: false` (US-026 through US-041), so another iteration will pick up the next story.
+
+**Summary of US-025 completion:**
+
+- **Created** `src/components/recommendations/RecommendationCard.tsx` — Reusable tappable expand/collapse card with emoji, headline, and expandable context text. Supports `compact` mode for dashboard use and `label` prop.
+- **Updated** `src/pages/PostMatchSaved.tsx` — Added recommendation card below the streak toast on the post-match save screen, parsing the JSON from `match.recommendationText`
+- **Updated** `src/pages/Dashboard.tsx` — Added pinned compact recommendation card at the top of the dashboard (above insight cards) showing the most recent match's recommendation with "Focus for next match:" label
+- **Updated** `src/pages/MatchDetail.tsx` — Replaced raw text display with proper `RecommendationCard` component that parses the JSON recommendation
+- Build passes, typecheck passes
+- Committed as `feat: US-025 - Post-match recommendation display`
+- PRD updated with `passes: true` for US-025
+- Progress log updated with codebase patterns and learnings

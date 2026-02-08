@@ -1,0 +1,14 @@
+US-005 is complete. Here's what was implemented:
+
+**US-005 - Dark theme, design tokens, and base UI components**
+
+- **Design tokens** in `src/index.css` via Tailwind CSS v4 `@theme` directive: primary (#00E676), secondary (#448AFF), accent (#FF6D00), bg (#0A0A0A), surface (#1A1A1A), surface-elevated (#242424), text-primary (#FFFFFF), text-secondary (#B0B0B0), win (#00E676), loss (#FF5252), tight (#FFD600)
+- **Global styles**: dark background, system font stack (system-ui/-apple-system/SF Pro), antialiased rendering
+- **Reduced motion**: `@media (prefers-reduced-motion: reduce)` disables all animations globally
+- **Card** (`src/components/ui/Card.tsx`): surface background, 16px border-radius, p-4 padding, optional onClick
+- **Button** (`src/components/ui/Button.tsx`): primary (green) and secondary (surface) variants, 12px border-radius, 48px min height
+- **Chip** (`src/components/ui/Chip.tsx`): 20px border-radius, selectable state (filled vs outlined), 48px min touch target
+
+All checks pass (typecheck, build, lint). Committed as `feat: US-005 - Dark theme, design tokens, and base UI components`.
+
+There are still stories with `passes: false` (US-006 through US-041), so another iteration will pick up the next story.

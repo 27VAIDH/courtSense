@@ -1,0 +1,40 @@
+There are still 10 user stories with `passes: false`, so I'm not done yet. Let me complete this iteration by summarizing what was accomplished:
+
+## Summary
+
+I successfully implemented **US-031: Rally insights generation and display**. Here's what was completed:
+
+### What was implemented:
+1. **Rally Insights Library** (`src/lib/rallyInsights.ts`):
+   - Created play style classification function that analyzes rally data
+   - Determines player style based on win method, rally length, and court coverage
+   - Supports 5 play styles: Aggressive Attacker, Patient Constructor, Retriever, Serve & Volley, All-Court Player
+
+2. **Win Method Distribution Card** (`src/components/insights/WinMethodDistribution.tsx`):
+   - Donut chart showing how the player wins points
+   - Color-coded legend with percentages
+   - Requires minimum 5 rally analyses to unlock
+
+3. **Loss Method Distribution Card** (`src/components/insights/LossMethodDistribution.tsx`):
+   - Donut chart showing how the player loses points
+   - Highlights the biggest loss method with improvement suggestion
+   - Action-oriented suggestions like "Focus on consistency over power"
+
+4. **Best Shot Trends Card** (`src/components/insights/BestShotTrends.tsx`):
+   - Bubble visualization where size = frequency
+   - Color-coded shot types with emojis
+   - Top 3 shots shown in legend below bubbles
+
+5. **Integration**:
+   - Added new insight IDs to `insightStore.ts`
+   - Updated Dashboard to import and render all three rally insight cards
+   - All cards follow the same locked state pattern as existing insights
+
+### Quality checks:
+✅ TypeScript compilation passed  
+✅ Build successful  
+✅ All code committed with proper message  
+✅ PRD updated (US-031 now has `passes: true`)  
+✅ Progress log updated with learnings
+
+The implementation follows all existing patterns from the codebase and is ready for the next iteration to pick up **US-032**.

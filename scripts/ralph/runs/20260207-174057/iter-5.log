@@ -1,0 +1,18 @@
+US-008 is complete. There are still stories with `passes: false` (US-009 through US-041), so another iteration will pick up the next story.
+
+**Summary of US-008 completion:**
+
+- **Zustand store** (`src/stores/matchLogStore.ts`): Match logging state management with all fields for steps 1-3 (opponent, date, venue, format, games, energy, vibe, tags, note), step navigation, and `reset()` for cleanup
+- **StepIndicator** (`src/components/matchlog/StepIndicator.tsx`): Shows "X of 3" with colored progress dots
+- **StepSetup** (`src/components/matchlog/StepSetup.tsx`): Step 1 with:
+  - **Opponent Picker**: horizontal scrollable Chip row with emoji + name, tap to select/deselect, "+" chip opens inline add-opponent modal
+  - **Date/Time**: auto-filled with current date/time, displayed as tappable pill ("Today, 7:30 PM"), opens native datetime-local input on tap
+  - **Venue Picker**: horizontal scrollable Chip row with 📍 + name, "+" chip opens inline add-venue modal
+  - **Format Selector**: segmented toggle between "Best of 3" and "Best of 5" (default Bo3)
+- **LogMatch page** (`src/pages/LogMatch.tsx`): Full-screen logging flow with:
+  - Tab bar hidden on mount, restored on unmount
+  - Close "✕" button with exit confirmation dialog if selections were made
+  - "Next" button disabled until opponent is selected
+  - Placeholder content for steps 2 and 3
+- Typecheck passes, build succeeds
+- Committed as `feat: US-008 - Match logging — Step 1 (Setup screen)`

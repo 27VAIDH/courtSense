@@ -1,0 +1,14 @@
+US-016 is complete. Here's what was implemented:
+
+**US-016 — Insight card: Energy Impact**
+
+- **New component** `src/components/insights/EnergyImpact.tsx`: Three horizontal bars showing win rate per energy level (Low/Medium/High)
+  - Each row: energy emoji + level name, colored bar proportional to win rate, win rate percentage + sample size (e.g. "78% (9)")
+  - Bar color: green for >50%, yellow for 50%, red for <50% with opacity scaling
+  - "No data" shown for energy levels with 0 matches
+  - **Locked state** when <5 total matches OR <3 energy-tagged matches: dimmed card with lock icon and context-specific progress text
+- **Dashboard updated** (`src/pages/Dashboard.tsx`): EnergyImpact rendered below WinRateByOpponent in the insight cards container
+- Typecheck passes, build succeeds
+- Committed as `feat: US-016 - Insight card — Energy Impact`
+
+There are still stories with `passes: false` (US-017 through US-041), so another iteration will pick up the next story.

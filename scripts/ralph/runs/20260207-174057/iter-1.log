@@ -1,0 +1,17 @@
+US-004 is complete. There are still stories with `passes: false` (US-005 through US-041), so another iteration will pick up the next story.
+
+**Summary of US-004 completion:**
+- Created `src/stores/uiStore.ts` — Zustand store with `tabBarVisible`, `showTabBar()`, and `hideTabBar()` for controlling tab bar visibility (needed for match logging flow)
+- Created `src/components/layout/BottomTabBar.tsx` — 5-tab bottom nav bar (Dashboard, Timeline, Log, Rivals, Profile) with:
+  - Log tab visually distinct: larger icon with circular accent-colored background (#00E676)
+  - Active tab highlighted with primary color #00E676
+  - Fixed to bottom with `env(safe-area-inset-bottom)` for iOS safe area
+  - 48px minimum touch targets on all tabs
+  - Controlled by Zustand store visibility flag
+- Created 5 placeholder page components in `src/pages/`
+- Updated `src/main.tsx` to wrap with `BrowserRouter`
+- Updated `src/App.tsx` with React Router `Routes` for all 5 routes (`/`, `/log`, `/timeline`, `/rivals`, `/profile`) plus `BottomTabBar`
+- Typecheck passes, build succeeds, lint clean
+- Committed as `feat: US-004 - App shell with bottom tab navigation`
+- PRD updated with `passes: true` for US-004
+- Progress log and codebase patterns updated

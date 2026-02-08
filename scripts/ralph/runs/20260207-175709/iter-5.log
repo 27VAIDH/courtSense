@@ -1,0 +1,28 @@
+US-013 is complete. There are still stories with `passes: false` (US-014 through US-041), so another iteration will pick up the next story.
+
+**Summary of US-013 completion:**
+
+- **Rewrote `src/pages/MatchDetail.tsx`** from a placeholder into a full match detail page with three modes:
+
+  **Read-only view:**
+  - Opponent emoji + name, date/time, venue with pin icon, format (Bo3/Bo5), overall result colored green/red
+  - Game scores as individual cards with game number, scores colored by winner, flame emoji for tight games
+  - Tags section showing energy level (with emoji), vibe, and quick tags as pills
+  - Match note displayed in a card if present
+  - Recommendation text displayed with green left border if present
+  - Back navigation arrow in header
+
+  **Edit mode:**
+  - "Edit" button toggles into inline edit mode with pre-filled data from the existing match
+  - Score editing with +/- buttons (48px touch targets) and quick presets (11-0, 11-5, 11-8, 11-9)
+  - Tight game indicator, match result banner, collapsible unneeded games — same UX as the log flow
+  - Energy level, vibe, quick tags, and note editing — reuses same UI patterns from StepTagsSave
+  - "Save Changes" overwrites existing match record and re-creates game records
+  - "Cancel" returns to read-only view
+
+  **Delete:**
+  - "Delete" button shows confirmation dialog: "Delete this match? This cannot be undone."
+  - On confirm, deletes match + associated game records and navigates back to Dashboard
+
+- Typecheck, build, and lint all pass
+- Committed as `feat: US-013 - Match detail view with edit and delete`

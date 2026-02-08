@@ -1,0 +1,15 @@
+US-010 is complete. There are still stories with `passes: false` (US-011 through US-041), so another iteration will pick up the next story.
+
+**Summary of US-010 completion:**
+
+- **StepTagsSave component** (`src/components/matchlog/StepTagsSave.tsx`): Full Step 3 UI with:
+  - **Energy Level**: 3 tappable icons (Low/Medium/High) with toggle on/off, single-select
+  - **Match Vibe**: horizontal scrollable Chip row (Intense, Casual, Frustrating, Focused, Fun, Grind), single-select with toggle off
+  - **Quick Tags**: flex-wrap grid of Chip components (Good day, Off day, New strategy, Comeback, Dominated, Lucky win, Close), multi-select toggle
+  - **Match Note**: single-line text input with 140 char max, character counter
+  - **Save Match button**: large green button that saves to Dexie DB
+- **Save logic**: Creates match record in `matches` table with all data from steps 1-3, creates game records in `games` table for each played game via `bulkAdd()`, auto-calculates result as "W X-Y" or "L X-Y"
+- **Post-match screen** (`src/pages/PostMatchSaved.tsx`): Simple confirmation page at `/match/:id/saved` with tab bar hidden, "Done" button returns to Dashboard (US-011 will build the full experience with animations)
+- **LogMatch page updated**: Step 3 now shows `StepTagsSave` instead of placeholder, bottom bar shows only "Back" button on step 3
+- Typecheck passes, build succeeds
+- Committed as `feat: US-010 - Match logging — Step 3 (Quick tags & save)`

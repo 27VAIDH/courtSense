@@ -1,0 +1,17 @@
+US-018 is complete. Here's what was implemented:
+
+**US-018 — Insight card: Venue Effect**
+
+- **New component** `src/components/insights/VenueEffect.tsx`: Side-by-side venue comparison cards, each showing:
+  - Venue name with truncation for long names
+  - SVG circular progress ring filled to win rate percentage, colored green (>50%), yellow (50%), or red (<50%)
+  - Home court badge (`Home` pill in green) for venues with `isHome=true`
+  - Win/loss record text (e.g. "5W - 2L")
+  - Horizontally scrollable for many venues
+  - Sorted by total matches played (most played venue first)
+  - **Locked state** when <5 total matches OR <2 unique venues: dimmed placeholder with lock icon and context-specific progress text
+- **Dashboard updated** (`src/pages/Dashboard.tsx`): Added `useVenues()` hook import, venues loading check, and `VenueEffect` rendered below BestDays in the insight cards container
+- Typecheck passes, build succeeds
+- Committed as `feat: US-018 - Insight card — Venue Effect`
+
+There are still stories with `passes: false` (US-019 through US-041), so another iteration will pick up the next story.

@@ -1,0 +1,16 @@
+US-011 is complete. There are still stories with `passes: false` (US-012 through US-041), so another iteration will pick up the next story.
+
+**Summary of US-011 completion:**
+
+- **Rewrote `src/pages/PostMatchSaved.tsx`** with full post-match experience:
+  - **Win animation**: `canvas-confetti` burst from both sides with custom colors (#00E676, #448AFF, #FF6D00, #FFD600) + `navigator.vibrate(200)` haptic feedback
+  - **Loss animation**: subtle blue pulse background animation (`rgba(68, 138, 255, 0.06)` pulsing at 3s intervals), empathetic not mocking
+  - **Result display**: large animated emoji (🏆 win / 💪 loss) with spring bounce, "WIN 3-1" or "LOSS 1-3" text colored green/red, opponent name + emoji, individual game scores
+  - **Streak Toast**: detects consecutive wins/losses against the same opponent — shows "W3 against Parth!" or "First win against Parth!" or "L2 — time to turn it around!"
+  - **Rally Analysis Placeholder**: "Want to add rally details? (30 sec)" link text (placeholder for US-029)
+  - **Done button**: navigates back to Dashboard with tab bar restored
+- **Framer Motion** staggered animations: emoji springs in, result fades up, opponent name slides in, streak toast scales in
+- **Accessibility**: `@media (prefers-reduced-motion: reduce)` disables pulse animation
+- **canvas-confetti** installed as new dependency
+- Typecheck passes, build succeeds
+- Committed as `feat: US-011 - Post-match save experience with animations`

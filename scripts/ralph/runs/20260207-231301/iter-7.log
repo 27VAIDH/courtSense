@@ -1,0 +1,14 @@
+**US-021 — Insight card: Current Form** is complete. Here's what was implemented:
+
+- **New component** `src/components/insights/CurrentForm.tsx`: Sparkline chart showing last 10 match results with trend analysis
+  - **Recharts LineChart** with Y-axis 0 (loss) to 1 (win), connected dots colored green for wins, red for losses
+  - **Horizontal dashed reference line** at overall win rate percentage for comparison
+  - **Shaded areas**: light green above the overall win rate line, light red below
+  - **Summary text**: "Last 10: XW-YL (Z%) vs overall: A%"
+  - **Trend label**: "On an upswing!" (green) if last 10 > overall + 10%, "In a dip" (red) if < overall - 10%, "Steady" (yellow) otherwise
+  - **Locked state** when <10 total matches: dimmed placeholder with lock icon and "Log X more matches to unlock"
+- **Dashboard updated** (`src/pages/Dashboard.tsx`): CurrentForm rendered below ComebackIndex in the insight cards container
+- Typecheck passes, build succeeds
+- Committed as `feat: US-021 - Insight card — Current Form`
+
+There are still stories with `passes: false` (US-022 through US-041), so another iteration will pick up the next story.

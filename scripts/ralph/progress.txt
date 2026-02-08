@@ -2010,3 +2010,41 @@ The implementation is complete and ready for the next iteration!
   - Cards positioned after recommendation but before insights section
   - Parse match result string to extract games won/lost (e.g., "W 3-1" or "L 1-3")
 ---
+
+## Iteration 6 - Sun Feb  8 11:33:42 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260208-110806/iter-6.log
+---
+Perfect! US-038 has been successfully completed. 
+
+## Summary
+
+I've successfully implemented **US-038 - Match of the Month and On This Day**, which adds nostalgic highlight cards to the Dashboard:
+
+### What was implemented:
+
+1. **Match of the Month scoring algorithm** (`src/lib/nostalgiaEngine.ts`):
+   - Drama scoring: closest total score difference (+3), most games played (+2), upset win (+2), comeback after losing Game 1 (+1)
+   - Auto-selects the most dramatic match from the current or most recent calendar month
+   - Generates dramatic titles like "The {opponent} Thriller" or "The {venue} Classic"
+   - Requires 4+ matches in the month to display
+
+2. **On This Day detection logic** (`src/lib/nostalgiaEngine.ts`):
+   - Checks for matches on the same day 1, 3, 6, or 12 months ago
+   - Returns anniversary match with formatted description
+
+3. **Display components**:
+   - `MatchOfTheMonth.tsx`: Story-style card with accent border, dismissible with X button, shows opponent, result, venue, and date
+   - `OnThisDay.tsx`: Card with secondary border, shows anniversary text with result details
+
+4. **Dashboard integration**: Both cards appear after the recommendation card but before insights
+
+### Quality checks:
+- ✅ TypeScript typecheck passes
+- ✅ Build successful
+- ✅ All changes committed with descriptive commit messages
+- ✅ PRD updated (US-038 set to `passes: true`)
+- ✅ Progress log updated with learnings
+
+There are still **3 incomplete stories** remaining (US-039, US-040, US-041), so another iteration will pick up the next story.
+---

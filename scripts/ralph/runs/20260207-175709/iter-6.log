@@ -1,0 +1,15 @@
+US-014 is complete. There are still stories with `passes: false` (US-015 through US-041), so another iteration will pick up the next story.
+
+**Summary of US-014 completion:**
+
+- **Rewrote `src/pages/Dashboard.tsx`** from a simple match history wrapper into a full dashboard layout with:
+  - **Header section**: Player name from current user record, overall record as "XW - YL" computed from all matches
+  - **Current form indicator**: Last 5 match results displayed as colored W/L letters (green for win, red for loss)
+  - **Insight cards container**: Scrollable `space-y-3` section with "Insights" header — placeholder for US-015 through US-022 cards
+  - **Match history section**: Existing MatchHistoryList component below insights
+  - **Skeleton loading**: Three skeleton sections (header, insight cards, match history) shown while Dexie data loads
+  - **Empty state**: "Welcome to SquashIQ!" with racket emoji, encouraging text, and large green "Log First Match" CTA button
+- Typecheck passes, build succeeds
+- Committed as `feat: US-014 - Dashboard layout and header with stats`
+- PRD updated with `passes: true` for US-014
+- Progress log updated with learnings

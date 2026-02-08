@@ -1,0 +1,15 @@
+US-007 is complete. Here's what was implemented:
+
+**US-007 - Venue management (add, edit, delete venues)**
+
+- **VenueManager component** (`src/components/venues/VenueManager.tsx`): Full CRUD for venues on the Profile page, following the same UX patterns as OpponentManager
+  - **Add**: "Add Venue" button opens a bottom-sheet modal with venue name input + Home Court toggle switch
+  - **List**: All venues displayed as cards with 📍 icon + name + "Home" badge (if `isHome=true`), sorted by `createdAt` descending
+  - **Edit**: Pencil icon opens edit modal with pre-filled name and toggle state
+  - **Delete**: Trash icon shows inline confirm/cancel buttons before deleting
+  - Home Court toggle uses an accessible `role="switch"` button with `aria-checked`
+- **Profile page** (`src/pages/Profile.tsx`): Updated to include VenueManager section below opponents with `mt-8` spacing
+- Typecheck passes, build succeeds
+- Committed as `feat: US-007 - Venue management (add, edit, delete venues)`
+
+There are still stories with `passes: false` (US-008 through US-041), so another iteration will pick up the next story.

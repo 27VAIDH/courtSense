@@ -1,0 +1,17 @@
+US-006 is complete. Here's what was implemented:
+
+**US-006 - Opponent management (add, edit, delete players)**
+
+- **OpponentManager component** (`src/components/opponents/OpponentManager.tsx`): Full CRUD for opponents on the Profile page
+  - **Add**: "Add Opponent" button opens a bottom-sheet modal with name + emoji inputs (emoji defaults to random sports emoji)
+  - **List**: All non-current-user players displayed as cards with emoji + name, sorted by `createdAt` descending
+  - **Edit**: Pencil icon on each card opens edit modal with pre-filled data
+  - **Delete**: Trash icon shows inline confirm/cancel buttons before deleting
+  - All operations use Dexie.js directly for immediate persistence
+- **Profile page** (`src/pages/Profile.tsx`): Updated from placeholder to include the OpponentManager section
+- All interactive elements have 48px minimum touch targets
+- Typecheck passes, build succeeds
+
+Committed as `feat: US-006 - Opponent management (add, edit, delete players)`.
+
+There are still stories with `passes: false` (US-007 through US-041), so another iteration will pick up the next story.

@@ -1,0 +1,17 @@
+US-019 is complete. Here's what was implemented:
+
+**US-019 — Insight card: Deciding Game Performance**
+
+- **New component** `src/components/insights/DecidingGames.tsx`: Donut chart showing win/loss split in deciding games (Game 3 in Bo3, Game 5 in Bo5)
+  - Recharts PieChart with inner/outer radius for donut visualization
+  - Green (#00E676) for wins, red (#FF5252) for losses
+  - Center percentage display overlaid on the donut
+  - Win rate + trend arrow (up/down/flat based on last 5 deciding games vs overall)
+  - Win/loss count breakdown
+  - Only counts matches that actually went to the deciding game (scores > 0)
+  - **Locked state** when <8 deciding games: dimmed placeholder with lock icon and progress text
+- **Dashboard updated** (`src/pages/Dashboard.tsx`): Added `useGames()` hook, games loading check, and `DecidingGames` rendered below VenueEffect
+- Typecheck passes, build succeeds
+- Committed as `feat: US-019 - Insight card — Deciding Game Performance`
+
+There are still stories with `passes: false` (US-020 through US-041), so another iteration will pick up the next story.

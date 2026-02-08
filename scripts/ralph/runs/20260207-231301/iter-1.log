@@ -1,0 +1,16 @@
+US-015 is complete. Here's what was implemented:
+
+**US-015 — Insight card: Win Rate by Opponent**
+
+- **New component** `src/components/insights/WinRateByOpponent.tsx`: Horizontal bar chart showing win rate per opponent
+  - Each row: opponent emoji + name, colored bar proportional to win rate, record text (e.g. "7-3"), percentage
+  - Bar color: green for >50%, yellow for 50%, red for <50% — opacity scales with win rate
+  - Sorted by total matches played (most played opponent at top)
+  - Only shows opponents with 3+ matches
+  - **Locked state** when <3 total matches: dimmed card with lock icon and "Log X more matches to unlock"
+  - **Second locked state** when enough total matches but no opponent has 3+ H2H matches
+- **Dashboard updated** (`src/pages/Dashboard.tsx`): WinRateByOpponent rendered in the insight cards container
+- Typecheck passes, build succeeds
+- Committed as `feat: US-015 - Insight card — Win Rate by Opponent`
+
+There are still stories with `passes: false` (US-016 through US-041), so another iteration will pick up the next story.

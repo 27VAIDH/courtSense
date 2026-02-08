@@ -1,0 +1,19 @@
+US-023 is complete. There are still stories with `passes: false` (US-024 through US-041), so another iteration will pick up the next story.
+
+**Summary of US-023 completion:**
+
+- **New Zustand store** (`src/stores/insightStore.ts`): Tracks which insight cards have been "seen unlocked" using a `Set<InsightId>` persisted to localStorage. The `markSeen()` action saves immediately to prevent the unlock animation from replaying.
+
+- **InsightCardWrapper** (`src/components/insights/InsightCardWrapper.tsx`): Wraps each insight card and detects first-time unlocks. When an insight transitions from locked to unlocked for the first time:
+  - **Slide up animation**: `motion.div` with `initial={{ opacity: 0, y: 30 }}` → `animate={{ opacity: 1, y: 0 }}`
+  - **Glow border effect**: Animated `boxShadow` pulsing green (`rgba(0, 230, 118, 0.4)`) on a sibling overlay
+  - Marks the insight as "seen" after 1.2s so animation only plays once
+
+- **Dashboard rewritten** (`src/pages/Dashboard.tsx`):
+  - **`computeInsightStatuses()`**: Centralizes unlock condition logic for all 8 insight cards, calculating `remaining` (items needed to unlock) for each
+  - **Dynamic ordering**: Unlocked cards render first, locked cards at bottom sorted by fewest remaining (closest to unlocking first)
+  - **Reactive**: All calculations use Dexie `useLiveQuery` hooks — no manual refresh needed after match saves
+  - Each insight card still handles its own locked/unlocked rendering internally
+
+- Typecheck passes, build succeeds
+- Committed as `feat: US-023 - Progressive insight unlocking system`

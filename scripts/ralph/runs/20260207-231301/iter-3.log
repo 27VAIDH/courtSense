@@ -1,0 +1,16 @@
+**US-017 is complete.** Here's what was implemented:
+
+**US-017 — Insight card: Day of Week Performance ("Best Days")**
+
+- **New component** `src/components/insights/BestDays.tsx`: 7-column bar chart using Recharts showing win rate per day of the week
+  - Each bar height represents win rate (0-100%) on that day
+  - Days with matches shown in primary color (#00E676), days without matches grayed out (#242424)
+  - Best performing day highlighted with accent color (#FF6D00) and labeled at top (e.g. "Tuesdays: 80%")
+  - Bar opacity scales with win rate for visual intensity
+  - Minimum 10 total matches required to show
+  - **Locked state** with dimmed placeholder bars, lock icon, "Log X more matches to unlock" text, and a progress bar showing how close the user is to unlocking
+- **Dashboard updated** (`src/pages/Dashboard.tsx`): BestDays rendered below EnergyImpact in the insight cards container
+- Typecheck passes, build succeeds
+- Committed as `feat: US-017 - Insight card — Day of Week Performance`
+
+There are still stories with `passes: false` (US-018 through US-041), so another iteration will pick up the next story.

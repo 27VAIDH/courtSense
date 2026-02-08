@@ -1,0 +1,38 @@
+Great! US-036 is complete and there are still 5 more stories to work on (US-037 through US-041). Let me provide a summary:
+
+## Summary
+
+Successfully implemented **US-036: Rivalry pages (head-to-head opponent view)**
+
+### What was implemented:
+1. **Created RivalryDetail page** (`src/pages/RivalryDetail.tsx`):
+   - Header showing both players' emojis and names
+   - H2H record display (wins-losses) with large numbers
+   - Last 5 results shown as colored dots (W/L)
+   - Score History chart using Recharts LineChart showing cumulative H2H momentum
+   - Key Stats section: current streak, best win streak, tight games record, avg games/match, most common score
+   - Best Win card: highlights the most dominant victory
+   - Worst Loss card: shows the worst defeat
+   - Fun Facts: auto-generated insights like day-of-week patterns
+
+2. **Updated Rivals page** (`src/pages/Rivals.tsx`):
+   - Shows list of all opponents sorted by total matches played
+   - Each opponent card displays: emoji, name, H2H record, last match result
+   - Tappable cards navigate to the rivalry detail page
+   - Empty state with helpful messaging
+
+3. **Made Win Rate by Opponent insight card clickable**:
+   - Each opponent bar is now clickable and navigates to their rivalry page
+   - Added hover effects and active state styling
+
+4. **Added routing** in App.tsx for `/rivals/:opponentId`
+
+### Quality checks:
+✅ TypeScript compilation passes  
+✅ Build succeeds  
+✅ All code follows existing codebase patterns  
+✅ Committed with proper message format  
+✅ PRD updated to `passes: true`  
+✅ Progress logged with learnings
+
+There are **5 remaining stories** (US-037 through US-041) with `passes: false`, so another iteration will pick up the next story.

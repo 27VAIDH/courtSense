@@ -1,0 +1,22 @@
+US-026 is complete. There are still stories with `passes: false` (US-027 through US-041), so another iteration will pick up the next story.
+
+**Summary of US-026 completion:**
+
+- **Rewrote `src/pages/Timeline.tsx`** from a placeholder into the full Timeline page with:
+  - **Time range selector**: Horizontal pill tabs for "Last 30 days", "Last 3 months", "Last 6 months", "All time" (default: All time)
+  - **Loading skeleton**: Animated placeholders while Dexie data loads
+  - **Empty state**: "Your squash journey starts here" with timeline illustration emoji and green CTA button to /log
+  - **Win/Loss River chart**: Rendered via the WinLossRiver component with filtered matches and player lookup map
+
+- **Created `src/components/timeline/WinLossRiver.tsx`**: Recharts AreaChart showing cumulative momentum score
+  - X-axis: match dates, Y-axis: cumulative momentum (+1 per win, -1 per loss)
+  - Green gradient fill above 0 line (winning streaks), red gradient fill below 0 line (losing periods)
+  - Interactive tooltips showing opponent name, result, and date on tap/click
+  - Custom dots colored green for wins, red for losses
+  - Auto-scaled Y-axis domain with padding
+  - Per-chart empty state when no matches in selected time range
+
+- Typecheck passes, build succeeds
+- Committed as `feat: US-026 - Timeline page with Win/Loss River chart`
+- PRD updated with `passes: true` for US-026
+- Progress log updated with codebase patterns and learnings

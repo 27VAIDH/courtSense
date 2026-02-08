@@ -1,0 +1,11 @@
+US-001 is complete. There are still stories with `passes: false` (US-002 through US-041), so another iteration will pick up the next story.
+
+**Summary of US-001 completion:**
+- Scaffolded Vite + React + TypeScript project in the project root
+- Installed all required dependencies: Tailwind CSS v4, Zustand, Dexie.js + dexie-react-hooks, Framer Motion, Recharts, html2canvas, React Router DOM
+- Configured Tailwind CSS v4 with `@tailwindcss/vite` plugin
+- Configured tsconfig with strict mode and `@/` path alias mapping to `src/`
+- Build passes, dev server runs, typecheck passes
+- Committed as `feat: US-001 - Project scaffolding with full tech stack`
+- PRD updated with `passes: true` for US-001
+- Progress log updated with codebase patterns and learnings

@@ -1,0 +1,40 @@
+Perfect! Let me provide a summary of what was completed.
+
+## Summary
+
+I've successfully implemented **US-032: Pressure Performance — 8-8+ Index display**.
+
+### What was implemented:
+
+1. **ClutchRating insight card component** (`src/components/insights/ClutchRating.tsx`):
+   - Large animated clutch rating number (0-100) with Framer Motion
+   - Rating labels with color coding:
+     - Ice Veins (cyan) for 80+
+     - Hot (orange) for 60-79
+     - Neutral (yellow) for 40-59
+     - Cold (blue) for 0-39
+   - Trend arrow comparing last 5 tight games to overall performance
+   - Expandable "Clutch by Opponent" section showing per-opponent tight game win rates
+   - Expandable "Clutch by Game Number" section showing tight game performance by game position
+   - Locked state requiring minimum 5 tight games
+
+2. **Dashboard integration**:
+   - Added `clutchRating` to the InsightId type
+   - Integrated the card into the Dashboard's insight system
+   - Added unlock logic based on tight games count
+
+### Files changed:
+- `src/components/insights/ClutchRating.tsx` (new)
+- `src/pages/Dashboard.tsx`
+- `src/stores/insightStore.ts`
+- `scripts/ralph/prd.json`
+- `scripts/ralph/progress.txt`
+
+### Quality checks:
+- ✅ TypeScript compilation passed (`tsc -b`)
+- ✅ Build succeeded (`npm run build`)
+- ✅ Committed with proper message including co-author attribution
+- ✅ PRD updated to mark US-032 as `passes: true`
+- ✅ Progress log updated with learnings
+
+The implementation follows the established patterns from other insight cards, uses the same locked state UX, and integrates seamlessly with the progressive unlocking system.

@@ -1,0 +1,15 @@
+US-027 is complete. There are still stories with `passes: false` (US-028 through US-041), so another iteration will pick up the next story.
+
+**Summary of US-027 completion:**
+- Created `RollingWinRate` component in `src/components/timeline/RollingWinRate.tsx` — a Recharts `LineChart` showing rolling win rate over a sliding window of the last 10 matches
+- Y-axis is 0-100%, with a dashed 50% reference line labeled "50%"
+- Green gradient shaded above 50%, red gradient shaded below 50% using `ReferenceArea`
+- Dots colored green when win rate >= 50%, red when below
+- Tooltips show date, win rate percentage, and "Last 10 matches" label
+- Respects the time range selector from US-026
+- Locked state with progress bar when fewer than 10 matches
+- Added the chart below the Win/Loss River on the Timeline page
+- Typecheck passes, build succeeds
+- Committed as `feat: US-027 - Timeline — Rolling Win Rate chart`
+- PRD updated with `passes: true` for US-027
+- Codebase patterns and progress log updated

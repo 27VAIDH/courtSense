@@ -1,0 +1,38 @@
+There are still more stories with `passes: false`. Since I've completed US-029 successfully, the workflow is complete for this iteration. According to the Ralph instructions:
+
+> After completing a user story, check if ALL stories have `passes: true`.
+> If ALL stories are complete and passing, reply with: `<promise>COMPLETE</promise>`
+> If there are still stories with `passes: false`, end your response normally (another iteration will pick up the next story).
+
+## Summary
+
+I've successfully completed **US-029: Timeline — Milestone detection and display**. Here's what was implemented:
+
+### Features Added:
+1. **Milestone Detection Engine** (`src/lib/milestones.ts`):
+   - Detects first wins against each opponent
+   - Tracks win streaks of 3+, 5+, and 10+
+   - Records match count milestones (10, 25, 50, 100 matches)
+   - Monitors win rate thresholds (50%, 60%, 70%)
+   - Identifies head-to-head record flips
+
+2. **Visual Milestone Markers**:
+   - Orange dots on Win/Loss River chart marking milestone achievements
+   - Positioned at exact match date/momentum coordinates
+
+3. **Milestone List Component** (`src/components/timeline/MilestoneList.tsx`):
+   - Scrollable list showing all achievements chronologically
+   - Each milestone displays: icon, title, description, and relative date
+   - Empty state for users with no milestones yet
+
+4. **Timeline Integration**:
+   - Milestones recalculate reactively after each match save
+   - Positioned below Activity Heatmap and Regularity Streak
+
+### Quality Checks:
+✅ TypeScript compilation passes without errors  
+✅ All files committed with proper commit message  
+✅ PRD updated to mark US-029 as `passes: true`  
+✅ Progress log appended with implementation details and learnings
+
+There are still incomplete user stories (US-030 through US-041), so another iteration will continue with the next priority story.

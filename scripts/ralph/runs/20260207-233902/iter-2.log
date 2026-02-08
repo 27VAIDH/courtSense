@@ -1,0 +1,17 @@
+US-024 is complete. There are still stories with `passes: false` (US-025 through US-041), so another iteration will pick up the next story.
+
+**Summary of US-024 completion:**
+
+- **New file** `src/lib/recommendations.ts`: Pure function `generateRecommendation(matches, games, currentMatch)` that returns `{ emoji, headline, context }` with 7 prioritized rules:
+  1. **Slow starter**: Lost Game 1 in 3+ of last 5 matches
+  2. **Low energy loss**: Last match tagged Low energy AND lost
+  3. **Tight game struggles**: Won <40% of tight games in last 10 games
+  4. **Win streak 3+**: Won 3+ consecutive matches
+  5. **Loss streak 3+**: Lost 3+ consecutive matches
+  6. **Opponent-specific**: Played same opponent 3+ times, losing >60%
+  7. **Fallback**: Generic motivational based on overall win rate
+
+- **Updated** `src/components/matchlog/StepTagsSave.tsx`: After saving match + games, fetches all data from DB, calls `generateRecommendation()`, and stores the result as a JSON string in the match's `recommendationText` field via `db.matches.update()`
+
+- Typecheck passes, build succeeds
+- Committed as `feat: US-024 - Recommendation engine (rule-based logic)`

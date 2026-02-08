@@ -1,0 +1,16 @@
+**US-020 — Comeback Index** is complete. Here's what was implemented:
+
+- **New component** `src/components/insights/ComebackIndex.tsx`: Semicircular gauge/meter showing comeback rate (wins after losing Game 1)
+  - SVG gauge with needle pointer that rotates to the value position
+  - Color zones: 0-39 red (Weak), 40-59 yellow (Average), 60-79 green (Strong), 80-100 bright green (Elite)
+  - 50% baseline mark labeled "Avg"
+  - Context text: "After losing Game 1, you come back to win X% of matches"
+  - Stats row showing comeback wins and total Game 1 losses
+  - Edge case: if no Game 1 losses exist, shows congratulatory message
+  - **Locked state** when <10 total matches: dimmed gauge placeholder with lock icon and progress text
+- **Dashboard updated** (`src/pages/Dashboard.tsx`): ComebackIndex rendered below DecidingGames in the insight cards container
+- Typecheck passes, build succeeds
+- Committed as `feat: US-020 - Insight card — Comeback Index`
+- PRD updated with `passes: true` for US-020
+
+There are still stories with `passes: false` (US-021 through US-041), so another iteration will pick up the next story.

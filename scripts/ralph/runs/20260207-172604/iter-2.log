@@ -1,0 +1,12 @@
+US-002 is complete. There are still stories with `passes: false` (US-003 through US-041), so another iteration will pick up the next story.
+
+**Summary of US-002 completion:**
+- Installed `vite-plugin-pwa` as dev dependency
+- Configured `VitePWA` plugin in `vite.config.ts` with full manifest (name, short_name, display standalone, orientation portrait, theme/background colors #0A0A0A)
+- Created SVG-based placeholder icons at 192x192, 512x512, and apple-touch-icon sizes in `public/icons/`
+- Updated `index.html` with iOS PWA meta tags: `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style=black-translucent`, `viewport-fit=cover`
+- Service worker auto-registered with `registerType: 'autoUpdate'` — caches app shell via Workbox with 11 precache entries
+- Typecheck passes, build succeeds
+- Committed as `feat: US-002 - PWA configuration for iOS home screen install`
+- PRD updated with `passes: true` for US-002
+- Progress log updated with codebase patterns and learnings
