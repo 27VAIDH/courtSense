@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import { visualizer } from 'rollup-plugin-visualizer'
+import { sentryVitePlugin } from '@sentry/vite-plugin'
 import path from 'path'
 
 // https://vite.dev/config/
@@ -83,10 +84,24 @@ export default defineConfig({
         ],
       },
     }),
-  ],
+    // Sentry plugin for source maps (only in production builds with auth token)
+    process.env.VITE_SENTRY_AUTH_TOKEN &&
+      sentryVitePlugin({
+        org: process.env.VITE_SENTRY_ORG,
+        project: process.env.VITE_SENTRY_PROJECT,
+        authToken: process.env.VITE_SENTRY_AUTH_TOKEN,
+        telemetry: false,
+        sourcemaps: {
+          assets: './dist/**',
+        },
+      }),
+  ].filter(Boolean),
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+  },
+  build: {
+    sourcemap: true, // Generate source maps for Sentry
   },
 })

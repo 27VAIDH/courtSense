@@ -1,5 +1,6 @@
 import { ReactNode, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import * as Sentry from '@sentry/react'
 import { useAuthStore } from '@/stores/authStore'
 import { supabase } from '@/lib/supabase'
 import ProfileSetupModal from './ProfileSetupModal'
@@ -51,7 +52,7 @@ export default function AuthGuard({ children }: AuthGuardProps) {
       try {
         const { data, error } = await supabase
           .from('user_profiles')
-          .select('id')
+          .select('id, username')
           .eq('id', session.user.id)
           .single()
 
@@ -61,6 +62,12 @@ export default function AuthGuard({ children }: AuthGuardProps) {
           setProfileExists(false)
         } else if (data) {
           setProfileExists(true)
+          // Update Sentry user context with username
+          Sentry.setUser({
+            id: session.user.id,
+            email: session.user.email,
+            username: data.username,
+          })
         } else {
           setProfileExists(false)
         }

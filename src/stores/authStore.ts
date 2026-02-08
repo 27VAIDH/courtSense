@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { User, Session } from '@supabase/supabase-js'
+import * as Sentry from '@sentry/react'
 import { supabase } from '../lib/supabase'
 
 interface AuthState {
@@ -38,14 +39,33 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const { data: { session } } = await supabase.auth.getSession()
       set({ session, user: session?.user ?? null })
 
+      // Set Sentry user context if authenticated
+      if (session?.user) {
+        Sentry.setUser({
+          id: session.user.id,
+          email: session.user.email,
+        })
+      }
+
       // Listen for auth changes
       supabase.auth.onAuthStateChange((_event, session) => {
         set({ session, user: session?.user ?? null })
+
+        // Update Sentry user context on auth state change
+        if (session?.user) {
+          Sentry.setUser({
+            id: session.user.id,
+            email: session.user.email,
+          })
+        } else {
+          Sentry.setUser(null)
+        }
       })
 
       set({ initialized: true })
     } catch (error) {
       console.error('Auth initialization error:', error)
+      Sentry.captureException(error)
     } finally {
       set({ loading: false })
     }
@@ -57,10 +77,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       await supabase.auth.signOut()
       set({ user: null, session: null, profileComplete: false })
 
+      // Clear Sentry user context
+      Sentry.setUser(null)
+
       // Clear other stores if needed
       // This will be called from the Settings page
     } catch (error) {
       console.error('Sign out error:', error)
+      Sentry.captureException(error)
       throw error
     } finally {
       set({ loading: false })

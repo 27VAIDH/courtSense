@@ -245,3 +245,90 @@ Next features to implement:
 - **US-P006**: Photo upload to Supabase Storage
 
 Happy coding! 🚀
+
+## 🐛 Step 7: Error Monitoring with Sentry (Optional)
+
+Sentry provides real-time error tracking and performance monitoring for production.
+
+### 7.1 Create Sentry Account
+
+1. Go to [sentry.io](https://sentry.io) and sign up
+2. Choose the **Free plan** (5,000 errors/month, sufficient for MVP)
+3. Click **"Create Project"**
+4. Select **React** as the platform
+5. Name your project: `squashiq-pwa`
+6. Click **"Create Project"**
+
+### 7.2 Get Your DSN
+
+1. After creating the project, you'll see a DSN (Data Source Name)
+2. It looks like: `https://xxxxx@xxxxx.ingest.sentry.io/xxxxx`
+3. Copy this DSN
+
+### 7.3 Configure Environment Variables
+
+1. Open `.env.local` in your project root
+2. Add your Sentry DSN:
+   ```env
+   VITE_SENTRY_DSN=https://xxxxx@xxxxx.ingest.sentry.io/xxxxx
+   ```
+3. **Optional**: For production builds with source maps:
+   ```env
+   VITE_SENTRY_ORG=your-org-slug
+   VITE_SENTRY_PROJECT=squashiq-pwa
+   VITE_SENTRY_AUTH_TOKEN=your-auth-token
+   ```
+
+### 7.4 Create Auth Token (for Production Source Maps)
+
+Only needed for production builds to upload source maps:
+
+1. Go to **Settings** → **Auth Tokens** in Sentry
+2. Click **"Create New Token"**
+3. Add scopes: `project:releases`, `project:write`
+4. Copy the token and add to `.env.local` as `VITE_SENTRY_AUTH_TOKEN`
+
+### 7.5 Test Sentry Integration
+
+1. Start your dev server: `npm run dev`
+2. To test error capture:
+   - Add a button that throws an error:
+     ```tsx
+     <button onClick={() => { throw new Error('Test error') }}>Test Sentry</button>
+     ```
+   - Click the button
+   - Check your Sentry dashboard for the error
+3. Verify:
+   - Error appears in Sentry Issues
+   - User context shows (email, username if logged in)
+   - Session replay captures the actions before the error
+
+### 7.6 Configure Alerts (Optional)
+
+1. Go to **Alerts** in your Sentry project
+2. Click **"Create Alert"**
+3. Choose **"Issues"**
+4. Set conditions: "When an issue is first seen"
+5. Actions: Email notification to your email
+6. Save the alert
+
+### Features Included
+
+- ✅ **Automatic error capture** - All unhandled errors sent to Sentry
+- ✅ **Session replay** - Watch user actions leading to errors (10% sample rate)
+- ✅ **Performance monitoring** - Track slow page loads (10% sample rate)
+- ✅ **User context** - Errors tagged with user ID, email, username
+- ✅ **Error boundary** - Graceful fallback UI when errors occur
+- ✅ **Source maps** - See original TypeScript code in error stack traces (production only)
+
+### Cost Management
+
+Free tier limits:
+- 5,000 errors/month
+- 10,000 performance transactions/month
+- 50 session replays/month (on error only captures are unlimited)
+
+If you exceed limits, oldest data is dropped. Upgrade to paid plan if needed.
+
+---
+
