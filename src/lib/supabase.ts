@@ -129,6 +129,41 @@ export type Database = {
         Insert: Omit<Database['public']['Tables']['friendships']['Row'], 'created_at'>;
         Update: Partial<Database['public']['Tables']['friendships']['Insert']>;
       };
+      groups: {
+        Row: {
+          id: string;
+          name: string;
+          description: string | null;
+          owner_id: string;
+          privacy: 'private' | 'public';
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['groups']['Row'], 'created_at' | 'updated_at'>;
+        Update: Partial<Database['public']['Tables']['groups']['Insert']>;
+      };
+      group_members: {
+        Row: {
+          id: string;
+          group_id: string;
+          user_id: string;
+          role: 'owner' | 'admin' | 'member';
+          joined_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['group_members']['Row'], 'id' | 'joined_at'>;
+        Update: Partial<Database['public']['Tables']['group_members']['Insert']>;
+      };
+      activity_log: {
+        Row: {
+          id: string;
+          user_id: string;
+          event_type: string;
+          event_data: Record<string, unknown>;
+          created_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['activity_log']['Row'], 'id' | 'created_at'>;
+        Update: Partial<Database['public']['Tables']['activity_log']['Insert']>;
+      };
     };
   };
 };

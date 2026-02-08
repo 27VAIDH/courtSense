@@ -7,6 +7,7 @@ import Button from '@/components/ui/Button'
 import Chip from '@/components/ui/Chip'
 import LeaderboardCard from '@/components/leaderboards/LeaderboardCard'
 import GlobalLeaderboard from '@/components/leaderboards/GlobalLeaderboard'
+import GroupsList from '@/components/groups/GroupsList'
 
 function formatDate(date: Date): string {
   const d = new Date(date)
@@ -135,6 +136,9 @@ export default function Rivals() {
 
       {/* Leaderboards Section */}
       {leaderboardMode === 'local' ? <LeaderboardCard /> : <GlobalLeaderboard />}
+
+      {/* Groups Section */}
+      {user && <GroupsList />}
 
       {/* Section Divider */}
       <div className="px-4 pt-6 pb-2">

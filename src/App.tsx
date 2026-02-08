@@ -21,6 +21,7 @@ const Rivals = lazy(() => import('@/pages/Rivals'))
 const RivalryDetail = lazy(() => import('@/pages/RivalryDetail'))
 const Profile = lazy(() => import('@/pages/Profile'))
 const FriendProfile = lazy(() => import('@/pages/FriendProfile'))
+const GroupDetail = lazy(() => import('@/pages/GroupDetail'))
 const PostMatchSaved = lazy(() => import('@/pages/PostMatchSaved'))
 const MatchDetail = lazy(() => import('@/pages/MatchDetail'))
 
@@ -106,6 +107,7 @@ function App() {
                     <Route path="/rivals/:opponentId" element={<RivalryDetail />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/profile/:userId" element={<FriendProfile />} />
+                    <Route path="/groups/:groupId" element={<GroupDetail />} />
                     <Route path="/match/:id" element={<MatchDetail />} />
                     <Route path="/match/:id/saved" element={<PostMatchSaved />} />
                   </Routes>
