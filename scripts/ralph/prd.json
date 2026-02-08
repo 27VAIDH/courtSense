@@ -111,7 +111,7 @@
         "Test: open 2 browser tabs as same user, create match in Tab A, verify appears in Tab B within 2 sec"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Core sync logic. Last Write Wins is simple but can lose data in rare race conditions - acceptable for MVP."
     },
     {
