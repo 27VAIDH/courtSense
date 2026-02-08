@@ -733,7 +733,7 @@
         "Verify in browser that Match of the Month and On This Day cards render with test data"
       ],
       "priority": 38,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

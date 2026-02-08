@@ -1953,3 +1953,60 @@ There are **5 remaining stories** (US-037 through US-041) with `passes: false`, 
   - Encouraging header text based on the leader keeps the UI positive and anti-toxic
   - Current user entries are highlighted with primary color border and background for easy identification
 ---
+
+## Iteration 5 - Sun Feb  8 11:29:50 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260208-110806/iter-5.log
+---
+There are still stories with `passes: false` (US-038, US-039, US-040, US-041), so this is not the completion point yet.
+
+---
+
+## Summary
+
+I've successfully completed **US-037: Friendly Leaderboards**!
+
+### What was implemented:
+- **Leaderboard calculation engine** (`src/lib/leaderboards.ts`) with 8 categories:
+  1. Overall Record - Win rate (min 5 matches)
+  2. Iron Man - Matches this calendar month
+  3. Clutch King - 8-8+ Index (min 5 tight games)
+  4. Comeback Kid - Wins after losing Game 1
+  5. Hot Streak - Current consecutive wins
+  6. Consistency Crown - Lowest win rate variance (min 20 matches)
+  7. Most Improved - Win rate change (last 30d vs prior 30d)
+  8. Rivalry Dominator - Best H2H record vs most-played opponent
+
+- **LeaderboardCard component** (`src/components/leaderboards/LeaderboardCard.tsx`) with:
+  - Horizontal scrollable category pills for switching between categories
+  - Ranked list with position numbers, medals for top 3 (🥇🥈🥉)
+  - Current user highlighted with primary color border
+  - Encouraging header text based on the leader
+  - Empty state for categories with insufficient data
+
+- **Rivals page integration** - Added leaderboards section above the opponent list
+
+### Key technical details:
+- Single-device mode: opponent stats computed from matches against current user
+- TypeScript compilation passes
+- All changes committed with proper message
+
+The implementation is complete and ready for the next iteration!
+---
+
+## 2026-02-08 11:07 IST - US-038
+- What was implemented: Match of the Month and On This Day nostalgic highlight cards
+- Files changed:
+  - Created: src/lib/nostalgiaEngine.ts (drama scoring algorithm and On This Day detection)
+  - Created: src/components/nostalgia/MatchOfTheMonth.tsx (Match of the Month card component)
+  - Created: src/components/nostalgia/OnThisDay.tsx (On This Day card component)
+  - Modified: src/pages/Dashboard.tsx (integrated both nostalgia cards)
+- **Learnings for future iterations:**
+  - Nostalgia/discovery cards pattern: dismissible with X button, tappable to navigate to detail view
+  - Match of the Month drama scoring: closest score diff (+3), most games (+2), upset win (+2), comeback (+1)
+  - On This Day checks specific intervals: 1, 3, 6, 12 months ago
+  - Both cards render conditionally based on data availability (4+ matches for MOTM, anniversary match for OTD)
+  - Use state to track dismissal per session (doesn't persist across app reloads)
+  - Cards positioned after recommendation but before insights section
+  - Parse match result string to extract games won/lost (e.g., "W 3-1" or "L 1-3")
+---
