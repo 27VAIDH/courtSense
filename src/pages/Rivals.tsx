@@ -78,13 +78,22 @@ export default function Rivals() {
   // Empty state
   if (opponentsList.length === 0) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center px-4">
-        <p className="text-4xl mb-4">🏸</p>
-        <p className="text-xl font-bold text-white mb-2">No rivals yet</p>
-        <p className="text-text-secondary text-center mb-6">
-          Add your first opponent and log a match to start tracking rivalries
+      <div className="flex min-h-[80vh] flex-col items-center justify-center px-4 text-center">
+        {/* Rivalry illustration */}
+        <div className="mb-6 flex items-center gap-2 text-5xl">
+          <span>🏸</span>
+          <span className="text-3xl">⚔️</span>
+          <span>🏸</span>
+        </div>
+        <h1 className="text-2xl font-bold text-text-primary mb-2">
+          Add your first opponent to start tracking rivalries
+        </h1>
+        <p className="text-text-secondary mb-8 max-w-[280px]">
+          Head-to-head records, performance insights, and friendly competition await!
         </p>
-        <Button onClick={() => navigate('/profile')}>Manage Opponents</Button>
+        <Button onClick={() => navigate('/profile')} className="w-full max-w-[280px]">
+          Manage Opponents
+        </Button>
       </div>
     )
   }

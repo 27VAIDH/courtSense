@@ -1,8 +1,10 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { ensureCurrentUser } from '@/db/database'
+import { isOnboardingComplete, markOnboardingComplete } from '@/lib/onboarding'
 import BottomTabBar from '@/components/layout/BottomTabBar'
 import BadgeToast from '@/components/badges/BadgeToast'
+import Onboarding from '@/components/onboarding/Onboarding'
 import Dashboard from '@/pages/Dashboard'
 import LogMatch from '@/pages/LogMatch'
 import Timeline from '@/pages/Timeline'
@@ -13,9 +15,20 @@ import PostMatchSaved from '@/pages/PostMatchSaved'
 import MatchDetail from '@/pages/MatchDetail'
 
 function App() {
+  const [showOnboarding, setShowOnboarding] = useState(!isOnboardingComplete())
+
   useEffect(() => {
     ensureCurrentUser()
   }, [])
+
+  const handleOnboardingComplete = () => {
+    markOnboardingComplete()
+    setShowOnboarding(false)
+  }
+
+  if (showOnboarding) {
+    return <Onboarding onComplete={handleOnboardingComplete} />
+  }
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white pb-20">

@@ -85,13 +85,18 @@ export default function Timeline() {
 
   if (!hasMatches) {
     return (
-      <div className="flex flex-col items-center justify-center px-4 pt-20 text-center">
-        <span className="text-6xl mb-4">📈</span>
+      <div className="flex min-h-[80vh] flex-col items-center justify-center px-4 text-center">
+        {/* Timeline illustration */}
+        <div className="mb-6 flex items-center gap-2 text-5xl">
+          <span>📊</span>
+          <span className="text-3xl">→</span>
+          <span>📈</span>
+        </div>
         <h1 className="text-2xl font-bold text-text-primary mb-2">
           Your squash journey starts here
         </h1>
         <p className="text-text-secondary mb-8 max-w-[280px]">
-          Log your first match to start seeing your timeline!
+          Log your first match to start tracking your timeline and see your progress over time!
         </p>
         <Button onClick={() => navigate('/log')} className="w-full max-w-[280px]">
           Log First Match

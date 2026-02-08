@@ -136,10 +136,14 @@ export default function MatchHistoryList() {
   if (sortedMatches.length === 0) {
     return (
       <div className="flex flex-col items-center py-12 text-center">
-        <span className="text-5xl mb-4">🏸</span>
-        <p className="text-lg font-semibold text-text-primary mb-2">No matches yet</p>
-        <p className="text-text-secondary mb-6">Log your first match to start tracking!</p>
-        <Button onClick={() => navigate('/log')}>Log First Match</Button>
+        <span className="text-6xl mb-4">🏸</span>
+        <p className="text-lg font-semibold text-text-primary mb-2">No matches yet — let's fix that!</p>
+        <p className="text-text-secondary mb-6 max-w-[240px]">
+          Start logging matches to build your history and unlock insights
+        </p>
+        <Button onClick={() => navigate('/log')} className="w-full max-w-[200px]">
+          Log First Match
+        </Button>
       </div>
     )
   }
