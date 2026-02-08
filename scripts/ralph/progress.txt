@@ -1595,3 +1595,56 @@ There are **6 user stories** remaining with `passes: false`:
 
 The project is not yet complete, so another iteration will pick up the next story.
 ---
+## 2026-02-08 23:15:00 - US-P013
+- **What was implemented:**
+  - Created FriendSearch component (src/components/friends/FriendSearch.tsx):
+    * Search bar with 300ms debounced input for real-time username search
+    * Searches user_profiles table by username (case-insensitive ILIKE query)
+    * Displays search results with display_name, @username, bio
+    * Shows friendship status: Friends ✓ (accepted), Request Sent (pending), Add Friend button (none)
+    * Send friend request inserts to friendships table with status='pending'
+    * Optimistic UI updates for immediate feedback
+    * Excludes current user from search results
+  - Created FriendRequests component (src/components/friends/FriendRequests.tsx):
+    * Loads pending friend requests where current user is friend_id (receiver)
+    * Displays incoming requests with sender's display_name, username, bio
+    * Accept button: updates friendship status to 'accepted', creates reverse record for bidirectional friendship
+    * Decline button: deletes friendship record
+    * Shows request count badge in section header
+    * Only renders section if pending requests exist (conditional rendering)
+  - Created FriendsList component (src/components/friends/FriendsList.tsx):
+    * Loads accepted friendships where current user is user_id
+    * Displays friends with display_name, username, bio
+    * View Profile button navigates to /profile/:friendId (placeholder for US-P014)
+    * Shows friend count badge in section header
+    * Empty state with icon and helpful message when no friends
+  - Integrated friends section into Profile page (src/pages/Profile.tsx):
+    * Added FriendRequests, FriendSearch, FriendsList components
+    * Positioned between badges and opponent manager
+    * Friends section shows at top of social features
+
+- **Files changed:**
+  - src/components/friends/FriendSearch.tsx (new - friend search with debounced input)
+  - src/components/friends/FriendRequests.tsx (new - incoming friend requests management)
+  - src/components/friends/FriendsList.tsx (new - accepted friends list)
+  - src/pages/Profile.tsx (updated - integrated friends section)
+
+- **Learnings for future iterations:**
+  - Pattern: Debounced search uses useEffect with 300ms timer and cleanup
+  - Pattern: Friendship status check uses separate query after search results loaded
+  - Pattern: Bidirectional friendships require two records: (A→B) and (B→A) both with status='accepted'
+  - Pattern: Optimistic UI updates improve perceived performance (update state before server confirms)
+  - Pattern: Button component only supports 'primary' and 'secondary' variants, no 'outline' or 'size' prop
+  - Pattern: Friend requests check uses .eq('friend_id', user.id) to find incoming requests
+  - Pattern: Friends list uses .eq('user_id', user.id) to find outgoing friendships
+  - Gotcha: Supabase foreign key relationship returns nested object, need to handle both array and object cases
+  - Gotcha: Button styling requires flex items-center justify-center gap-2 for icon + text layout
+  - Gotcha: Must exclude current user from search results with .neq('id', user.id)
+  - Context: Accept request creates reverse record immediately (no separate approval needed)
+  - Context: Decline request deletes record (could update status='declined' for analytics)
+  - Context: View Profile navigation uses window.location.href for now (proper routing in US-P014)
+  - Context: Empty state only shows for friends list, not search results or requests
+  - Browser testing note: Manual verification needed - test search, send request, accept/decline, view friends
+  - Next: US-P014 will implement friend profile page with privacy-respecting stats display
+---
+

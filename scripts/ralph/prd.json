@@ -289,7 +289,7 @@
         "Test: create 2 accounts, send request from A to B, accept from B, verify both see each other in friends list"
       ],
       "priority": 13,
-      "passes": false,
+      "passes": true,
       "notes": "Foundation for social features. Privacy controls can be added later (who can send requests, etc.)."
     },
     {
