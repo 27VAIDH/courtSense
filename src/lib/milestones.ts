@@ -1,4 +1,4 @@
-import type { Match, Game } from '@/db/types'
+import type { Match } from '@/db/types'
 
 export type MilestoneType =
   | 'first_win'
@@ -25,7 +25,7 @@ export interface Milestone {
  * - Win rate crossing 50%/60%/70% (sustained over 5+ matches)
  * - Head-to-head record flipping against an opponent
  */
-export function detectMilestones(matches: Match[], _games: Game[]): Milestone[] {
+export function detectMilestones(matches: Match[]): Milestone[] {
   if (matches.length === 0) return []
 
   const milestones: Milestone[] = []
@@ -41,7 +41,7 @@ export function detectMilestones(matches: Match[], _games: Game[]): Milestone[] 
   let currentStreak = 0
   let streakType: 'W' | 'L' | null = null
   let totalWins = 0
-  let rollingWinRates: number[] = []
+  const rollingWinRates: number[] = []
 
   sorted.forEach((match, index) => {
     const isWin = match.result.startsWith('W')

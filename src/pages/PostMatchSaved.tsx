@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo } from 'react'
+import { useEffect, useRef, useMemo, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import confetti from 'canvas-confetti'
@@ -6,6 +6,7 @@ import { useUIStore } from '@/stores/uiStore'
 import { useMatches, usePlayers, useGames } from '@/db/hooks'
 import Button from '@/components/ui/Button'
 import RecommendationCard from '@/components/recommendations/RecommendationCard'
+import RallyAnalyzer from '@/components/rally/RallyAnalyzer'
 import type { Recommendation } from '@/lib/recommendations'
 
 function getStreakText(
@@ -46,6 +47,7 @@ export default function PostMatchSaved() {
   const navigate = useNavigate()
   const { hideTabBar, showTabBar } = useUIStore()
   const confettiFired = useRef(false)
+  const [showRallyAnalyzer, setShowRallyAnalyzer] = useState(false)
 
   const allMatches = useMatches()
   const players = usePlayers()
@@ -207,15 +209,16 @@ export default function PostMatchSaved() {
           </motion.div>
         )}
 
-        {/* Rally Analysis Placeholder */}
-        <motion.p
-          className="mb-8 text-sm text-primary/70"
+        {/* Rally Analysis Button */}
+        <motion.button
+          onClick={() => setShowRallyAnalyzer(true)}
+          className="mb-8 text-sm text-primary/70 underline min-h-[48px] active:opacity-80"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
         >
           Want to add rally details? (30 sec)
-        </motion.p>
+        </motion.button>
 
         {/* Done button */}
         <motion.div
@@ -251,6 +254,18 @@ export default function PostMatchSaved() {
           }
         }
       `}</style>
+
+      {/* Rally Analyzer Modal */}
+      {showRallyAnalyzer && matchId && (
+        <RallyAnalyzer
+          matchId={matchId}
+          onComplete={() => {
+            setShowRallyAnalyzer(false)
+            // Optional: could show a success toast here
+          }}
+          onCancel={() => setShowRallyAnalyzer(false)}
+        />
+      )}
     </div>
   )
 }

@@ -1,12 +1,13 @@
 import { useState, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { useMatches, useGames, usePlayers, useVenues } from '@/db/hooks'
+import { useMatches, useGames, usePlayers, useVenues, useRallyAnalyses } from '@/db/hooks'
 import { db } from '@/db/database'
 import type { Recommendation } from '@/lib/recommendations'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import Chip from '@/components/ui/Chip'
 import RecommendationCard from '@/components/recommendations/RecommendationCard'
+import RallyAnalyzer from '@/components/rally/RallyAnalyzer'
 
 const VIBES = ['Intense', 'Casual', 'Frustrating', 'Focused', 'Fun', 'Grind']
 const QUICK_TAGS = ['Good day', 'Off day', 'New strategy', 'Comeback', 'Dominated', 'Lucky win', 'Close']
@@ -52,11 +53,13 @@ export default function MatchDetail() {
   const allGames = useGames(matchId)
   const players = usePlayers()
   const venues = useVenues()
+  const rallyAnalyses = useRallyAnalyses(matchId)
 
   const [isEditing, setIsEditing] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [showRallyAnalyzer, setShowRallyAnalyzer] = useState(false)
 
   // Edit state
   const [editGames, setEditGames] = useState<EditGameScore[]>([])
@@ -589,6 +592,64 @@ export default function MatchDetail() {
         </>
       )}
 
+      {/* Rally Analysis */}
+      {rallyAnalyses && rallyAnalyses.length > 0 ? (
+        <>
+          <h2 className="mb-3 text-sm font-medium text-text-secondary">Rally Analysis</h2>
+          <Card className="mb-4">
+            {rallyAnalyses[0].winMethod && (
+              <div className="mb-3">
+                <span className="text-xs text-text-secondary">Win Method</span>
+                <p className="text-sm text-text-primary">{rallyAnalyses[0].winMethod}</p>
+              </div>
+            )}
+            {rallyAnalyses[0].loseMethod && (
+              <div className="mb-3">
+                <span className="text-xs text-text-secondary">Lose Method</span>
+                <p className="text-sm text-text-primary">{rallyAnalyses[0].loseMethod}</p>
+              </div>
+            )}
+            {rallyAnalyses[0].rallyLength && (
+              <div className="mb-3">
+                <span className="text-xs text-text-secondary">Rally Length</span>
+                <p className="text-sm text-text-primary">{rallyAnalyses[0].rallyLength}</p>
+              </div>
+            )}
+            {rallyAnalyses[0].courtCoverage && (
+              <div className="mb-3">
+                <span className="text-xs text-text-secondary">Court Coverage</span>
+                <p className="text-sm text-text-primary">{rallyAnalyses[0].courtCoverage}</p>
+              </div>
+            )}
+            {rallyAnalyses[0].bestShots && rallyAnalyses[0].bestShots.length > 0 && (
+              <div>
+                <span className="text-xs text-text-secondary">Best Shots</span>
+                <div className="mt-1 flex flex-wrap gap-1">
+                  {rallyAnalyses[0].bestShots.map((shot) => (
+                    <span
+                      key={shot}
+                      className="rounded-full bg-surface-elevated px-3 py-1 text-xs text-text-primary"
+                    >
+                      {shot}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </Card>
+        </>
+      ) : (
+        <div className="mb-4">
+          <Button
+            variant="secondary"
+            onClick={() => setShowRallyAnalyzer(true)}
+            className="w-full"
+          >
+            Add Rally Analysis
+          </Button>
+        </div>
+      )}
+
       {/* Action Buttons */}
       <div className="mt-6 flex gap-3">
         <Button variant="secondary" onClick={startEdit} className="flex-1">
@@ -628,6 +689,15 @@ export default function MatchDetail() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Rally Analyzer Modal */}
+      {showRallyAnalyzer && (
+        <RallyAnalyzer
+          matchId={matchId}
+          onComplete={() => setShowRallyAnalyzer(false)}
+          onCancel={() => setShowRallyAnalyzer(false)}
+        />
       )}
     </div>
   )

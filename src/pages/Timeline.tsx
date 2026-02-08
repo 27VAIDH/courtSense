@@ -62,7 +62,7 @@ export default function Timeline() {
 
   const milestones = useMemo(() => {
     if (!matches || !games) return []
-    return detectMilestones(matches, games)
+    return detectMilestones(matches)
   }, [matches, games])
 
   const isLoading = matches === undefined || players === undefined || games === undefined
