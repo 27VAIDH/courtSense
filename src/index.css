@@ -22,6 +22,10 @@ html, body, #root {
   -moz-osx-font-smoothing: grayscale;
 }
 
+body {
+  overscroll-behavior-y: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

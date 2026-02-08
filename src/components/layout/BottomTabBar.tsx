@@ -65,11 +65,11 @@ export default function BottomTabBar() {
   if (!tabBarVisible) return null
 
   return (
-    <nav
-      className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 bg-[#0A0A0A]"
-      style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
-    >
-      <div className="flex items-end justify-around px-2 pt-1 pb-2">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 bg-[#0A0A0A]">
+      <div
+        className="flex items-end justify-around px-2 pt-1"
+        style={{ paddingBottom: 'calc(0.5rem + env(safe-area-inset-bottom, 0px))' }}
+      >
         {tabs.map((tab) => (
           <NavLink
             key={tab.to}

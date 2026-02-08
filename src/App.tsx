@@ -4,6 +4,7 @@ import { ensureCurrentUser } from '@/db/database'
 import { isOnboardingComplete, markOnboardingComplete } from '@/lib/onboarding'
 import BottomTabBar from '@/components/layout/BottomTabBar'
 import BadgeToast from '@/components/badges/BadgeToast'
+import PWAInstallBanner from '@/components/pwa/PWAInstallBanner'
 import AuthGuard from '@/components/auth/AuthGuard'
 import { useAuthStore } from '@/stores/authStore'
 import { performSync } from '@/lib/sync'
@@ -108,6 +109,7 @@ function App() {
                   </Routes>
                   <BottomTabBar />
                   <BadgeToast />
+                  <PWAInstallBanner />
                 </div>
               )}
             </AuthGuard>

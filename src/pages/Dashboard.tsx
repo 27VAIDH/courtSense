@@ -211,7 +211,7 @@ export default function Dashboard() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="px-4 pt-6 pb-4">
+      <div className="px-4 pb-4" style={{ paddingTop: 'calc(1.5rem + env(safe-area-inset-top, 0px))' }}>
         {/* Header skeleton */}
         <div className="mb-6">
           <div className="h-7 w-40 animate-pulse rounded-lg bg-surface mb-2" />
@@ -244,7 +244,7 @@ export default function Dashboard() {
   // Empty state
   if (!hasMatches) {
     return (
-      <div className="flex flex-col items-center justify-center px-4 pt-20 text-center">
+      <div className="flex flex-col items-center justify-center px-4 text-center" style={{ paddingTop: 'calc(5rem + env(safe-area-inset-top, 0px))' }}>
         <span className="text-6xl mb-4">🏸</span>
         <h1 className="text-2xl font-bold text-text-primary mb-2">
           Welcome to SquashIQ!
@@ -291,7 +291,7 @@ export default function Dashboard() {
 
   return (
     <PullToRefresh>
-      <div className="px-4 pt-6 pb-4">
+      <div className="px-4 pb-4" style={{ paddingTop: 'calc(1.5rem + env(safe-area-inset-top, 0px))' }}>
         {/* Header with stats */}
         <div className="mb-6">
           <div className="flex items-start justify-between">

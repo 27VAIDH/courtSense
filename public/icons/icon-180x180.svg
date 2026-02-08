@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180">
+  <rect width="180" height="180" rx="30" fill="#0A0A0A"/>
+  <text x="90" y="68" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="30" font-weight="700" fill="#00E676">SQUASH</text>
+  <text x="90" y="109" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="45" font-weight="800" fill="#FFFFFF">IQ</text>
+  <circle cx="90" cy="139" r="7" fill="#00E676" opacity="0.6"/>
+</svg>
