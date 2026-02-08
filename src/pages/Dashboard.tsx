@@ -25,6 +25,7 @@ import OnThisDay from '@/components/nostalgia/OnThisDay'
 import BackupReminder from '@/components/settings/BackupReminder'
 import SyncStatusIndicator from '@/components/sync/SyncStatusIndicator'
 import PullToRefresh from '@/components/sync/PullToRefresh'
+import SampleDataBanner from '@/components/sampleData/SampleDataBanner'
 
 function CurrentFormDots({ matches }: { matches: Match[] }) {
   const last5 = useMemo(() => {
@@ -314,6 +315,9 @@ export default function Dashboard() {
 
         {/* Backup Reminder Banner */}
         <BackupReminder />
+
+        {/* Sample Data Banner */}
+        <SampleDataBanner />
 
         {/* Pinned recommendation from most recent match */}
         {latestRecommendation && (

@@ -4,6 +4,7 @@ export interface Player {
   emoji: string;
   isCurrentUser: boolean;
   createdAt: Date;
+  sample_data?: boolean; // Flag for sample data generation
 }
 
 export interface Venue {
@@ -11,6 +12,7 @@ export interface Venue {
   name: string;
   isHome: boolean;
   createdAt: Date;
+  sample_data?: boolean; // Flag for sample data generation
 }
 
 export interface Match {
@@ -28,6 +30,7 @@ export interface Match {
   photo_url?: string; // New - Supabase Storage URL
   recommendationText?: string;
   createdAt: Date;
+  sample_data?: boolean; // Flag for sample data generation
 }
 
 export interface Game {
@@ -37,6 +40,7 @@ export interface Game {
   myScore: number;
   opponentScore: number;
   isTight: boolean;
+  sample_data?: boolean; // Flag for sample data generation
 }
 
 export interface RallyAnalysis {

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import Button from '@/components/ui/Button'
+import { generateSampleData } from '@/lib/sampleData'
 
 interface OnboardingScreen {
   title: string
@@ -34,6 +35,7 @@ interface OnboardingProps {
 export default function Onboarding({ onComplete }: OnboardingProps) {
   const [currentScreen, setCurrentScreen] = useState(0)
   const [direction, setDirection] = useState(1)
+  const [generatingSampleData, setGeneratingSampleData] = useState(false)
   const navigate = useNavigate()
 
   const handleNext = () => {
@@ -44,6 +46,22 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
     } else {
       setDirection(1)
       setCurrentScreen((prev) => prev + 1)
+    }
+  }
+
+  const handleStartWithSampleData = async () => {
+    setGeneratingSampleData(true)
+    try {
+      await generateSampleData()
+      onComplete()
+      navigate('/') // Navigate to Dashboard to see sample data
+    } catch (error) {
+      console.error('Failed to generate sample data:', error)
+      // Fall back to normal flow
+      onComplete()
+      navigate('/')
+    } finally {
+      setGeneratingSampleData(false)
     }
   }
 
@@ -124,9 +142,23 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
       {/* Navigation buttons */}
       <div className="absolute bottom-12 w-full max-w-sm px-6">
         {currentScreen === SCREENS.length - 1 ? (
-          <Button onClick={handleNext} className="w-full">
-            Get Started
-          </Button>
+          <div className="flex flex-col gap-3">
+            <Button
+              onClick={handleStartWithSampleData}
+              className="w-full"
+              disabled={generatingSampleData}
+            >
+              {generatingSampleData ? 'Generating sample data...' : 'Start with sample data'}
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={handleNext}
+              className="w-full"
+              disabled={generatingSampleData}
+            >
+              Skip to logging my own matches
+            </Button>
+          </div>
         ) : (
           <div className="flex gap-3">
             <Button

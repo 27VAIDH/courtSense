@@ -29,6 +29,16 @@ export class SquashIQDatabase extends Dexie {
       rally_analyses: '++id, matchId, winMethod, loseMethod, rallyLength, courtCoverage, bestShots, createdAt',
       photo_upload_queue: '++id, matchId, filename, createdAt, retryCount',
     });
+
+    // Version 3: Add sample_data field to all tables for sample data tracking
+    this.version(3).stores({
+      players: '++id, name, emoji, isCurrentUser, createdAt, sample_data',
+      venues: '++id, name, isHome, createdAt, sample_data',
+      matches: '++id, date, opponentId, venueId, format, result, energyLevel, vibe, tags, note, photoBase64, photo_url, recommendationText, createdAt, sample_data',
+      games: '++id, matchId, gameNumber, myScore, opponentScore, isTight, sample_data',
+      rally_analyses: '++id, matchId, winMethod, loseMethod, rallyLength, courtCoverage, bestShots, createdAt',
+      photo_upload_queue: '++id, matchId, filename, createdAt, retryCount',
+    });
   }
 }
 
