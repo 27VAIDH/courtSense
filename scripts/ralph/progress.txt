@@ -657,3 +657,60 @@ The next user story is **US-P006: Photo upload to Supabase Storage with offline 
   - Next: US-P007 will optimize bundle size and add code splitting for faster load times
 ---
 
+
+## Iteration 3 - Sun Feb  8 18:01:02 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260208-174225/iter-3.log
+---
+Perfect! I've successfully completed **US-P006: Photo upload to Supabase Storage with offline queue**. 
+
+## Summary
+
+I've implemented a comprehensive photo upload system for SquashIQ with the following features:
+
+### ✅ What Was Implemented
+
+1. **Image Compression**
+   - Installed `browser-image-compression` package
+   - Compresses images to max 1920px width, 85% JPEG quality
+   - Uses web workers for non-blocking compression
+
+2. **Photo Upload Utilities** (`src/lib/photoUpload.ts`)
+   - `compressImage()` - Optimizes images for upload
+   - `uploadMatchPhoto()` - Uploads to Supabase Storage bucket
+   - `generatePhotoFilename()` - Format: `{userId}/{matchId}_{timestamp}.jpg`
+   - `processPhotoUploadQueue()` - Background worker for offline uploads
+   - `deleteMatchPhoto()` - Removes photos from storage
+
+3. **Offline Queue System**
+   - Added `photo_upload_queue` table to IndexedDB (version 2)
+   - Stores photos as base64 when offline
+   - Processes queue when app comes online
+   - Retry logic with max 5 attempts per upload
+
+4. **Match Logging Integration**
+   - Photo upload UI with camera icon placeholder
+   - Live preview with remove button
+   - Offline indicator when photo will upload later
+   - Photo failures don't block match save
+
+5. **Photo Display**
+   - Shows photos in match detail page
+   - Lazy loading for performance
+   - Legacy `photoBase64` fallback support
+   - Deletes photos from storage when match deleted
+
+6. **Background Processing**
+   - Processes upload queue on app load
+   - Listens for 'online' event
+   - Updates match records with public URLs after upload
+
+### 🎯 Quality Checks
+- ✅ TypeScript type checking passed
+- ✅ Build successful (1.98s, 450.89KB gzipped)
+- ✅ All acceptance criteria met
+- ✅ Changes committed to `ralph/squashiq-pwa-v2` branch
+
+### 📋 Next Steps
+The next user story is **US-P007: Performance optimization - code splitting and bundle size**, which is currently `passes: false`. There are still 12 user stories remaining to complete.
+---

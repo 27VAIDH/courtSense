@@ -1,9 +1,13 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useInView } from 'react-intersection-observer'
 import { useMatches, useGames, usePlayers, useVenues } from '@/db/hooks'
 import type { Match, Game, Player, Venue } from '@/db/types'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
+
+const INITIAL_LOAD = 20
+const LOAD_MORE = 20
 
 function formatRelativeDate(date: Date): string {
   const now = new Date()
@@ -84,6 +88,7 @@ export default function MatchHistoryList() {
   const players = usePlayers()
   const venues = useVenues()
   const navigate = useNavigate()
+  const [displayCount, setDisplayCount] = useState(INITIAL_LOAD)
 
   const sortedMatches = useMemo(() => {
     if (!matches) return undefined
@@ -91,6 +96,23 @@ export default function MatchHistoryList() {
       (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     )
   }, [matches])
+
+  const displayedMatches = useMemo(() => {
+    if (!sortedMatches) return undefined
+    return sortedMatches.slice(0, displayCount)
+  }, [sortedMatches, displayCount])
+
+  const hasMore = sortedMatches && displayCount < sortedMatches.length
+
+  // Infinite scroll trigger
+  const { ref: loadMoreRef } = useInView({
+    threshold: 0,
+    onChange: (inView) => {
+      if (inView && hasMore) {
+        setDisplayCount((prev) => prev + LOAD_MORE)
+      }
+    },
+  })
 
   const gamesByMatch = useMemo(() => {
     if (!games) return new Map<number, Game[]>()
@@ -122,7 +144,7 @@ export default function MatchHistoryList() {
   }, [venues])
 
   // Loading state
-  if (sortedMatches === undefined) {
+  if (displayedMatches === undefined) {
     return (
       <div className="space-y-3">
         {[1, 2, 3].map((i) => (
@@ -133,7 +155,7 @@ export default function MatchHistoryList() {
   }
 
   // Empty state
-  if (sortedMatches.length === 0) {
+  if (displayedMatches.length === 0) {
     return (
       <div className="flex flex-col items-center py-12 text-center">
         <span className="text-6xl mb-4">🏸</span>
@@ -150,7 +172,7 @@ export default function MatchHistoryList() {
 
   return (
     <div className="space-y-3">
-      {sortedMatches.map((match) => (
+      {displayedMatches.map((match) => (
         <MatchCard
           key={match.id}
           match={match}
@@ -160,6 +182,16 @@ export default function MatchHistoryList() {
           onClick={() => navigate(`/match/${match.id}`)}
         />
       ))}
+      {hasMore && (
+        <div ref={loadMoreRef} className="py-4 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary"></div>
+        </div>
+      )}
+      {!hasMore && sortedMatches && sortedMatches.length > INITIAL_LOAD && (
+        <p className="text-xs text-text-secondary text-center py-4">
+          All {sortedMatches.length} matches loaded
+        </p>
+      )}
     </div>
   )
 }

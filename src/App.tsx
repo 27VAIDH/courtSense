@@ -1,24 +1,33 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, lazy, Suspense } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { ensureCurrentUser } from '@/db/database'
 import { isOnboardingComplete, markOnboardingComplete } from '@/lib/onboarding'
 import BottomTabBar from '@/components/layout/BottomTabBar'
 import BadgeToast from '@/components/badges/BadgeToast'
-import Onboarding from '@/components/onboarding/Onboarding'
 import AuthGuard from '@/components/auth/AuthGuard'
-import AuthPage from '@/pages/AuthPage'
-import AuthCallback from '@/pages/AuthCallback'
-import Dashboard from '@/pages/Dashboard'
-import LogMatch from '@/pages/LogMatch'
-import Timeline from '@/pages/Timeline'
-import Rivals from '@/pages/Rivals'
-import RivalryDetail from '@/pages/RivalryDetail'
-import Profile from '@/pages/Profile'
-import PostMatchSaved from '@/pages/PostMatchSaved'
-import MatchDetail from '@/pages/MatchDetail'
 import { useAuthStore } from '@/stores/authStore'
 import { performSync } from '@/lib/sync'
 import { processPhotoUploadQueue } from '@/lib/photoUpload'
+
+// Lazy load pages for code splitting
+const Onboarding = lazy(() => import('@/components/onboarding/Onboarding'))
+const AuthPage = lazy(() => import('@/pages/AuthPage'))
+const AuthCallback = lazy(() => import('@/pages/AuthCallback'))
+const Dashboard = lazy(() => import('@/pages/Dashboard'))
+const LogMatch = lazy(() => import('@/pages/LogMatch'))
+const Timeline = lazy(() => import('@/pages/Timeline'))
+const Rivals = lazy(() => import('@/pages/Rivals'))
+const RivalryDetail = lazy(() => import('@/pages/RivalryDetail'))
+const Profile = lazy(() => import('@/pages/Profile'))
+const PostMatchSaved = lazy(() => import('@/pages/PostMatchSaved'))
+const MatchDetail = lazy(() => import('@/pages/MatchDetail'))
+
+// Loading component
+const LoadingSpinner = () => (
+  <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
+    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+  </div>
+)
 
 function App() {
   const [showOnboarding, setShowOnboarding] = useState(!isOnboardingComplete())
@@ -72,38 +81,40 @@ function App() {
   }
 
   return (
-    <Routes>
-      {/* Public routes */}
-      <Route path="/auth" element={<AuthPage />} />
-      <Route path="/auth/callback" element={<AuthCallback />} />
+    <Suspense fallback={<LoadingSpinner />}>
+      <Routes>
+        {/* Public routes */}
+        <Route path="/auth" element={<AuthPage />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
 
-      {/* Protected routes */}
-      <Route
-        path="/*"
-        element={
-          <AuthGuard>
-            {showOnboarding ? (
-              <Onboarding onComplete={handleOnboardingComplete} />
-            ) : (
-              <div className="min-h-screen bg-[#0A0A0A] text-white pb-20">
-                <Routes>
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="/log" element={<LogMatch />} />
-                  <Route path="/timeline" element={<Timeline />} />
-                  <Route path="/rivals" element={<Rivals />} />
-                  <Route path="/rivals/:opponentId" element={<RivalryDetail />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/match/:id" element={<MatchDetail />} />
-                  <Route path="/match/:id/saved" element={<PostMatchSaved />} />
-                </Routes>
-                <BottomTabBar />
-                <BadgeToast />
-              </div>
-            )}
-          </AuthGuard>
-        }
-      />
-    </Routes>
+        {/* Protected routes */}
+        <Route
+          path="/*"
+          element={
+            <AuthGuard>
+              {showOnboarding ? (
+                <Onboarding onComplete={handleOnboardingComplete} />
+              ) : (
+                <div className="min-h-screen bg-[#0A0A0A] text-white pb-20">
+                  <Routes>
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/log" element={<LogMatch />} />
+                    <Route path="/timeline" element={<Timeline />} />
+                    <Route path="/rivals" element={<Rivals />} />
+                    <Route path="/rivals/:opponentId" element={<RivalryDetail />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/match/:id" element={<MatchDetail />} />
+                    <Route path="/match/:id/saved" element={<PostMatchSaved />} />
+                  </Routes>
+                  <BottomTabBar />
+                  <BadgeToast />
+                </div>
+              )}
+            </AuthGuard>
+          }
+        />
+      </Routes>
+    </Suspense>
   )
 }
 
