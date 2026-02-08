@@ -596,3 +596,64 @@ The next user story is **US-P006: Photo upload to Supabase Storage with offline 
 6. Create match in Tab A
 7. Focus Tab B - should sync and show new match within 2 seconds
 ---
+## 2026-02-08 18:45:00 - US-P006
+- **What was implemented:**
+  - Installed browser-image-compression package for image optimization
+  - Created photo upload utilities (src/lib/photoUpload.ts):
+    * compressImage: compresses images to max 1920px width, 85% JPEG quality using web worker
+    * uploadMatchPhoto: uploads to Supabase Storage bucket (match-photos)
+    * generatePhotoFilename: creates filename with pattern {userId}/{matchId}_{timestamp}.jpg
+    * queuePhotoUpload: stores photo in IndexedDB queue when offline
+    * processPhotoUploadQueue: background worker processes queued uploads
+    * deleteMatchPhoto: removes photos from Supabase Storage
+    * Helper functions: blobToBase64 and base64ToBlob for queue storage
+  - Updated IndexedDB database schema (version 2):
+    * Added photo_url field to matches table (stores Supabase public URL, not base64)
+    * Created photo_upload_queue table with matchId, blob, filename, retryCount
+  - Updated match logging (src/components/matchlog/StepTagsSave.tsx):
+    * Added photo file input with camera icon placeholder
+    * Photo preview shows thumbnail with remove button
+    * Uploads photo during match save if user is authenticated
+    * Shows offline indicator "Photo will upload when back online"
+    * Photo failures don't block match save (error logged, match saves without photo)
+  - Updated matchLogStore (src/stores/matchLogStore.ts):
+    * Added photoFile state (File | null)
+    * Added setPhotoFile action
+    * Resets photoFile on match save
+  - Added background worker (src/App.tsx):
+    * Processes upload queue on app load if online
+    * Listens for 'online' event to process queue when connectivity restored
+    * Retries failed uploads up to 5 times with retry counter
+  - Updated match display (src/pages/MatchDetail.tsx):
+    * Shows match photo from photo_url or photoBase64 (legacy fallback)
+    * Uses lazy loading (loading="lazy") for performance
+    * Deletes photo from Supabase Storage when match is deleted
+
+- **Files changed:**
+  - package.json, package-lock.json (added browser-image-compression)
+  - src/lib/photoUpload.ts (new - photo upload/compression/queue utilities)
+  - src/db/types.ts (updated - added photo_url to Match, created PhotoUploadQueue interface)
+  - src/db/database.ts (updated - added photo_upload_queue table, bumped version to 2)
+  - src/stores/matchLogStore.ts (updated - added photoFile state)
+  - src/components/matchlog/StepTagsSave.tsx (updated - added photo upload UI)
+  - src/App.tsx (updated - added photo queue processing on online event)
+  - src/pages/MatchDetail.tsx (updated - display photos, delete from storage)
+
+- **Learnings for future iterations:**
+  - Pattern: Store public URLs in database, NOT base64 - significantly reduces database size
+  - Pattern: browser-image-compression uses web workers for non-blocking compression
+  - Pattern: Photo upload queue uses base64 storage in IndexedDB for blob persistence
+  - Pattern: Retry counter prevents infinite retry loops - max 5 attempts per upload
+  - Pattern: Photo operations are non-blocking - match saves even if photo upload fails
+  - Gotcha: Must check navigator.onLine before upload to decide immediate vs queued upload
+  - Gotcha: Photo filename extraction from URL uses split('/match-photos/') pattern
+  - Gotcha: Database version must increment when adding new tables or fields (v1 → v2)
+  - Gotcha: File input hidden, triggered via label with cursor-pointer for mobile-friendly UX
+  - Context: Photo preview created with FileReader.readAsDataURL() for instant feedback
+  - Context: Offline queue processed on 'online' event AND app load (handles app restart while offline)
+  - Context: Legacy photoBase64 field preserved for backwards compatibility with old matches
+  - Context: Max retry count of 5 prevents queue from filling with permanently failed uploads
+  - Browser testing note: Manual verification needed - test offline photo queue, online upload, deletion
+  - Next: US-P007 will optimize bundle size and add code splitting for faster load times
+---
+

@@ -134,7 +134,7 @@
         "Test: upload photo, verify in Supabase Storage dashboard, go offline, select photo, go online, verify uploaded"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "Photo migration from base64 handled separately post-MVP. This story only handles NEW photos."
     },
     {
