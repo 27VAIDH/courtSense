@@ -17,15 +17,35 @@ import Profile from '@/pages/Profile'
 import PostMatchSaved from '@/pages/PostMatchSaved'
 import MatchDetail from '@/pages/MatchDetail'
 import { useAuthStore } from '@/stores/authStore'
+import { performSync } from '@/lib/sync'
 
 function App() {
   const [showOnboarding, setShowOnboarding] = useState(!isOnboardingComplete())
-  const { initialize } = useAuthStore()
+  const { initialize, session } = useAuthStore()
 
   useEffect(() => {
     ensureCurrentUser()
     initialize() // Initialize auth on app load
   }, [initialize])
+
+  // Sync on app load (after auth initialized)
+  useEffect(() => {
+    if (session) {
+      performSync()
+    }
+  }, [session])
+
+  // Sync on window focus
+  useEffect(() => {
+    const handleFocus = () => {
+      if (session) {
+        performSync()
+      }
+    }
+
+    window.addEventListener('focus', handleFocus)
+    return () => window.removeEventListener('focus', handleFocus)
+  }, [session])
 
   const handleOnboardingComplete = () => {
     markOnboardingComplete()

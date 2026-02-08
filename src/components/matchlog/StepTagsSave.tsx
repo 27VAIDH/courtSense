@@ -6,6 +6,7 @@ import { useSettingsStore } from '@/stores/settingsStore'
 import { db } from '@/db/database'
 import { generateRecommendation } from '@/lib/recommendations'
 import { checkBadges } from '@/lib/badges'
+import { triggerSyncDebounced } from '@/lib/sync'
 import Chip from '@/components/ui/Chip'
 import Button from '@/components/ui/Button'
 
@@ -101,6 +102,9 @@ export default function StepTagsSave() {
 
       // Increment match count for backup reminder
       incrementMatchCount()
+
+      // Trigger sync after saving match
+      triggerSyncDebounced()
 
       // Reset state and navigate to post-match screen
       reset()

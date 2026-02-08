@@ -23,6 +23,8 @@ import RecommendationCard from '@/components/recommendations/RecommendationCard'
 import MatchOfTheMonth from '@/components/nostalgia/MatchOfTheMonth'
 import OnThisDay from '@/components/nostalgia/OnThisDay'
 import BackupReminder from '@/components/settings/BackupReminder'
+import SyncStatusIndicator from '@/components/sync/SyncStatusIndicator'
+import PullToRefresh from '@/components/sync/PullToRefresh'
 
 function CurrentFormDots({ matches }: { matches: Match[] }) {
   const last5 = useMemo(() => {
@@ -288,63 +290,70 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="px-4 pt-6 pb-4">
-      {/* Header with stats */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-text-primary">
-          {currentUser?.name || 'Player'}
-        </h1>
-        <p className="text-lg text-text-secondary font-semibold mt-1">
-          {wins}W - {losses}L
-        </p>
-        <div className="mt-2 flex items-center gap-2">
-          <span className="text-xs text-text-secondary">Form:</span>
-          <CurrentFormDots matches={matches} />
+    <PullToRefresh>
+      <div className="px-4 pt-6 pb-4">
+        {/* Header with stats */}
+        <div className="mb-6">
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-text-primary">
+                {currentUser?.name || 'Player'}
+              </h1>
+              <p className="text-lg text-text-secondary font-semibold mt-1">
+                {wins}W - {losses}L
+              </p>
+              <div className="mt-2 flex items-center gap-2">
+                <span className="text-xs text-text-secondary">Form:</span>
+                <CurrentFormDots matches={matches} />
+              </div>
+            </div>
+            <SyncStatusIndicator />
+          </div>
         </div>
-      </div>
 
-      {/* Backup Reminder Banner */}
-      <BackupReminder />
+        {/* Backup Reminder Banner */}
+        <BackupReminder />
 
-      {/* Pinned recommendation from most recent match */}
-      {latestRecommendation && (
-        <RecommendationCard
-          recommendation={latestRecommendation}
-          compact
-          label="Focus for next match:"
+        {/* Pinned recommendation from most recent match */}
+        {latestRecommendation && (
+          <RecommendationCard
+            recommendation={latestRecommendation}
+            compact
+            label="Focus for next match:"
+          />
+        )}
+
+        {/* Nostalgia cards */}
+        <MatchOfTheMonth
+          matches={matches}
+          games={games}
+          players={players}
+          venues={venues}
         />
-      )}
+        <OnThisDay matches={matches} players={players} venues={venues} />
 
-      {/* Nostalgia cards */}
-      <MatchOfTheMonth
-        matches={matches}
-        games={games}
-        players={players}
-        venues={venues}
-      />
-      <OnThisDay matches={matches} players={players} venues={venues} />
+        {/* Insight cards — dynamically ordered with unlock animations */}
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold text-text-secondary mb-3">Insights</h2>
+          <div className="space-y-3" id="insight-cards-container">
+            {sortedInsights.map((config) => (
+              <InsightCardWrapper
+                key={config.id}
+                id={config.id}
+                isUnlocked={config.remaining === 0}
+              >
+                {renderInsight(config.id)}
+              </InsightCardWrapper>
+            ))}
+          </div>
+        </div>
 
-      {/* Insight cards — dynamically ordered with unlock animations */}
-      <div className="mb-6">
-        <h2 className="text-lg font-semibold text-text-secondary mb-3">Insights</h2>
-        <div className="space-y-3" id="insight-cards-container">
-          {sortedInsights.map((config) => (
-            <InsightCardWrapper
-              key={config.id}
-              id={config.id}
-              isUnlocked={config.remaining === 0}
-            >
-              {renderInsight(config.id)}
-            </InsightCardWrapper>
-          ))}
+        {/* Match history */}
+        <div>
+          <h2 className="text-lg font-semibold text-text-secondary mb-3">Match History</h2>
+          <MatchHistoryList />
         </div>
       </div>
-
-      {/* Match history */}
-      <div>
-        <h2 className="text-lg font-semibold text-text-secondary mb-3">Match History</h2>
-        <MatchHistoryList />
-      </div>
-    </div>
+    </PullToRefresh>
   )
 }
