@@ -24,7 +24,8 @@ export interface Match {
   vibe?: string;
   tags?: string[];
   note?: string;
-  photoBase64?: string;
+  photoBase64?: string; // Legacy - for old matches
+  photo_url?: string; // New - Supabase Storage URL
   recommendationText?: string;
   createdAt: Date;
 }
@@ -47,4 +48,13 @@ export interface RallyAnalysis {
   courtCoverage?: string;
   bestShots?: string[];
   createdAt: Date;
+}
+
+export interface PhotoUploadQueue {
+  id?: number;
+  matchId: string; // Can be local number ID or server UUID
+  blob: string; // Base64 encoded compressed image
+  filename: string; // Format: {userId}/{matchId}_{timestamp}.jpg
+  createdAt: Date;
+  retryCount: number;
 }

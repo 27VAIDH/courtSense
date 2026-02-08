@@ -20,6 +20,7 @@ interface MatchLogState {
   vibe: string | null
   tags: string[]
   note: string
+  photoFile: File | null
 
   // Navigation
   step: number
@@ -34,6 +35,7 @@ interface MatchLogState {
   setVibe: (vibe: string | null) => void
   toggleTag: (tag: string) => void
   setNote: (note: string) => void
+  setPhotoFile: (file: File | null) => void
   setStep: (step: number) => void
   reset: () => void
 }
@@ -54,6 +56,7 @@ const initialState = {
   vibe: null as string | null,
   tags: [] as string[],
   note: '',
+  photoFile: null as File | null,
   step: 1,
 }
 
@@ -85,6 +88,7 @@ export const useMatchLogStore = create<MatchLogState>((set) => ({
         : [...state.tags, tag],
     })),
   setNote: (note) => set({ note }),
+  setPhotoFile: (file) => set({ photoFile: file }),
   setStep: (step) => set({ step }),
   reset: () => set({ ...initialState, date: new Date(), games: initialGames() }),
 }))

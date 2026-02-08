@@ -18,6 +18,7 @@ import PostMatchSaved from '@/pages/PostMatchSaved'
 import MatchDetail from '@/pages/MatchDetail'
 import { useAuthStore } from '@/stores/authStore'
 import { performSync } from '@/lib/sync'
+import { processPhotoUploadQueue } from '@/lib/photoUpload'
 
 function App() {
   const [showOnboarding, setShowOnboarding] = useState(!isOnboardingComplete())
@@ -45,6 +46,24 @@ function App() {
 
     window.addEventListener('focus', handleFocus)
     return () => window.removeEventListener('focus', handleFocus)
+  }, [session])
+
+  // Process photo upload queue when online
+  useEffect(() => {
+    if (!session) return
+
+    const handleOnline = () => {
+      processPhotoUploadQueue()
+    }
+
+    // Process queue immediately if online
+    if (navigator.onLine) {
+      processPhotoUploadQueue()
+    }
+
+    // Listen for online event
+    window.addEventListener('online', handleOnline)
+    return () => window.removeEventListener('online', handleOnline)
   }, [session])
 
   const handleOnboardingComplete = () => {
