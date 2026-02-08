@@ -18,6 +18,7 @@ import FastStarter from '@/components/insights/FastStarter'
 import WinMethodDistribution from '@/components/insights/WinMethodDistribution'
 import LossMethodDistribution from '@/components/insights/LossMethodDistribution'
 import BestShotTrends from '@/components/insights/BestShotTrends'
+import ClutchRating from '@/components/insights/ClutchRating'
 import RecommendationCard from '@/components/recommendations/RecommendationCard'
 
 function CurrentFormDots({ matches }: { matches: Match[] }) {
@@ -127,6 +128,10 @@ function computeInsightStatuses(
   const rallyAnalysesCount = rallyAnalyses.length
   const rallyInsightsRemaining = rallyAnalysesCount < 5 ? 5 - rallyAnalysesCount : 0
 
+  // ClutchRating: 5 tight games minimum
+  const tightGamesCount = games.filter((g) => g.isTight).length
+  const clutchRatingRemaining = tightGamesCount < 5 ? 5 - tightGamesCount : 0
+
   return [
     { id: 'winRateByOpponent', remaining: winRateRemaining },
     { id: 'energyImpact', remaining: energyRemaining },
@@ -139,6 +144,7 @@ function computeInsightStatuses(
     { id: 'winMethodDistribution', remaining: rallyInsightsRemaining },
     { id: 'lossMethodDistribution', remaining: rallyInsightsRemaining },
     { id: 'bestShotTrends', remaining: rallyInsightsRemaining },
+    { id: 'clutchRating', remaining: clutchRatingRemaining },
   ]
 }
 
@@ -273,6 +279,8 @@ export default function Dashboard() {
         return <LossMethodDistribution rallyAnalyses={rallyAnalyses!} />
       case 'bestShotTrends':
         return <BestShotTrends rallyAnalyses={rallyAnalyses!} />
+      case 'clutchRating':
+        return <ClutchRating matches={matches!} games={games!} players={players!} />
     }
   }
 

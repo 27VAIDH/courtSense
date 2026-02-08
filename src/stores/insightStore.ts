@@ -12,6 +12,7 @@ export type InsightId =
   | 'winMethodDistribution'
   | 'lossMethodDistribution'
   | 'bestShotTrends'
+  | 'clutchRating'
 
 interface InsightState {
   /** Set of insight IDs that have been seen in their unlocked state */
