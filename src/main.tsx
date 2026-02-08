@@ -31,7 +31,12 @@ if (import.meta.env.VITE_SENTRY_DSN) {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <Sentry.ErrorBoundary fallback={ErrorFallback} showDialog>
+    <Sentry.ErrorBoundary
+      fallback={({ error, resetError }) => (
+        <ErrorFallback error={error as Error} resetError={resetError} />
+      )}
+      showDialog
+    >
       <BrowserRouter>
         <App />
       </BrowserRouter>

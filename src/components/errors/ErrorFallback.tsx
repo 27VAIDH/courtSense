@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface ErrorFallbackProps {
   /**
    * Optional error object

@@ -77,7 +77,7 @@ const tiers: PricingTier[] = [
 /**
  * Pricing page - shows tier comparison and upgrade options
  */
-export function Pricing() {
+export default function Pricing() {
   const [searchParams] = useSearchParams();
 
   // Log page view with source
