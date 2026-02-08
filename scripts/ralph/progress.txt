@@ -2048,3 +2048,27 @@ I've successfully implemented **US-038 - Match of the Month and On This Day**, w
 
 There are still **3 incomplete stories** remaining (US-039, US-040, US-041), so another iteration will pick up the next story.
 ---
+
+## 2026-02-08 11:37 IST - US-039
+- What was implemented: Season Wrapped - Spotify-style shareable summary cards with 6 swipeable screens
+- Files changed:
+  - Created: src/components/wrapped/SeasonWrapped.tsx (main container with swipe navigation)
+  - Created: src/components/wrapped/cards/QuarterInNumbers.tsx (total stats card)
+  - Created: src/components/wrapped/cards/WinRateJourney.tsx (sparkline chart card)
+  - Created: src/components/wrapped/cards/BiggestRival.tsx (most-played opponent card)
+  - Created: src/components/wrapped/cards/BestMonth.tsx (best performing month card)
+  - Created: src/components/wrapped/cards/ClutchMoments.tsx (tight games stats card)
+  - Created: src/components/wrapped/cards/HeadlineStat.tsx (standout achievement card)
+  - Modified: src/pages/Profile.tsx (added Season Wrapped button, visible when 20+ matches)
+- **Learnings for future iterations:**
+  - Framer Motion AnimatePresence with drag gestures for swipeable stories - use `drag="x"` with `dragConstraints` and `onDragEnd` handler
+  - html2canvas integration: capture component ref with `html2canvas(ref.current, { scale: 2, backgroundColor: '#0A0A0A', width: 1080, height: 1920 })`
+  - Native share API: check `navigator.canShare({ files: [file] })` before calling `navigator.share()`, fallback to download link
+  - Wrapped cards use gradient backgrounds for visual variety - different gradient per card
+  - TypeScript strictness issue: when filtering arrays and accessing properties, assign to const variable first to help type narrowing
+  - Progress dots pattern: array map with conditional width/color based on currentCard index
+  - Share button positioned absolutely at bottom of full-screen overlay
+  - Season Wrapped button only shows when `matches.length >= 20` - prevents empty/underwhelming experience
+  - Each card is self-contained with its own data calculations and styling
+  - Watermark "SquashIQ" added to bottom of each card for brand recognition when shared
+---

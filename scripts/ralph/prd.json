@@ -756,7 +756,7 @@
         "Verify in browser that all 6 wrapped cards render and share button generates an image"
       ],
       "priority": 39,
-      "passes": false,
+      "passes": true,
       "notes": "This is a larger story but the cards are all similar in structure. The key complexity is html2canvas integration."
     },
     {
