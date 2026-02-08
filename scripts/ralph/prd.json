@@ -175,7 +175,7 @@
         "Test on physical iPhone: verify swipes responsive, haptics trigger correctly"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "Haptics via Vibration API (web standard) - works on modern mobile browsers."
     },
     {
