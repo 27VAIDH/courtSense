@@ -9,6 +9,9 @@ export type InsightId =
   | 'comebackIndex'
   | 'currentForm'
   | 'fastStarter'
+  | 'winMethodDistribution'
+  | 'lossMethodDistribution'
+  | 'bestShotTrends'
 
 interface InsightState {
   /** Set of insight IDs that have been seen in their unlocked state */

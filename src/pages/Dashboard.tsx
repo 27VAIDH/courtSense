@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useMatches, usePlayers, useVenues, useGames } from '@/db/hooks'
-import type { Match, Game } from '@/db/types'
+import { useMatches, usePlayers, useVenues, useGames, useRallyAnalyses } from '@/db/hooks'
+import type { Match, Game, RallyAnalysis } from '@/db/types'
 import type { InsightId } from '@/stores/insightStore'
 import type { Recommendation } from '@/lib/recommendations'
 import MatchHistoryList from '@/components/matches/MatchHistoryList'
@@ -15,6 +15,9 @@ import DecidingGames from '@/components/insights/DecidingGames'
 import ComebackIndex from '@/components/insights/ComebackIndex'
 import CurrentForm from '@/components/insights/CurrentForm'
 import FastStarter from '@/components/insights/FastStarter'
+import WinMethodDistribution from '@/components/insights/WinMethodDistribution'
+import LossMethodDistribution from '@/components/insights/LossMethodDistribution'
+import BestShotTrends from '@/components/insights/BestShotTrends'
 import RecommendationCard from '@/components/recommendations/RecommendationCard'
 
 function CurrentFormDots({ matches }: { matches: Match[] }) {
@@ -54,6 +57,7 @@ interface InsightConfig {
 function computeInsightStatuses(
   matches: Match[],
   games: Game[],
+  rallyAnalyses: RallyAnalysis[],
 ): InsightConfig[] {
   const totalMatches = matches.length
 
@@ -119,6 +123,10 @@ function computeInsightStatuses(
   // FastStarter: 8 total matches
   const fastStarterRemaining = totalMatches < 8 ? 8 - totalMatches : 0
 
+  // Rally insights: 5 rally analyses minimum
+  const rallyAnalysesCount = rallyAnalyses.length
+  const rallyInsightsRemaining = rallyAnalysesCount < 5 ? 5 - rallyAnalysesCount : 0
+
   return [
     { id: 'winRateByOpponent', remaining: winRateRemaining },
     { id: 'energyImpact', remaining: energyRemaining },
@@ -128,6 +136,9 @@ function computeInsightStatuses(
     { id: 'comebackIndex', remaining: comebackRemaining },
     { id: 'currentForm', remaining: currentFormRemaining },
     { id: 'fastStarter', remaining: fastStarterRemaining },
+    { id: 'winMethodDistribution', remaining: rallyInsightsRemaining },
+    { id: 'lossMethodDistribution', remaining: rallyInsightsRemaining },
+    { id: 'bestShotTrends', remaining: rallyInsightsRemaining },
   ]
 }
 
@@ -136,6 +147,7 @@ export default function Dashboard() {
   const players = usePlayers()
   const venues = useVenues()
   const games = useGames()
+  const rallyAnalyses = useRallyAnalyses()
   const navigate = useNavigate()
 
   const currentUser = useMemo(() => {
@@ -155,9 +167,9 @@ export default function Dashboard() {
   }, [matches])
 
   const insightStatuses = useMemo(() => {
-    if (!matches || !games) return []
-    return computeInsightStatuses(matches, games)
-  }, [matches, games])
+    if (!matches || !games || !rallyAnalyses) return []
+    return computeInsightStatuses(matches, games, rallyAnalyses)
+  }, [matches, games, rallyAnalyses])
 
   // Most recent match recommendation
   const latestRecommendation = useMemo((): Recommendation | null => {
@@ -183,7 +195,7 @@ export default function Dashboard() {
     return [...unlocked, ...locked]
   }, [insightStatuses])
 
-  const isLoading = matches === undefined || players === undefined || venues === undefined || games === undefined
+  const isLoading = matches === undefined || players === undefined || venues === undefined || games === undefined || rallyAnalyses === undefined
 
   // Loading state
   if (isLoading) {
@@ -255,6 +267,12 @@ export default function Dashboard() {
         return <CurrentForm matches={matches!} />
       case 'fastStarter':
         return <FastStarter matches={matches!} games={games!} />
+      case 'winMethodDistribution':
+        return <WinMethodDistribution rallyAnalyses={rallyAnalyses!} />
+      case 'lossMethodDistribution':
+        return <LossMethodDistribution rallyAnalyses={rallyAnalyses!} />
+      case 'bestShotTrends':
+        return <BestShotTrends rallyAnalyses={rallyAnalyses!} />
     }
   }
 
