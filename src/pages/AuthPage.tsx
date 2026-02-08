@@ -1,13 +1,15 @@
 import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { supabase } from '@/lib/supabase'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/stores/authStore'
+import { db } from '@/db/database'
 
 export default function AuthPage() {
   const navigate = useNavigate()
   const { session, loading } = useAuthStore()
+  const [localMatchCount, setLocalMatchCount] = useState<number>(0)
 
   useEffect(() => {
     // Redirect to dashboard if already authenticated
@@ -16,8 +18,38 @@ export default function AuthPage() {
     }
   }, [session, loading, navigate])
 
+  useEffect(() => {
+    // Check for local IndexedDB data
+    const checkLocalData = async () => {
+      try {
+        const count = await db.matches.count()
+        setLocalMatchCount(count)
+      } catch (error) {
+        console.error('Error checking local data:', error)
+      }
+    }
+    checkLocalData()
+  }, [])
+
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white flex flex-col items-center justify-center p-6">
+      {/* Local Data Banner */}
+      {!session && localMatchCount > 0 && (
+        <div className="w-full max-w-md mb-6 bg-gradient-to-r from-[#00E676]/20 to-[#00C853]/20 border border-[#00E676]/30 rounded-xl p-4">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">💾</span>
+            <div>
+              <div className="font-semibold text-white">
+                You have {localMatchCount} {localMatchCount === 1 ? 'match' : 'matches'} stored locally
+              </div>
+              <div className="text-sm text-gray-300">
+                Sign in to back them up to the cloud!
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
       <div className="text-center mb-12 max-w-md">
         <div className="mb-6">
