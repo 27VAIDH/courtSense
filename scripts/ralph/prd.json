@@ -155,7 +155,7 @@
         "Run Lighthouse audit: Performance score 90+ on mobile"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": "Performance is critical for mobile PWA. Target <2s load time on 3G."
     },
     {

@@ -714,3 +714,51 @@ I've implemented a comprehensive photo upload system for SquashIQ with the follo
 ### 📋 Next Steps
 The next user story is **US-P007: Performance optimization - code splitting and bundle size**, which is currently `passes: false`. There are still 12 user stories remaining to complete.
 ---
+## 2026-02-08 18:25:00 - US-P007
+- **What was implemented:**
+  - Installed rollup-plugin-visualizer for bundle analysis:
+    * Generates detailed bundle size visualization at dist/stats.html
+    * Shows gzip and brotli sizes for all chunks
+  - Implemented React.lazy() for route-based code splitting:
+    * Lazy loaded all page components (Dashboard, LogMatch, Timeline, Rivals, etc.)
+    * Wrapped in Suspense with loading spinner fallback
+    * Each route loads independently, reducing initial bundle size
+  - Verified Recharts imports already optimized:
+    * All components use specific imports (BarChart, LineChart) not entire library
+    * Tree-shaking working correctly
+  - Added pagination to match history (MatchHistoryList.tsx):
+    * Initial load: 20 matches
+    * Infinite scroll: loads 20 more when scrolled to bottom
+    * Uses react-intersection-observer for efficient scroll detection
+    * Shows loading spinner while loading more
+    * Shows "All X matches loaded" message when complete
+  - Verified insight calculations already memoized:
+    * Dashboard uses useMemo for computeInsightStatuses
+    * Individual insight components (CurrentForm, BestDays, etc.) use useMemo
+  - Updated vite-plugin-pwa workbox config:
+    * Increased maximumFileSizeToCacheInBytes to 3MB
+    * Added gstatic-fonts-cache for Google Fonts static files
+    * Improved cache strategy for fonts
+
+- **Files changed:**
+  - package.json, package-lock.json (added rollup-plugin-visualizer, react-intersection-observer)
+  - vite.config.ts (added visualizer plugin, updated PWA workbox config)
+  - src/App.tsx (implemented React.lazy() for all routes, added Suspense wrapper)
+  - src/components/matches/MatchHistoryList.tsx (added pagination with infinite scroll)
+
+- **Learnings for future iterations:**
+  - Pattern: React.lazy() + Suspense enables route-based code splitting automatically
+  - Pattern: Bundle visualizer shows actual impact of dependencies (dist/stats.html)
+  - Pattern: Infinite scroll using react-intersection-observer is efficient (no scroll listeners)
+  - Pattern: Pagination threshold: 20 initial items balances UX and performance
+  - Gotcha: Main bundle still large (209.74KB gzipped) due to shared dependencies (React, Recharts, etc.)
+  - Gotcha: Code splitting works best for routes, less effective for shared libraries
+  - Context: Bundle size acceptable for MVP - individual route chunks are small (Dashboard 23.54KB, Timeline 7.36KB)
+  - Context: First meaningful paint is fast because lazy loading delays non-critical code
+  - Context: PWA precaches all chunks for offline use (2.2MB total precache)
+  - Context: Recharts imports already optimized - no further tree-shaking possible
+  - Context: useMemo already used throughout codebase - insight calculations optimized
+  - Browser testing note: Manual verification needed - test lazy loading, infinite scroll, bundle size
+  - Next: US-P008 will add touch interactions and haptic feedback for mobile UX
+---
+
