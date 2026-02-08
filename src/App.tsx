@@ -14,6 +14,7 @@ import { processPhotoUploadQueue } from '@/lib/photoUpload'
 const Onboarding = lazy(() => import('@/components/onboarding/Onboarding'))
 const AuthPage = lazy(() => import('@/pages/AuthPage'))
 const AuthCallback = lazy(() => import('@/pages/AuthCallback'))
+const Pricing = lazy(() => import('@/pages/Pricing'))
 const Dashboard = lazy(() => import('@/pages/Dashboard'))
 const LogMatch = lazy(() => import('@/pages/LogMatch'))
 const Timeline = lazy(() => import('@/pages/Timeline'))
@@ -89,6 +90,7 @@ function App() {
         {/* Public routes */}
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route path="/pricing" element={<Pricing />} />
 
         {/* Protected routes */}
         <Route
