@@ -46,16 +46,22 @@ export default function MigrationModal({
   const progressPercentage = totalRecords > 0 ? (progress / totalRecords) * 100 : 0
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+    <div
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-6"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="migration-title"
+      aria-describedby="migration-description"
+    >
       <div className="bg-[#1A1A1A] rounded-3xl p-8 max-w-md w-full border border-gray-800 shadow-2xl">
         {/* Header */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
-            <h2 className="text-2xl font-bold text-white">
+            <h2 id="migration-title" className="text-2xl font-bold text-white">
               {!isStarted ? 'Backup Your Data' : error ? 'Migration Paused' : 'Migrating Your Data'}
             </h2>
           </div>
-          <p className="text-gray-400 text-sm">
+          <p id="migration-description" className="text-gray-400 text-sm">
             {!isStarted
               ? `We found ${totalRecords} local ${totalRecords === 1 ? 'record' : 'records'}. Let's back them up to the cloud.`
               : error
@@ -66,9 +72,9 @@ export default function MigrationModal({
 
         {/* Progress Section */}
         {isStarted && !error && (
-          <div className="mb-6">
+          <div className="mb-6" role="status" aria-live="polite">
             {/* Progress Bar */}
-            <div className="bg-[#0A0A0A] rounded-full h-3 mb-3 overflow-hidden">
+            <div className="bg-[#0A0A0A] rounded-full h-3 mb-3 overflow-hidden" role="progressbar" aria-valuenow={progressPercentage} aria-valuemin={0} aria-valuemax={100}>
               <div
                 className="bg-gradient-to-r from-[#00E676] to-[#00C853] h-full transition-all duration-300 ease-out"
                 style={{ width: `${progressPercentage}%` }}
@@ -87,7 +93,7 @@ export default function MigrationModal({
 
         {/* Error Display */}
         {error && (
-          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl" role="alert">
             <p className="text-red-400 text-sm">{error}</p>
           </div>
         )}

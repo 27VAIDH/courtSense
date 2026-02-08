@@ -1106,3 +1106,72 @@ I've successfully implemented US-P008! Here's what was accomplished:
   - Next: US-P010 will add accessibility improvements for WCAG AA compliance
 ---
 
+
+## Iteration 3 - Sun Feb  8 18:40:04 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260208-182230/iter-3.log
+---
+Perfect! There are still 9 user stories remaining with `passes: false`, so the project is not complete yet.
+
+## ✅ US-P009 Complete: iOS-specific polish with safe areas and PWA install prompt
+
+I've successfully implemented US-P009! Here's what was accomplished:
+
+### What Was Implemented
+
+1. **Safe Area CSS**
+   - **BottomTabBar**: Added `padding-bottom: calc(0.5rem + env(safe-area-inset-bottom))` to respect iOS home indicator
+   - **Dashboard Header**: Added `padding-top: calc(1.5rem + env(safe-area-inset-top))` to avoid status bar overlap
+   - Applied safe area padding to loading and empty states
+
+2. **Overscroll Bounce Disable**
+   - Set `overscroll-behavior-y: none` on body element
+   - Prevents iOS rubber-band scrolling for a native-like feel
+
+3. **PWA Install Banner** (`src/components/pwa/PWAInstallBanner.tsx`)
+   - Detects if already installed using `matchMedia('(display-mode: standalone)')`
+   - Detects iOS Safari (checks user agent)
+   - Shows dismissible banner: "Add SquashIQ to your home screen"
+   - **"How to Install" button** reveals step-by-step instructions:
+     1. Tap the Share button at the bottom of Safari
+     2. Scroll down and tap Add to Home Screen
+     3. Tap Add in the top-right corner
+   - Stores dismissal flag in localStorage
+   - Positioned at `bottom-20` to avoid tab bar overlap
+   - Gradient background with backdrop blur effect
+
+4. **iOS Icon Sizes Generated**
+   - 180x180 (iPhone home screen)
+   - 167x167 (iPad Pro)
+   - 152x152 (iPad)
+   - 120x120 (iPhone)
+   - All icons properly scaled with adjusted viewBox and elements
+
+5. **Manifest & Meta Tags**
+   - Updated vite.config.ts to include 180x180 icon
+   - Confirmed theme_color and background_color both set to #0A0A0A
+   - index.html already had correct iOS meta tags (verified)
+
+### Quality Checks
+- ✅ Typecheck passed (`npx tsc --noEmit`)
+- ✅ Build successful (3.92s, 211.21KB gzipped main bundle)
+- ✅ All acceptance criteria met
+- ✅ Changes committed to `ralph/squashiq-pwa-v2` branch
+- ✅ PRD updated (`passes: true`)
+- ✅ Progress log updated
+
+### Key Patterns Discovered
+- Safe area CSS uses `calc()` to combine base padding with `env(safe-area-inset-*)`
+- PWA install detection: check `display-mode: standalone` before showing banner
+- iOS detection: User agent check for iPad/iPhone/iPod + Safari (not Chrome)
+- Banner positioned above tab bar to avoid overlap
+
+### Next Steps
+**US-P010: Accessibility improvements - WCAG AA compliance** is next with `passes: false`. There are still **9 user stories** remaining to complete.
+
+**Browser Testing Note:** Manual verification required on physical iOS device:
+1. Test safe areas - content should not be hidden behind status bar or home indicator
+2. Test install banner - should appear on iOS Safari, dismissible
+3. Test Add to Home Screen - app should install as standalone PWA
+4. Test overscroll - no rubber-band bounce effect
+---

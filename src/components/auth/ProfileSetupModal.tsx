@@ -127,9 +127,14 @@ export default function ProfileSetupModal({ onComplete }: ProfileSetupModalProps
   }
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+    <div
+      className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="profile-setup-title"
+    >
       <div className="bg-[#1A1A1A] rounded-lg max-w-md w-full p-6">
-        <h2 className="text-2xl font-bold text-white mb-2">Welcome to SquashIQ!</h2>
+        <h2 id="profile-setup-title" className="text-2xl font-bold text-white mb-2">Welcome to SquashIQ!</h2>
         <p className="text-gray-400 mb-6">Let's set up your profile to get started.</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">

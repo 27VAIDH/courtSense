@@ -65,7 +65,7 @@ export default function BottomTabBar() {
   if (!tabBarVisible) return null
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 bg-[#0A0A0A]">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 bg-[#0A0A0A]" aria-label="Main navigation">
       <div
         className="flex items-end justify-around px-2 pt-1"
         style={{ paddingBottom: 'calc(0.5rem + env(safe-area-inset-bottom, 0px))' }}
@@ -75,6 +75,7 @@ export default function BottomTabBar() {
             key={tab.to}
             to={tab.to}
             end={tab.to === '/'}
+            aria-label={tab.label}
             className={({ isActive }) =>
               `flex min-h-[48px] min-w-[48px] flex-col items-center justify-center gap-0.5 text-[10px] transition-colors ${
                 tab.isCenter
@@ -88,11 +89,11 @@ export default function BottomTabBar() {
             }
           >
             {tab.isCenter ? (
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#00E676]/15">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#00E676]/15" aria-hidden="true">
                 {tab.icon}
               </span>
             ) : (
-              tab.icon
+              <span aria-hidden="true">{tab.icon}</span>
             )}
             <span>{tab.label}</span>
           </NavLink>

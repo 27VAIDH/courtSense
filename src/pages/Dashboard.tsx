@@ -211,7 +211,8 @@ export default function Dashboard() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="px-4 pb-4" style={{ paddingTop: 'calc(1.5rem + env(safe-area-inset-top, 0px))' }}>
+      <div className="px-4 pb-4" style={{ paddingTop: 'calc(1.5rem + env(safe-area-inset-top, 0px))' }} role="status" aria-live="polite">
+        <span className="sr-only">Loading dashboard...</span>
         {/* Header skeleton */}
         <div className="mb-6">
           <div className="h-7 w-40 animate-pulse rounded-lg bg-surface mb-2" />
@@ -291,9 +292,9 @@ export default function Dashboard() {
 
   return (
     <PullToRefresh>
-      <div className="px-4 pb-4" style={{ paddingTop: 'calc(1.5rem + env(safe-area-inset-top, 0px))' }}>
+      <main className="px-4 pb-4" style={{ paddingTop: 'calc(1.5rem + env(safe-area-inset-top, 0px))' }}>
         {/* Header with stats */}
-        <div className="mb-6">
+        <header className="mb-6">
           <div className="flex items-start justify-between">
             <div>
               <h1 className="text-2xl font-bold text-text-primary">
@@ -309,7 +310,7 @@ export default function Dashboard() {
             </div>
             <SyncStatusIndicator />
           </div>
-        </div>
+        </header>
 
         {/* Backup Reminder Banner */}
         <BackupReminder />
@@ -349,11 +350,11 @@ export default function Dashboard() {
         </div>
 
         {/* Match history */}
-        <div>
+        <section>
           <h2 className="text-lg font-semibold text-text-secondary mb-3">Match History</h2>
           <MatchHistoryList />
-        </div>
-      </div>
+        </section>
+      </main>
     </PullToRefresh>
   )
 }
