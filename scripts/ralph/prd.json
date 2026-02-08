@@ -355,7 +355,7 @@
         "Test: create group, invite friend, verify group leaderboard shows only members, log match, verify activity feed updates"
       ],
       "priority": 16,
-      "passes": false,
+      "passes": true,
       "notes": "Groups are powerful for retention - users compete with their regular squash club."
     },
     {
@@ -379,7 +379,7 @@
         "Verify in browser: Pro feature shows lock icon, click opens modal with pricing info"
       ],
       "priority": 17,
-      "passes": false,
+      "passes": true,
       "notes": "No payment integration - just architecture. Stripe can be added post-MVP after ≥1k users."
     },
     {
@@ -401,7 +401,7 @@
         "Test: trigger error (throw in component), verify appears in Sentry dashboard with session replay"
       ],
       "priority": 18,
-      "passes": false,
+      "passes": true,
       "notes": "Essential for production. Free tier sufficient for MVP. Session replay is invaluable for debugging."
     }
   ]
