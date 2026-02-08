@@ -237,7 +237,7 @@ for i in $(seq 1 "$MAX_ITERATIONS"); do
   } >> "$PROGRESS_FILE"
 
   # Print what got completed (nice UX)
-  COMPLETED_LINE="$(echo "$OUTPUT" | grep -Eo 'US-[0-9]{3} is complete' | tail -n 1 || true)"
+  COMPLETED_LINE="$(echo "$OUTPUT" | grep -Eoi 'US-P?[0-9]{3} (is )?[Cc]omplete' | tail -n 1 || true)"
   if [[ -n "$COMPLETED_LINE" ]]; then
     echo "✅ $COMPLETED_LINE"
     NO_PROGRESS=0
