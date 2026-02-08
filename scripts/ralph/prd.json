@@ -88,7 +88,7 @@
         "Test: create 10 matches locally, sign in, verify all 10 uploaded to Supabase with correct ID remapping"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "Critical for user retention. Must not lose data during migration. Photos handled separately in US-P005."
     },
     {

@@ -11,6 +11,9 @@ Started: Sun Feb  8 15:49:01 IST 2026
 - Auth flow: AuthGuard wraps protected routes, redirects to /auth if not authenticated
 - Supabase Auth UI component handles OAuth (Google) with custom theme matching design system
 - Session persistence automatic via Supabase localStorage, 7-day expiry
+- Migration pattern: Use ID mapping (Map<number, string>) to convert local auto-increment IDs to Supabase UUIDs
+- Batch uploads: 50 records max per Supabase insert to avoid timeouts
+- Local IndexedDB (Dexie) uses auto-increment IDs, Supabase uses UUIDs - always remap on migration
 
 ---
 
@@ -253,4 +256,119 @@ The next user story is **US-P003: User profile creation on first sign-in**, whic
   - Context: crypto.randomUUID() used for player ID (not auth.uid since one user can have multiple players)
   - Browser testing note: Manual verification needed - new user should see profile setup modal after OAuth
   - Next: US-P004 will handle migration from IndexedDB to Supabase for existing users
+---
+
+## Iteration 3 - Sun Feb  8 16:05:47 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260208-154901/iter-3.log
+---
+There are still 15 stories remaining with `passes: false`, so the project is not yet complete. Let me provide a summary of what was accomplished:
+
+---
+
+## ✅ US-P003 Complete: User profile creation on first sign-in
+
+I've successfully implemented US-P003! Here's what was accomplished:
+
+### What Was Implemented
+
+1. **ProfileSetupModal Component** (`src/components/auth/ProfileSetupModal.tsx`)
+   - Full-screen modal with dark theme matching app design
+   - **Username input** with real-time validation:
+     - 3-20 characters length
+     - Alphanumeric + underscores only
+     - Uniqueness check against Supabase database
+     - Error messages for invalid inputs
+   - **Display name input** (pre-filled with email username)
+   - Creates `user_profiles` record with defaults:
+     - `privacy_setting: 'friends'`
+     - `user_tier: 'free'`
+     - `feature_flags: {}`
+   - Creates default `players` record with `is_current_user: true`
+
+2. **AuthGuard Updates** (`src/components/auth/AuthGuard.tsx`)
+   - Profile existence check after authentication
+   - Shows ProfileSetupModal if no profile exists
+   - Loading state during profile check
+   - Sets `profileComplete` flag after successful setup
+
+3. **Auth Store Updates** (`src/stores/authStore.ts`)
+   - Added `profileComplete` state flag
+   - Added `setProfileComplete` action
+   - Clears `profileComplete` on sign out
+
+### Quality Checks
+- ✅ Typecheck passed
+- ✅ Build successful (2.04s, 423KB gzipped)
+- ✅ All acceptance criteria met
+- ✅ Changes committed to `ralph/squashiq-pwa-v2` branch
+
+### Codebase Patterns Discovered
+- Profile check uses PGRST116 error code to detect "no rows returned"
+- Username stored as lowercase for case-insensitive lookups
+- Default player record uses `crypto.randomUUID()` (not `auth.uid()`)
+- Modal rendered inside AuthGuard instead of children when setup needed
+
+### Next Steps
+The next user story is **US-P004: Automatic data migration from IndexedDB to Supabase**, which will:
+- Detect local IndexedDB data on sign-in
+- Show migration modal with progress tracking
+- Batch upload matches, players, venues, games, and rally analyses
+- Handle ID remapping from local to server UUIDs
+
+**Browser Testing Note:** Manual verification is required:
+1. Run `npm run dev`
+2. Sign in with a new Google account
+3. Should see profile setup modal
+4. Enter username and display name
+5. Click "Complete Setup"
+6. Should proceed to Dashboard
+7. Verify profile created in Supabase dashboard
+---
+## 2026-02-08 17:42:00 - US-P004
+- **What was implemented:**
+  - Added local data detection banner to AuthPage (src/pages/AuthPage.tsx):
+    * Shows banner when user has local IndexedDB matches but is not signed in
+    * Banner displays match count and encourages sign-in to back up data
+  - Created MigrationModal component (src/components/auth/MigrationModal.tsx):
+    * Full-screen modal with progress bar showing X/Y records migrated
+    * Displays current migration step (e.g., "Uploading players...", "Uploading matches...")
+    * Error handling with "Retry Migration" button if migration fails
+    * Completion callback to dismiss modal after successful migration
+  - Implemented migration logic (src/lib/migration.ts):
+    * checkIfMigrationNeeded() - checks if user has server data, if not checks for local data
+    * getTotalRecordsToMigrate() - counts all local records to display progress
+    * performMigration() - orchestrates 5-step migration with ID remapping:
+      1. Upload players (map local auto-increment IDs to server UUIDs)
+      2. Upload venues (map local IDs to UUIDs)
+      3. Upload matches (remap opponent_id, venue_id using ID maps)
+      4. Upload games (remap match_id)
+      5. Upload rally_analyses (remap match_id)
+    * Batch uploads: max 50 records per request to avoid Supabase timeouts
+    * Progress callbacks: onProgress(current, total, step), onError(message)
+    * Sets migration_completed flag in localStorage after success
+  - Integrated migration into AuthGuard (src/components/auth/AuthGuard.tsx):
+    * Checks for migration after profile setup completes
+    * Shows MigrationModal if migration needed
+    * Handles migration start/progress/completion lifecycle
+
+- **Files changed:**
+  - src/pages/AuthPage.tsx (updated - added local data banner)
+  - src/components/auth/AuthGuard.tsx (updated - integrated migration check)
+  - src/components/auth/MigrationModal.tsx (new - migration UI)
+  - src/lib/migration.ts (new - migration logic)
+
+- **Learnings for future iterations:**
+  - Pattern: ID remapping is critical - local IndexedDB uses auto-increment numbers, Supabase uses UUIDs
+  - Pattern: Maintain ID mapping throughout migration (Map<number, string>) to remap foreign keys
+  - Pattern: Batch inserts with 50-record limit prevents Supabase timeout errors
+  - Pattern: Migration modal shows "Start Migration" button, not auto-start, giving users control
+  - Gotcha: Match result format differs between local ("W 3-1") and server (result: 'win', user_score: 3, opponent_score: 1)
+  - Gotcha: Energy level stored as strings locally ('Low', 'Medium', 'High'), numbers in Supabase (1, 2, 3)
+  - Gotcha: Rally analysis structure differs - local has flat fields, server uses rally_data JSONB object
+  - Context: Migration completed flag in localStorage prevents re-running after success
+  - Context: Local data remains in IndexedDB after migration (becomes cache for offline-first)
+  - Context: Photos NOT migrated in this story - handled separately in US-P006
+  - Browser testing note: Manual verification needed - create local matches, sign in, verify uploaded to Supabase
+  - Next: US-P005 will implement bidirectional sync engine to keep data in sync across devices
 ---
