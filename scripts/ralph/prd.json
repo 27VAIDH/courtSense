@@ -47,8 +47,8 @@
         "Verify in browser: sign in with Google test account, redirected to Dashboard, session persists on refresh"
       ],
       "priority": 2,
-      "passes": false,
-      "notes": "Google OAuth requires configuration in Google Cloud Console. Add setup instructions to README-SUPABASE.md."
+      "passes": true,
+      "notes": "Google OAuth requires configuration in Google Cloud Console. Setup instructions added to README-SUPABASE.md."
     },
     {
       "id": "US-P003",

@@ -7,6 +7,10 @@ Started: Sun Feb  8 15:49:01 IST 2026
 - Database schema uses RLS policies with auth.uid() = user_id pattern for all user-scoped tables
 - All sync-enabled tables include last_modified_ms BIGINT for conflict resolution
 - Storage bucket pattern: {userId}/{matchId}_{timestamp}.jpg for user-specific uploads
+- Zustand stores follow pattern: create<StateInterface>((set, get) => ({...})) with typed hooks
+- Auth flow: AuthGuard wraps protected routes, redirects to /auth if not authenticated
+- Supabase Auth UI component handles OAuth (Google) with custom theme matching design system
+- Session persistence automatic via Supabase localStorage, 7-day expiry
 
 ---
 
@@ -38,4 +42,97 @@ Started: Sun Feb  8 15:49:01 IST 2026
   - Context: Schema SQL file is meant to be run manually in Supabase SQL Editor - not auto-applied
   - Context: Storage bucket RLS uses storage.foldername(name)[1] pattern to extract userId from path
 
+---
+
+## Iteration 1 - Sun Feb  8 15:55:22 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260208-154901/iter-1.log
+---
+Perfect! I have successfully completed US-P001. Let me provide a summary of what was accomplished.
+
+---
+
+## ✅ US-P001 Complete: Supabase Project Setup
+
+I've successfully implemented the foundation story for SquashIQ PWA v2.0. Here's what was accomplished:
+
+### What Was Implemented
+
+1. **Dependencies Installed**
+   - `@supabase/supabase-js` v2.95.3 - Core Supabase client
+   - `@supabase/auth-helpers-react` v0.15.0 - Auth helpers (note: deprecated but functional)
+
+2. **Supabase Client Configuration**
+   - Created `src/lib/supabase.ts` with:
+     - Environment variable validation (warns if not configured)
+     - TypeScript database types for all tables
+     - Auth configuration with PKCE flow and session persistence
+
+3. **Comprehensive Database Schema**
+   - Created `src/db/supabase-schema.sql` with:
+     - **Core tables**: user_profiles, players, venues, matches, games, rally_analyses
+     - **Social tables**: friendships, groups, group_members, leaderboard_cache, activity_log
+     - **RLS policies** on ALL tables (auth.uid() = user_id pattern)
+     - **Performance indexes** on critical query paths
+     - **Storage bucket** (match-photos) with user-scoped RLS
+     - All sync tables include `last_modified_ms` for conflict resolution
+
+4. **Setup Documentation**
+   - `.env.local` template with detailed instructions (not committed to git)
+   - `README-SUPABASE.md` with comprehensive guide covering:
+     - Supabase project creation
+     - Database schema deployment
+     - Google OAuth setup (Google Cloud Console + Supabase)
+     - Storage configuration
+     - Development tips and troubleshooting
+
+### Quality Checks
+- ✅ Typecheck passed
+- ✅ Build successful (1.89s)
+- ✅ All files committed to `ralph/squashiq-pwa-v2` branch
+
+### Next Steps
+The next user story is **US-P002: Authentication UI with Google Sign In**, which will build on this foundation to implement the auth flow.
+---
+
+## 2026-02-08 16:00:00 - US-P002
+- **What was implemented:**
+  - Installed @supabase/auth-ui-react and @supabase/auth-ui-shared packages
+  - Created Zustand auth store (src/stores/authStore.ts) with:
+    * User/session state management
+    * Auth initialization on app load
+    * Session persistence (auto via Supabase localStorage, 7-day expiry)
+    * Sign out functionality with store cleanup
+  - Created AuthPage (src/pages/AuthPage.tsx) with:
+    * Full-screen landing page with dark theme (#0A0A0A background)
+    * SquashIQ logo with gradient (#00E676 to #00C853)
+    * Value props: 📊 Deep insights, 🔄 Never lose data, 👥 Compete with friends
+    * Supabase Auth UI component with Google OAuth
+    * Custom theme matching app design system (primary #00E676, surface #1A1A1A)
+  - Created AuthCallback (src/pages/AuthCallback.tsx) to handle OAuth redirect
+  - Created AuthGuard (src/components/auth/AuthGuard.tsx) to protect routes
+  - Updated App.tsx routing to separate public (/auth, /auth/callback) and protected routes
+  - Added logout to Settings with confirmation dialog and email display
+
+- **Files changed:**
+  - package.json, package-lock.json (added auth UI dependencies)
+  - src/stores/authStore.ts (new - Zustand auth store)
+  - src/pages/AuthPage.tsx (new - Google Sign In landing page)
+  - src/pages/AuthCallback.tsx (new - OAuth callback handler)
+  - src/components/auth/AuthGuard.tsx (new - protected route wrapper)
+  - src/App.tsx (updated routing with AuthGuard wrapper)
+  - src/components/settings/Settings.tsx (added logout button)
+  - README-SUPABASE.md (updated testing instructions)
+
+- **Learnings for future iterations:**
+  - Pattern: Zustand auth store follows same pattern as other stores (useAuthStore hook)
+  - Pattern: AuthGuard initializes auth on mount, redirects to /auth if not authenticated
+  - Pattern: Supabase Auth UI component handles all OAuth flows (no custom forms needed)
+  - Pattern: Auth callback uses supabase.auth.exchangeCodeForSession() to complete OAuth
+  - Gotcha: Must initialize auth store in App.tsx useEffect to get session on app load
+  - Gotcha: Session persistence is automatic via Supabase (localStorage), expires after 7 days
+  - Context: Auth UI theme customization uses @supabase/auth-ui-shared ThemeSupa
+  - Context: Protected routes wrapped in AuthGuard, public routes (/auth, /auth/callback) outside
+  - Browser testing note: Manual browser verification needed (no automated browser tools available)
+  - Next: US-P003 will check for user_profiles record on first sign-in
 ---
