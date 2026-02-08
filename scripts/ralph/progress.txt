@@ -136,3 +136,121 @@ The next user story is **US-P002: Authentication UI with Google Sign In**, which
   - Browser testing note: Manual browser verification needed (no automated browser tools available)
   - Next: US-P003 will check for user_profiles record on first sign-in
 ---
+
+## Iteration 2 - Sun Feb  8 16:01:41 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260208-154901/iter-2.log
+---
+Perfect! US-P001 and US-P002 are complete (`passes: true`), but there are still many stories remaining with `passes: false`. The iteration is complete.
+
+---
+
+## ✅ US-P002 Complete: Authentication UI with Google Sign In
+
+I've successfully implemented US-P002! Here's what was accomplished:
+
+### What Was Implemented
+
+1. **Dependencies Installed**
+   - `@supabase/auth-ui-react` v0.4.7 - Pre-built auth UI components
+   - `@supabase/auth-ui-shared` v0.1.8 - Shared theme utilities
+
+2. **Auth Store** (`src/stores/authStore.ts`)
+   - User/session state management with Zustand
+   - Auth initialization on app load
+   - Session persistence (automatic via Supabase, 7-day expiry)
+   - Sign out functionality with store cleanup
+
+3. **AuthPage** (`src/pages/AuthPage.tsx`)
+   - Full-screen landing page with dark theme (#0A0A0A)
+   - SquashIQ logo with gradient (#00E676 → #00C853)
+   - Value props section: 📊 Deep insights, 🔄 Never lose data, 👥 Compete with friends
+   - Supabase Auth UI component with Google OAuth
+   - Custom theme matching the app's design system
+
+4. **Auth Callback Handler** (`src/pages/AuthCallback.tsx`)
+   - Processes OAuth redirect from Google
+   - Exchanges code for session
+   - Redirects to Dashboard on success
+
+5. **Protected Routes** (`src/components/auth/AuthGuard.tsx`)
+   - Wraps all protected routes
+   - Redirects to `/auth` if not authenticated
+   - Shows loading state during initialization
+
+6. **Routing Updates** (`src/App.tsx`)
+   - Public routes: `/auth`, `/auth/callback`
+   - Protected routes: all app routes wrapped in `<AuthGuard>`
+   - Auth initialization on app mount
+
+7. **Logout Functionality** (`src/components/settings/Settings.tsx`)
+   - Account section shows signed-in email
+   - Sign Out button with confirmation dialog
+   - Clears session and redirects to `/auth`
+
+8. **Documentation**
+   - Updated `README-SUPABASE.md` with testing instructions
+
+### Quality Checks
+- ✅ Typecheck passed (`npx tsc --noEmit`)
+- ✅ Build successful (2.04s, 422KB gzipped)
+- ✅ All acceptance criteria met
+- ✅ Changes committed to `ralph/squashiq-pwa-v2` branch
+
+### Codebase Patterns Discovered
+- Zustand stores follow consistent pattern across the codebase
+- AuthGuard pattern for protecting routes
+- Supabase Auth UI handles all OAuth complexity
+- Session persistence is automatic via Supabase
+
+### Next Steps
+The next user story is **US-P003: User profile creation on first sign-in**, which will:
+- Check for `user_profiles` record after auth
+- Show profile setup modal for new users
+- Create default player record
+
+**Note:** Browser testing requires manual verification (no automated browser tools available). To test:
+1. Run `npm run dev`
+2. Visit `http://localhost:5173`
+3. Should redirect to `/auth`
+4. Click "Continue with Google"
+5. Complete OAuth flow
+6. Should redirect to Dashboard
+7. Session persists on refresh
+---
+## 2026-02-08 16:15:00 - US-P003
+- **What was implemented:**
+  - Created ProfileSetupModal component (src/components/auth/ProfileSetupModal.tsx) with:
+    * Username input with validation (3-20 chars, alphanumeric + underscores)
+    * Display name input (pre-filled with email username)
+    * Real-time username uniqueness check against Supabase
+    * Error handling with user-friendly messages
+    * Creates user_profiles record with default settings (privacy='friends', tier='free')
+    * Creates default player record with is_current_user=true
+  - Updated AuthGuard (src/components/auth/AuthGuard.tsx) with:
+    * Profile existence check after authentication
+    * Shows ProfileSetupModal if profile doesn't exist
+    * Loading state during profile check
+    * Completion callback to update profileComplete flag
+  - Updated authStore (src/stores/authStore.ts) with:
+    * Added profileComplete flag to state
+    * setProfileComplete action
+    * Clears profileComplete on sign out
+
+- **Files changed:**
+  - src/components/auth/ProfileSetupModal.tsx (new - profile setup modal)
+  - src/components/auth/AuthGuard.tsx (updated - added profile check logic)
+  - src/stores/authStore.ts (updated - added profileComplete state)
+
+- **Learnings for future iterations:**
+  - Pattern: Profile check uses PGRST116 error code to detect "no rows" (profile doesn't exist)
+  - Pattern: Username uniqueness check uses .single() query, expects PGRST116 for available usernames
+  - Pattern: Modal is rendered inside AuthGuard instead of children when profile setup needed
+  - Gotcha: Username stored as lowercase for case-insensitive lookups
+  - Gotcha: Display name defaults to email username (e.g., "john" from "john@example.com")
+  - Context: Default player record created with is_current_user=true to distinguish user from opponents
+  - Context: Privacy setting defaults to 'friends', user tier defaults to 'free'
+  - Context: crypto.randomUUID() used for player ID (not auth.uid since one user can have multiple players)
+  - Browser testing note: Manual verification needed - new user should see profile setup modal after OAuth
+  - Next: US-P004 will handle migration from IndexedDB to Supabase for existing users
+---

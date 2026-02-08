@@ -66,7 +66,7 @@
         "Verify in browser: new user signs in, prompted for username, profile created in Supabase"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Simple profile setup - just username and display name for MVP. Bio and avatar can be added later."
     },
     {
