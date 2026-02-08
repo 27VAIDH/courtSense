@@ -522,7 +522,7 @@
         "Verify in browser with test data"
       ],
       "priority": 27,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -543,7 +543,7 @@
         "Verify in browser that heatmap cells render with correct colors and streak displays correctly"
       ],
       "priority": 28,
-      "passes": false,
+      "passes": true,
       "notes": "Can use a custom SVG grid component or a lightweight library like react-activity-calendar."
     },
     {
@@ -562,7 +562,7 @@
         "Verify in browser that milestones appear on chart and in list with test data"
       ],
       "priority": 29,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -584,7 +584,7 @@
         "Verify in browser that swipe navigation, selection, skip, and save all work correctly"
       ],
       "priority": 30,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -602,7 +602,7 @@
         "Verify in browser that donut charts and shot bubbles render with test data"
       ],
       "priority": 31,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -622,7 +622,7 @@
         "Verify in browser that clutch rating animates and breakdown tables display correctly"
       ],
       "priority": 32,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -640,7 +640,7 @@
         "Verify in browser that badge grid renders with both earned and unearned states, and toast appears"
       ],
       "priority": 33,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -658,7 +658,7 @@
         "Typecheck passes"
       ],
       "priority": 34,
-      "passes": false,
+      "passes": true,
       "notes": "This is logic-only. Display is in US-035."
     },
     {

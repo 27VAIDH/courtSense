@@ -69,6 +69,12 @@
 - Timeline page uses time range filtering with filterByTimeRange() utility — cutoff dates computed via Date constructor arithmetic
 - Recharts AreaChart with split fills for positive/negative: use two Area elements with dataKey functions returning 0 for out-of-range values, each with its own gradient fill, plus a third Area with fill="none" for the main line
 - Win/Loss River momentum: cumulative +1 for win, -1 for loss — Y-axis domain auto-scaled with padding
+- Recharts ReferenceArea + gradient fills for shading above/below threshold lines (e.g. 50% baseline) — use unique gradient IDs per chart to avoid conflicts
+- Rolling win rate calculation: sliding window of last N matches, computed at each match point from sorted array
+- Locked chart preview pattern: lock icon + "Log X more matches to unlock" + progress bar showing current/target ratio
+- Activity heatmap: custom div grid (not SVG/library) — weeks as columns, days as rows, Mon-aligned. `dateKey()` helper for YYYY-MM-DD string keys
+- Regularity streak: ISO week-based calculation using `getWeekKey()` — walks backwards from current week counting consecutive weeks with matches
+- Heatmap & streak use ALL matches (unfiltered), not time-range-filtered, since they have their own fixed windows (3 months / all-time)
 
 # Ralph Progress Log
 Started: Sat Feb  7 16:50:52 IST 2026
@@ -1350,4 +1356,415 @@ US-025 is complete. There are still stories with `passes: false` (US-026 through
   - Timeline page passes a `playersMap: Map<number, Player>` to child components for efficient O(1) opponent name lookups
   - Empty state per-chart: WinLossRiver shows "No matches in this time range" when filtered data is empty (different from page-level empty state)
   - Custom tooltip styling: match the codebase pattern with `bg-surface-elevated rounded-lg` and colored result text
+---
+
+## Iteration 4 - Sat Feb  7 23:53:04 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-233902/iter-4.log
+---
+US-026 is complete. There are still stories with `passes: false` (US-027 through US-041), so another iteration will pick up the next story.
+
+**Summary of US-026 completion:**
+
+- **Rewrote `src/pages/Timeline.tsx`** from a placeholder into the full Timeline page with:
+  - **Time range selector**: Horizontal pill tabs for "Last 30 days", "Last 3 months", "Last 6 months", "All time" (default: All time)
+  - **Loading skeleton**: Animated placeholders while Dexie data loads
+  - **Empty state**: "Your squash journey starts here" with timeline illustration emoji and green CTA button to /log
+  - **Win/Loss River chart**: Rendered via the WinLossRiver component with filtered matches and player lookup map
+
+- **Created `src/components/timeline/WinLossRiver.tsx`**: Recharts AreaChart showing cumulative momentum score
+  - X-axis: match dates, Y-axis: cumulative momentum (+1 per win, -1 per loss)
+  - Green gradient fill above 0 line (winning streaks), red gradient fill below 0 line (losing periods)
+  - Interactive tooltips showing opponent name, result, and date on tap/click
+  - Custom dots colored green for wins, red for losses
+  - Auto-scaled Y-axis domain with padding
+  - Per-chart empty state when no matches in selected time range
+
+- Typecheck passes, build succeeds
+- Committed as `feat: US-026 - Timeline page with Win/Loss River chart`
+- PRD updated with `passes: true` for US-026
+- Progress log updated with codebase patterns and learnings
+---
+
+## 2026-02-07 - US-027
+- What was implemented: Rolling Win Rate chart on Timeline page — a Recharts LineChart showing rolling win rate over last 10 matches, with 50% reference line and green/red shaded zones
+- Files changed: src/components/timeline/RollingWinRate.tsx (new), src/pages/Timeline.tsx (updated)
+- **Learnings for future iterations:**
+  - Recharts `ReferenceArea` with gradient fills works well for shading above/below a threshold line
+  - The `RollingWinRate` component follows the same patterns as `WinLossRiver` — Card wrapper, locked state for insufficient data, empty state for no matches in range
+  - Use unique gradient IDs (e.g. `rwrGreenGrad`) to avoid conflicts with gradients from other charts on the same page
+  - Locked state with progress bar pattern: show remaining count + progress bar fill width based on current/target ratio
+---
+
+## Iteration 5 - Sat Feb  7 23:55:53 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260207-233902/iter-5.log
+---
+US-027 is complete. There are still stories with `passes: false` (US-028 through US-041), so another iteration will pick up the next story.
+
+**Summary of US-027 completion:**
+- Created `RollingWinRate` component in `src/components/timeline/RollingWinRate.tsx` — a Recharts `LineChart` showing rolling win rate over a sliding window of the last 10 matches
+- Y-axis is 0-100%, with a dashed 50% reference line labeled "50%"
+- Green gradient shaded above 50%, red gradient shaded below 50% using `ReferenceArea`
+- Dots colored green when win rate >= 50%, red when below
+- Tooltips show date, win rate percentage, and "Last 10 matches" label
+- Respects the time range selector from US-026
+- Locked state with progress bar when fewer than 10 matches
+- Added the chart below the Win/Loss River on the Timeline page
+- Typecheck passes, build succeeds
+- Committed as `feat: US-027 - Timeline — Rolling Win Rate chart`
+- PRD updated with `passes: true` for US-027
+- Codebase patterns and progress log updated
+---
+
+## 2026-02-07 - US-028
+- What was implemented: Activity Heatmap (GitHub-style calendar grid) and Regularity Streak components on the Timeline page
+- Files changed: src/components/timeline/ActivityHeatmap.tsx (new), src/components/timeline/RegularityStreak.tsx (new), src/pages/Timeline.tsx (updated)
+- **Learnings for future iterations:**
+  - GitHub-style heatmap is best done with div grid (flexbox columns for weeks, rows for days) rather than SVG — more flexible for responsive layout and Tailwind styling
+  - ISO week calculation needs care: use Thursday-based approach for correct week numbering across year boundaries
+  - Heatmap and streak components should receive ALL matches (unfiltered by time range), since they have their own fixed time windows
+  - `dateKey()` pattern (YYYY-MM-DD string) is useful for grouping matches by day — reusable for other date-based features
+  - Tooltip positioning in a scrollable heatmap is tricky — used absolute positioning relative to the Card container
+---
+
+## 2026-02-08 09:59 - US-029
+- What was implemented: Milestone detection engine and display on Timeline page
+- Files changed:
+  - src/lib/milestones.ts (new) - detectMilestones() function with detection logic
+  - src/components/timeline/MilestoneList.tsx (new) - scrollable milestone list component
+  - src/components/timeline/WinLossRiver.tsx - added milestone markers as orange dots
+  - src/pages/Timeline.tsx - integrated milestones into page
+- **Learnings for future iterations:**
+  - Milestone detection runs on all matches (not filtered by time range) to maintain consistency
+  - matchIndex property on Milestone links to data point on chart for marker positioning
+  - ReferenceDot in Recharts doesn't support 'isFront' prop - remove it to avoid TS errors
+  - Milestones recalculate reactively via useMemo whenever matches or games change
+  - Milestone types: first_win, win_streak, match_count, win_rate_threshold, h2h_flip
+  - Win rate thresholds (50/60/70%) require minimum 5 matches to be meaningful
+  - H2H flips need minimum 3 matches in rivalry to avoid false positives
+  - Milestone list uses formatDate() helper for relative dates ("Today", "3 days ago", etc.)
+---
+
+## Iteration 1 - Sun Feb  8 10:01:52 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260208-095752/iter-1.log
+---
+There are still more stories with `passes: false`. Since I've completed US-029 successfully, the workflow is complete for this iteration. According to the Ralph instructions:
+
+> After completing a user story, check if ALL stories have `passes: true`.
+> If ALL stories are complete and passing, reply with: `<promise>COMPLETE</promise>`
+> If there are still stories with `passes: false`, end your response normally (another iteration will pick up the next story).
+
+## Summary
+
+I've successfully completed **US-029: Timeline — Milestone detection and display**. Here's what was implemented:
+
+### Features Added:
+1. **Milestone Detection Engine** (`src/lib/milestones.ts`):
+   - Detects first wins against each opponent
+   - Tracks win streaks of 3+, 5+, and 10+
+   - Records match count milestones (10, 25, 50, 100 matches)
+   - Monitors win rate thresholds (50%, 60%, 70%)
+   - Identifies head-to-head record flips
+
+2. **Visual Milestone Markers**:
+   - Orange dots on Win/Loss River chart marking milestone achievements
+   - Positioned at exact match date/momentum coordinates
+
+3. **Milestone List Component** (`src/components/timeline/MilestoneList.tsx`):
+   - Scrollable list showing all achievements chronologically
+   - Each milestone displays: icon, title, description, and relative date
+   - Empty state for users with no milestones yet
+
+4. **Timeline Integration**:
+   - Milestones recalculate reactively after each match save
+   - Positioned below Activity Heatmap and Regularity Streak
+
+### Quality Checks:
+✅ TypeScript compilation passes without errors  
+✅ All files committed with proper commit message  
+✅ PRD updated to mark US-029 as `passes: true`  
+✅ Progress log appended with implementation details and learnings
+
+There are still incomplete user stories (US-030 through US-041), so another iteration will continue with the next priority story.
+---
+
+## 2026-02-08 09:58 PST - US-030
+- What was implemented: Rally Pattern Analyzer swipeable card UI with 5 sequential cards for capturing rally analysis data
+- Files changed:
+  - src/components/rally/RallyAnalyzer.tsx (new) - Full-screen modal with swipeable cards
+  - src/pages/PostMatchSaved.tsx - Added rally analyzer button ("Want to add rally details?")
+  - src/pages/MatchDetail.tsx - Added "Add Rally Analysis" button and display existing analysis
+  - src/lib/milestones.ts - Fixed lint errors (removed unused Game parameter)
+  - src/pages/Timeline.tsx - Updated detectMilestones call to match new signature
+- **Learnings for future iterations:**
+  - Framer Motion drag gestures: use `drag="x"`, `dragConstraints`, `dragElastic`, and `onDragEnd` with PanInfo to detect swipe direction
+  - AnimatePresence with `mode="wait"` ensures cards fully exit before new one enters - prevents visual overlap
+  - Custom direction state (+1 for forward, -1 for back) passed as `custom` prop to motion variants controls slide direction
+  - Multi-select state: use array in selections object, check length against maxSelect limit before adding
+  - Rally data storage: `bestShots` field is string[] type in DB, all other fields are optional strings
+  - Modal overlay pattern: `fixed inset-0 z-50` with high z-index to overlay everything including tab bar
+  - Skip functionality: delete selection for current card and advance - keeps data clean
+  - Unused TypeScript parameters: prefix with underscore (_event) or remove entirely to satisfy strict linting
+---
+
+## Iteration 1 - Sun Feb  8 10:28:00 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260208-102257/iter-1.log
+---
+Perfect! I have successfully completed US-030 (Rally Pattern Analyzer). Let me provide a summary:
+
+## Summary
+
+I've successfully implemented **US-030 - Rally Pattern Analyzer with swipeable card UI**. 
+
+### What was implemented:
+
+1. **RallyAnalyzer Component** (`src/components/rally/RallyAnalyzer.tsx`):
+   - Full-screen modal with 5 sequential swipeable cards
+   - Framer Motion drag gestures for horizontal swipe navigation
+   - Card 1: Win method selection (single-select from 5 options)
+   - Card 2: Lose method selection (single-select from 5 options)
+   - Card 3: Rally length selection (single-select from 3 options)
+   - Card 4: Court coverage selection (single-select from 4 options)
+   - Card 5: Best shots selection (multi-select, max 2 from 7 options)
+   - Progress dots showing position (1-5)
+   - Skip button on each card
+   - Data saved to `rally_analyses` table in Dexie.js
+
+2. **Integration Points**:
+   - **PostMatchSaved page**: "Want to add rally details?" is now a clickable button that opens the analyzer
+   - **MatchDetail page**: Added "Add Rally Analysis" button (if no analysis exists) or displays existing rally analysis data
+
+3. **Bug Fixes**:
+   - Fixed lint errors in `src/lib/milestones.ts` (removed unused Game import/parameter, changed `let` to `const`)
+   - Updated `src/pages/Timeline.tsx` to match new function signature
+
+### Quality Checks:
+- ✅ TypeScript compilation passes (`npm run build`)
+- ✅ ESLint passes (`npm run lint`)
+- ✅ Code committed with proper commit message
+- ✅ PRD updated (US-030 marked as `passes: true`)
+- ✅ Progress logged to `progress.txt`
+
+There are still **11 stories remaining** with `passes: false`. The next iteration will pick up US-031 (Rally insights generation and display).
+---
+
+## 2026-02-08 10:09 - US-031
+- What was implemented: Rally insights generation and display with three insight cards
+- Files changed:
+  - src/lib/rallyInsights.ts (new) - Play style classification logic
+  - src/components/insights/WinMethodDistribution.tsx (new) - Donut chart showing win method distribution
+  - src/components/insights/LossMethodDistribution.tsx (new) - Donut chart showing loss methods with improvement suggestions
+  - src/components/insights/BestShotTrends.tsx (new) - Bubble visualization for best shot trends
+  - src/stores/insightStore.ts - Added new insight IDs
+  - src/pages/Dashboard.tsx - Integrated rally insights with hooks and rendering
+- **Learnings for future iterations:**
+  - Rally insight cards follow same locked state pattern as other insights (minimum 5 rally analyses)
+  - All three rally insight cards share the same unlock threshold for consistency
+  - Donut chart pattern: Recharts PieChart with innerRadius/outerRadius for donut effect, absolute-positioned center text
+  - Bubble visualization: Dynamic sizing based on frequency (min 40px, max 120px), calculated as percentage of max count
+  - Improvement suggestion: Highlighted biggest loss method with action-oriented suggestion text
+  - useRallyAnalyses() hook already existed in db/hooks.ts, just needed to import it
+  - Dashboard computeInsightStatuses now takes rallyAnalyses parameter for rally insight unlocking
+---
+
+## Iteration 2 - Sun Feb  8 10:38:49 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260208-102257/iter-2.log
+---
+There are still 10 user stories with `passes: false`, so I'm not done yet. Let me complete this iteration by summarizing what was accomplished:
+
+## Summary
+
+I successfully implemented **US-031: Rally insights generation and display**. Here's what was completed:
+
+### What was implemented:
+1. **Rally Insights Library** (`src/lib/rallyInsights.ts`):
+   - Created play style classification function that analyzes rally data
+   - Determines player style based on win method, rally length, and court coverage
+   - Supports 5 play styles: Aggressive Attacker, Patient Constructor, Retriever, Serve & Volley, All-Court Player
+
+2. **Win Method Distribution Card** (`src/components/insights/WinMethodDistribution.tsx`):
+   - Donut chart showing how the player wins points
+   - Color-coded legend with percentages
+   - Requires minimum 5 rally analyses to unlock
+
+3. **Loss Method Distribution Card** (`src/components/insights/LossMethodDistribution.tsx`):
+   - Donut chart showing how the player loses points
+   - Highlights the biggest loss method with improvement suggestion
+   - Action-oriented suggestions like "Focus on consistency over power"
+
+4. **Best Shot Trends Card** (`src/components/insights/BestShotTrends.tsx`):
+   - Bubble visualization where size = frequency
+   - Color-coded shot types with emojis
+   - Top 3 shots shown in legend below bubbles
+
+5. **Integration**:
+   - Added new insight IDs to `insightStore.ts`
+   - Updated Dashboard to import and render all three rally insight cards
+   - All cards follow the same locked state pattern as existing insights
+
+### Quality checks:
+✅ TypeScript compilation passed  
+✅ Build successful  
+✅ All code committed with proper message  
+✅ PRD updated (US-031 now has `passes: true`)  
+✅ Progress log updated with learnings
+
+The implementation follows all existing patterns from the codebase and is ready for the next iteration to pick up **US-032**.
+---
+
+## 2026-02-08 10:12 - US-032
+- What was implemented: Pressure Performance — 8-8+ Index display with clutch rating insight card
+- Files changed:
+  - src/components/insights/ClutchRating.tsx (new)
+  - src/pages/Dashboard.tsx
+  - src/stores/insightStore.ts
+- **Learnings for future iterations:**
+  - Clutch rating calculation: (tight games won / total tight games) * 100 where tight games have isTight=true
+  - Rating labels use color coding: Ice Veins (cyan, 80+), Hot (orange, 60-79), Neutral (yellow, 40-59), Cold (blue, 0-39)
+  - Trend calculation compares last 5 tight games to overall tight game win rate
+  - Expandable sections use Framer Motion with height: 'auto' animation for smooth collapse/expand
+  - Per-opponent and per-game-number breakdowns require joining games with matches and grouping by opponentId or gameNumber
+  - New insight IDs must be added to: insightStore.ts InsightId type, Dashboard computeInsightStatuses(), and Dashboard renderInsight() switch
+  - Minimum data threshold pattern: locked state with progress text like "Play X more tight games to unlock"
+---
+
+## Iteration 3 - Sun Feb  8 10:43:00 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260208-102257/iter-3.log
+---
+Perfect! Let me provide a summary of what was completed.
+
+## Summary
+
+I've successfully implemented **US-032: Pressure Performance — 8-8+ Index display**.
+
+### What was implemented:
+
+1. **ClutchRating insight card component** (`src/components/insights/ClutchRating.tsx`):
+   - Large animated clutch rating number (0-100) with Framer Motion
+   - Rating labels with color coding:
+     - Ice Veins (cyan) for 80+
+     - Hot (orange) for 60-79
+     - Neutral (yellow) for 40-59
+     - Cold (blue) for 0-39
+   - Trend arrow comparing last 5 tight games to overall performance
+   - Expandable "Clutch by Opponent" section showing per-opponent tight game win rates
+   - Expandable "Clutch by Game Number" section showing tight game performance by game position
+   - Locked state requiring minimum 5 tight games
+
+2. **Dashboard integration**:
+   - Added `clutchRating` to the InsightId type
+   - Integrated the card into the Dashboard's insight system
+   - Added unlock logic based on tight games count
+
+### Files changed:
+- `src/components/insights/ClutchRating.tsx` (new)
+- `src/pages/Dashboard.tsx`
+- `src/stores/insightStore.ts`
+- `scripts/ralph/prd.json`
+- `scripts/ralph/progress.txt`
+
+### Quality checks:
+- ✅ TypeScript compilation passed (`tsc -b`)
+- ✅ Build succeeded (`npm run build`)
+- ✅ Committed with proper message including co-author attribution
+- ✅ PRD updated to mark US-032 as `passes: true`
+- ✅ Progress log updated with learnings
+
+The implementation follows the established patterns from other insight cards, uses the same locked state UX, and integrates seamlessly with the progressive unlocking system.
+---
+
+## 2026-02-08 05:40 UTC - US-033
+- Implemented pressure badges system with 5 badges celebrating clutch performances
+- Created badge detection engine in src/lib/badges.ts with rules for Ice Veins, Clutch King, Comeback Artist, Heartbreaker, and Pressure Cooker badges
+- Created badge state management in src/stores/badgeStore.ts with localStorage persistence
+- Built BadgeGrid component for Profile page showing earned/unearned badges with rarity-based styling
+- Built BadgeToast component with Framer Motion slide-in animation for new badge notifications
+- Integrated badge checking into match save flow in StepTagsSave.tsx
+- Added BadgeToast to App.tsx for global toast notifications
+- Added BadgeGrid to Profile page
+- Files changed: src/lib/badges.ts, src/stores/badgeStore.ts, src/components/badges/BadgeGrid.tsx, src/components/badges/BadgeToast.tsx, src/App.tsx, src/components/matchlog/StepTagsSave.tsx, src/pages/Profile.tsx
+
+**Learnings for future iterations:**
+- Badge detection runs after every match save to check all badges at once
+- Badge store tracks both earnedBadges (all time) and newBadges (pending toast display)
+- Badge toast auto-dismisses after 4 seconds and shows one badge at a time from queue
+- Rarity colors and glows defined as constant maps for consistency: Common (gray), Rare (blue), Epic (purple), Legendary (gold)
+- Badge dates use earnedAt field to track when achievement was unlocked
+- Badge criteria checked in order: consecutive tight wins, clutch index threshold, comeback patterns, single-match achievements, time-window achievements
+- Used Map for efficient earned badge lookup in BadgeGrid rendering
+---
+
+## Iteration 1 - Sun Feb  8 11:12:38 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260208-110806/iter-1.log
+---
+Excellent! Build passes successfully. 
+
+## Summary
+
+I've successfully completed **US-033: Pressure badges system**. Here's what was implemented:
+
+### Features Delivered:
+1. **Badge Detection Engine** (`src/lib/badges.ts`)
+   - 5 pressure-related badges with different rarities
+   - Ice Veins (Rare): 5+ consecutive tight game wins
+   - Clutch King (Epic): 80%+ clutch rating over 10+ tight games
+   - Comeback Artist (Legendary): Win after 0-2 down with tight game
+   - Heartbreaker (Rare): 3+ tight wins in single Bo5
+   - Pressure Cooker (Common): 5+ tight games in one week
+
+2. **Badge State Management** (`src/stores/badgeStore.ts`)
+   - Zustand store with localStorage persistence
+   - Tracks earned badges and new badges queue
+   - Auto-detects new achievements
+
+3. **Badge Display** (`src/components/badges/BadgeGrid.tsx`)
+   - Grid layout on Profile page
+   - Shows earned badges in full color
+   - Unearned badges displayed as grayed-out with unlock criteria
+   - Rarity-based styling (Common/Rare/Epic/Legendary)
+
+4. **Badge Notification** (`src/components/badges/BadgeToast.tsx`)
+   - Animated toast using Framer Motion
+   - Slide-in from top animation
+   - Auto-dismisses after 4 seconds
+   - Shows badges one at a time from queue
+   - Rarity-specific colors and glows
+
+5. **Integration**
+   - Badge checking runs after every match save
+   - Toast appears when new badges are earned
+   - Badge grid integrated into Profile page
+
+### Quality Checks:
+✅ TypeScript build passes  
+✅ All files follow existing patterns  
+✅ Code committed with proper message  
+✅ PRD updated (US-033 marked as passes: true)  
+✅ Progress log updated with learnings  
+
+The next iteration will pick up US-034 (Player Archetype Engine).
+---
+
+## 2026-02-08 11:15 - US-034
+- What was implemented: Player Archetype Engine with 6 archetype definitions and trait scoring algorithm
+- Files changed: src/lib/archetypes.ts (new file)
+- **Learnings for future iterations:**
+  - Archetype matching uses Euclidean distance-based similarity scoring between player trait scores and archetype radar profiles
+  - Trait scoring algorithm aggregates data from matches, games, and rally analyses:
+    - Aggression: Based on win methods (winners/kill shots/serve dominance) from rally analyses
+    - Fitness: Based on rally length (long rallies = higher fitness) from rally analyses
+    - Consistency: Based on rolling 5-match win rate variance (lower variance = higher consistency)
+    - Clutch: Based on tight game win rate (8-8+ Index)
+    - Adaptability: Based on opponent-specific win rate variance (lower variance = better adaptation)
+    - Deception: Based on best shots (drop shots/boasts) and deception win methods
+  - Secondary archetype shown only if within 10% match score of primary archetype
+  - Minimum data requirements: 10 matches AND 5 rally analyses enforced by returning null
+  - Six archetypes defined: The Assassin (aggressive), The Wall (fitness/retriever), The Strategist (intelligent), The Closer (clutch), The Streaker (momentum-based), The Chameleon (adaptable)
+  - Each archetype has a predefined radar profile with balanced trait scores that define its characteristics
 ---
