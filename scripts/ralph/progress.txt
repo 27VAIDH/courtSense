@@ -1768,3 +1768,126 @@ The next iteration will pick up US-034 (Player Archetype Engine).
   - Six archetypes defined: The Assassin (aggressive), The Wall (fitness/retriever), The Strategist (intelligent), The Closer (clutch), The Streaker (momentum-based), The Chameleon (adaptable)
   - Each archetype has a predefined radar profile with balanced trait scores that define its characteristics
 ---
+
+## Iteration 2 - Sun Feb  8 11:14:58 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260208-110806/iter-2.log
+---
+Perfect! There are still 7 stories with `passes: false`, so I should end normally for the next iteration to continue.
+
+## Summary
+
+I've successfully completed **US-034 - Player Archetype Engine (determination logic)**:
+
+### What was implemented:
+- Created `src/lib/archetypes.ts` with complete archetype system
+- Defined 6 archetypes with unique characteristics:
+  - **The Assassin** (aggressive, high-risk attacking)
+  - **The Wall** (fitness-based retriever)
+  - **The Strategist** (intelligent, adaptable)
+  - **The Closer** (clutch performer)
+  - **The Streaker** (momentum-driven)
+  - **The Chameleon** (versatile adapter)
+- Implemented trait scoring algorithm that analyzes:
+  - **Aggression**: from win methods (winners/kill shots)
+  - **Fitness**: from rally length (long rallies)
+  - **Consistency**: from win rate variance
+  - **Clutch**: from tight game performance (8-8+ Index)
+  - **Adaptability**: from opponent-specific win rate variance
+  - **Deception**: from drop shots/boasts usage
+- Created archetype determination function with similarity-based matching
+- Secondary archetype shown when within 10% of primary match score
+- Enforced minimum requirements: 10 matches AND 5 rally analyses
+
+### Quality checks:
+✅ Typecheck passes  
+✅ Build succeeds  
+✅ Committed with proper message format  
+✅ PRD updated (`passes: true`)  
+✅ Progress log updated with learnings
+
+The archetype engine is now ready for US-035 to build the UI display with radar chart visualization.
+---
+
+## 2026-02-08 11:50 - US-035
+- What was implemented: Archetype display with radar chart visualization on Profile page
+- Files changed:
+  - src/components/archetype/ArchetypeCard.tsx (new)
+  - src/components/archetype/ArchetypeEvolution.tsx (new)
+  - src/stores/archetypeHistoryStore.ts (new)
+  - src/components/ui/Card.tsx (added style prop support)
+  - src/pages/Profile.tsx (added ArchetypeCard)
+- **Learnings for future iterations:**
+  - Recharts RadarChart uses PolarGrid and PolarAngleAxis for radar visualization
+  - Radar fill opacity set to 0.3 with stroke matching archetype color for clean visual
+  - Evolution timeline shows archetype changes over time using localStorage-backed Zustand store
+  - Card component now accepts optional style prop for inline styles (used for dynamic border color)
+  - Profile hooks can return undefined, so use ?? [] to handle undefined values
+  - Archetype history tracked via useEffect that triggers on archetype name change
+  - Locked state pattern reused: blurred content + overlay with lock icon + progress text
+---
+
+## Iteration 3 - Sun Feb  8 11:18:41 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260208-110806/iter-3.log
+---
+Good! The next story is US-036. My work on US-035 is complete. Let me create a summary of what was accomplished:
+
+## Summary
+
+I successfully implemented **US-035: Archetype display with radar chart**. Here's what was completed:
+
+### Implementation Details:
+
+1. **Created ArchetypeCard component** (`src/components/archetype/ArchetypeCard.tsx`):
+   - Full-width card with dynamic archetype color border
+   - Displays archetype name, description, strength, and growth area
+   - 6-trait radar chart using Recharts (aggression, fitness, consistency, clutch, adaptability, deception)
+   - Shows secondary archetype when within 10% match score
+   - Locked state when minimum data requirements not met (10 matches + 5 rally analyses)
+
+2. **Created ArchetypeEvolution component** (`src/components/archetype/ArchetypeEvolution.tsx`):
+   - Displays archetype changes over time
+   - Shows badges with archetype initial and month/year labels
+   - Only displays when archetype has changed at least once
+
+3. **Created archetypeHistoryStore** (`src/stores/archetypeHistoryStore.ts`):
+   - Zustand store with localStorage persistence
+   - Tracks archetype changes with dates
+   - Prevents duplicate entries for same archetype
+
+4. **Updated Card component** (`src/components/ui/Card.tsx`):
+   - Added optional `style` prop for inline styles
+   - Enables dynamic border coloring for archetype card
+
+5. **Updated Profile page** (`src/pages/Profile.tsx`):
+   - Added ArchetypeCard above BadgeGrid
+   - Fetches matches, games, and rally analyses data
+   - Handles undefined values from hooks
+
+### Quality Checks:
+✅ TypeScript compilation passes  
+✅ Build completes successfully  
+✅ All acceptance criteria met  
+✅ Committed with proper message format  
+✅ PRD updated to mark US-035 as passing  
+✅ Progress logged in progress.txt
+
+The implementation follows all existing codebase patterns and is ready for the next iteration to pick up US-036.
+---
+
+## 2026-02-08 - US-036
+- What was implemented: Rivalry pages with head-to-head opponent view
+- Files changed: 
+  - Created src/pages/RivalryDetail.tsx - comprehensive H2H rivalry detail page
+  - Modified src/pages/Rivals.tsx - opponent list with navigation to rivalry pages
+  - Modified src/App.tsx - added /rivals/:opponentId route
+  - Modified src/components/insights/WinRateByOpponent.tsx - made bars clickable to navigate to rivalry pages
+- **Learnings for future iterations:**
+  - Recharts LineChart works well for cumulative H2H score tracking over time
+  - When using `typeof arrayVariable` in Map types, use the element type instead (e.g., `Game[]` not `typeof allGames`)
+  - `.toFixed(1)` returns a string, not a number - ensure consistent return types in useMemo (e.g., return '0.0' not 0 when using toFixed)
+  - For click handlers on list items in cards, use negative margin (-mx-2) with positive padding (px-2) to extend clickable area without affecting layout
+  - Fun facts generation: day-of-week patterns (never lost on Tuesday) require at least 2 matches on that day for statistical significance
+  - When calculating best win/worst loss, filter games by win/loss first, then compute margin/deficit from game counts
+---

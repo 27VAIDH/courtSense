@@ -676,7 +676,7 @@
         "Verify in browser that archetype card, radar chart, and evolution timeline render correctly"
       ],
       "priority": 35,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -697,7 +697,7 @@
         "Verify in browser that rivalry page renders with all sections using test data"
       ],
       "priority": 36,
-      "passes": false,
+      "passes": true,
       "notes": "Also connect the Win Rate by Opponent insight card (US-015) to navigate here on tap."
     },
     {
