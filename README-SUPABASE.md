@@ -130,12 +130,15 @@ This guide walks you through setting up Supabase for SquashIQ's cloud sync, auth
    - ✅ No Supabase configuration warnings
    - ✅ Supabase client initialized successfully
 
-3. Test authentication (after implementing US-P002):
-   - Navigate to the auth page
-   - Click "Sign in with Google"
-   - Complete the Google sign-in flow
-   - You should be redirected back to the app
+3. Test authentication:
+   - Visit `http://localhost:5173` (or your dev server URL)
+   - You should be automatically redirected to `/auth` if not signed in
+   - Click "Continue with Google"
+   - Complete the Google sign-in flow in the popup
+   - You should be redirected to `/auth/callback` then to the Dashboard
    - Check Supabase dashboard → **Authentication** → **Users** to see your user account
+   - Your session will persist for 7 days (stored in localStorage)
+   - Test logout: Go to Profile tab → Settings → Sign Out button
 
 ## 📦 Step 6: Configure Storage Bucket (for US-P006)
 
@@ -233,11 +236,12 @@ After completing this setup:
 2. ✅ Database schema deployed
 3. ✅ Environment variables configured
 4. ✅ Google OAuth configured
+5. ✅ Authentication UI implemented (US-P002)
 
-You're ready to implement:
-- **US-P002**: Authentication UI with Google Sign In
-- **US-P003**: User profile creation
+Next features to implement:
+- **US-P003**: User profile creation on first sign-in
 - **US-P004**: Data migration from IndexedDB
 - **US-P005**: Bidirectional sync engine
+- **US-P006**: Photo upload to Supabase Storage
 
 Happy coding! 🚀
