@@ -1389,3 +1389,135 @@ I've successfully implemented US-P010! Here's what was accomplished:
   - Next: US-P012 will add advanced search and filtering for match history
 ---
 
+
+## Iteration 2 - Sun Feb  8 18:53:33 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260208-184134/iter-2.log
+---
+Excellent! I have successfully completed **US-P011: Interactive onboarding with sample data**. Here's a summary of what was accomplished:
+
+## ✅ US-P011 Complete: Interactive onboarding with sample data
+
+### What Was Implemented
+
+1. **Updated Onboarding Component** (`src/components/onboarding/Onboarding.tsx`)
+   - Added "Start with sample data" button on final step (Step 3)
+   - Shows loading state during sample data generation
+   - Secondary button "Skip to logging my own matches" navigates to /log
+   - Navigates to Dashboard after sample data generation to show matches
+
+2. **Sample Data Generation Utility** (`src/lib/sampleData.ts`)
+   - `generateSampleData()` - Creates 20 realistic matches with:
+     - 4 sample opponents: Parth, Hemang, Sarah, Mike
+     - 3 sample venues: Downtown Sports Club, Elite Squash Center, City Fitness Squash Courts
+     - Random dates within last 90 days
+     - 60% win rate for positive UX
+     - Random scores, energy levels, formats (Bo3/Bo5), tags
+     - Realistic game scores with tight game detection
+   - `clearSampleData()` - Deletes all sample data
+   - `hasSampleData()` - Checks if sample data exists
+   - All records flagged with `sample_data: true`
+
+3. **Sample Data Banner** (`src/components/sampleData/SampleDataBanner.tsx`)
+   - Shows on Dashboard when sample data exists
+   - Message: "👀 This is sample data. Log your first real match to replace it!"
+   - Gradient background matching app theme
+
+4. **Dashboard Integration** (`src/pages/Dashboard.tsx`)
+   - Added SampleDataBanner after BackupReminder
+   - Banner only shows when sample data exists
+
+5. **Settings - Clear Sample Data** (`src/components/settings/Settings.tsx`)
+   - "Clear Sample Data" button in Data Management section
+   - Only visible when sample data exists
+   - Confirmation dialog before deletion
+
+6. **Database Schema Update** (`src/db/database.ts`)
+   - Bumped to version 3
+   - Added `sample_data` field to players, venues, matches, games tables
+   - Indexed for efficient queries
+
+7. **TypeScript Types** (`src/db/types.ts`)
+   - Added `sample_data?: boolean` to Player, Venue, Match, Game interfaces
+
+### Quality Checks
+- ✅ Typecheck passed (`npx tsc --noEmit`)
+- ✅ Build successful (3.87s, 211.44KB gzipped main bundle)
+- ✅ All acceptance criteria met
+- ✅ Changes committed to `ralph/squashiq-pwa-v2` branch
+- ✅ PRD updated (`passes: true`)
+- ✅ Progress log updated
+
+### Key Patterns Discovered
+- Sample data provides instant value for new users without requiring 20 match entries
+- 60% win rate creates positive user experience
+- `sample_data` flag enables easy bulk deletion
+- IndexedDB queries use `.where('sample_data').equals(1)` for filtering
+- Database uses camelCase fields (opponentId, venueId), not snake_case
+
+### Remaining Stories
+There are **7 user stories** remaining with `passes: false`:
+- US-P012: Advanced search and filtering for matches
+- US-P013: Friend connections - search and send friend requests
+- US-P014: Friend profiles - view friends' stats
+- US-P015: Global leaderboards with multiple categories
+- US-P016: Private groups for squash clubs
+- US-P017: User tiers and feature flags architecture
+- US-P018: Error monitoring with Sentry
+
+The project is not yet complete, so another iteration will pick up the next story.
+---
+## 2026-02-08 19:00:00 - US-P012
+- **What was implemented:**
+  - Created MatchSearchFilter component (src/components/matches/MatchSearchFilter.tsx):
+    * Search bar with debounced input (300ms delay) for real-time search
+    * Searches by: opponent name, venue name, match note, date
+    * Quick filter chips: All/Wins/Losses, This Month/Last Month/This Year
+    * Advanced filters (collapsible accordion):
+      - Opponent multi-select (all opponents except current user)
+      - Venue multi-select (all venues)
+      - Energy level filter (All/Low/Medium/High)
+    * URL state management: filters persist in query params for sharing/bookmarking
+    * Results count: "Showing X of Y matches"
+    * Clear Filters button appears when any filter is active
+    * Responsive design with horizontal scrollable chip lists
+  - Updated MatchHistoryList component (src/components/matches/MatchHistoryList.tsx):
+    * Integrated MatchSearchFilter component at top of match history
+    * Added filtered matches state management with useCallback
+    * Updated pagination to work with filtered results
+    * Enhanced empty state: shows different message when filters return no results
+    * "No matches found" with search icon when filters active
+    * Original empty state when no matches at all
+    * Pagination display shows correct count for filtered matches
+  - Filter features:
+    * Debounced search prevents excessive re-renders
+    * Timeframe filters: This Month, Last Month, This Year calculations
+    * Multi-select filters for opponents and venues
+    * Energy level filter for matches tagged with energy
+    * All filters work in combination (AND logic)
+    * URL params format: ?search=parth&result=win&timeframe=thisMonth&opponents=1,2&venues=3&energy=High
+
+- **Files changed:**
+  - src/components/matches/MatchSearchFilter.tsx (new - comprehensive search/filter UI)
+  - src/components/matches/MatchHistoryList.tsx (updated - integrated search/filter)
+
+- **Learnings for future iterations:**
+  - Pattern: Debounced search uses useEffect with setTimeout cleanup for 300ms delay
+  - Pattern: URL state management with useSearchParams for filter persistence and sharing
+  - Pattern: Chip component uses children prop, not label prop
+  - Pattern: Filter state synchronized with URL params for bookmarkable filtered views
+  - Pattern: Empty state logic checks if filters are active to show appropriate message
+  - Pattern: Filtered matches passed to parent via callback, pagination resets on filter change
+  - Pattern: Advanced filters use collapsible accordion with ChevronDown/ChevronUp icons
+  - Pattern: Multi-select filters use array state, toggle function adds/removes items
+  - Gotcha: Must handle initial state where filteredMatches is empty array vs no matches
+  - Gotcha: Pagination display count should use matchesToDisplay.length, not sortedMatches.length
+  - Context: Search is case-insensitive (toLowerCase() on both query and match data)
+  - Context: Timeframe filters calculate month/year dynamically from current date
+  - Context: lucide-react provides Search, X, ChevronDown, ChevronUp icons
+  - Context: Filter UI is sticky (future: could add position: sticky for scroll persistence)
+  - Context: Horizontal scroll for chip lists handles many opponents/venues gracefully
+  - Browser testing note: Manual verification needed - test search, filters, URL params, pagination
+  - Next: US-P013 will add friend connections and friend request system
+---
+
