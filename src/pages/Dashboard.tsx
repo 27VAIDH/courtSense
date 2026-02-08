@@ -22,6 +22,7 @@ import ClutchRating from '@/components/insights/ClutchRating'
 import RecommendationCard from '@/components/recommendations/RecommendationCard'
 import MatchOfTheMonth from '@/components/nostalgia/MatchOfTheMonth'
 import OnThisDay from '@/components/nostalgia/OnThisDay'
+import BackupReminder from '@/components/settings/BackupReminder'
 
 function CurrentFormDots({ matches }: { matches: Match[] }) {
   const last5 = useMemo(() => {
@@ -301,6 +302,9 @@ export default function Dashboard() {
           <CurrentFormDots matches={matches} />
         </div>
       </div>
+
+      {/* Backup Reminder Banner */}
+      <BackupReminder />
 
       {/* Pinned recommendation from most recent match */}
       {latestRecommendation && (

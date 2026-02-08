@@ -4,6 +4,7 @@ import VenueManager from '@/components/venues/VenueManager'
 import BadgeGrid from '@/components/badges/BadgeGrid'
 import ArchetypeCard from '@/components/archetype/ArchetypeCard'
 import SeasonWrapped from '@/components/wrapped/SeasonWrapped'
+import Settings from '@/components/settings/Settings'
 import Button from '@/components/ui/Button'
 import { useMatches, useGames, useRallyAnalyses, usePlayers } from '@/db/hooks'
 
@@ -46,6 +47,9 @@ export default function Profile() {
       <div className="mt-8">
         <VenueManager />
       </div>
+
+      {/* Settings */}
+      <Settings />
 
       {/* Season Wrapped Modal */}
       {showWrapped && (

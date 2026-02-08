@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMatchLogStore } from '@/stores/matchLogStore'
 import { useBadgeStore } from '@/stores/badgeStore'
+import { useSettingsStore } from '@/stores/settingsStore'
 import { db } from '@/db/database'
 import { generateRecommendation } from '@/lib/recommendations'
 import { checkBadges } from '@/lib/badges'
@@ -37,6 +38,7 @@ export default function StepTagsSave() {
   } = useMatchLogStore()
 
   const setEarnedBadges = useBadgeStore((state) => state.setEarnedBadges)
+  const incrementMatchCount = useSettingsStore((state) => state.incrementMatchCount)
   const [saving, setSaving] = useState(false)
 
   async function handleSave() {
@@ -96,6 +98,9 @@ export default function StepTagsSave() {
       // Check for badges
       const earnedBadges = checkBadges(allMatches, allGames)
       setEarnedBadges(earnedBadges)
+
+      // Increment match count for backup reminder
+      incrementMatchCount()
 
       // Reset state and navigate to post-match screen
       reset()
