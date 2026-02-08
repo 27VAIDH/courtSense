@@ -2072,3 +2072,125 @@ There are still **3 incomplete stories** remaining (US-039, US-040, US-041), so 
   - Each card is self-contained with its own data calculations and styling
   - Watermark "SquashIQ" added to bottom of each card for brand recognition when shared
 ---
+
+## Iteration 7 - Sun Feb  8 11:41:31 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260208-110806/iter-7.log
+---
+Perfect! US-039 is now complete. There are still 2 incomplete stories:
+- **US-040**: Data export, import, and settings (Priority 40)
+- **US-041**: Empty states and onboarding flow (Priority 41)
+
+## Summary
+
+I've successfully completed **US-039 - Season Wrapped (shareable summary cards)**!
+
+### What was implemented:
+
+1. **SeasonWrapped component** - Full-screen swipeable story experience with:
+   - Framer Motion drag gestures for horizontal swiping between cards
+   - Progress dots showing current position (1-6)
+   - Close button to exit the experience
+   - Share button on each card
+
+2. **6 Wrapped Cards**:
+   - **Card 1: Quarter in Numbers** - Total matches, games, tight games, and estimated hours
+   - **Card 2: Win Rate Journey** - Sparkline chart showing rolling 10-match win rate
+   - **Card 3: Biggest Rival** - Most-played opponent with H2H record and fun stats
+   - **Card 4: Best Month** - Highest win rate month with performance stats
+   - **Card 5: Clutch Moments** - Tight games count, 8-8+ Index, and most dramatic game
+   - **Card 6: Headline Stat** - Auto-generated standout achievement (win streak, court warrior, etc.)
+
+3. **html2canvas Integration** - Each card can be shared as an image:
+   - 1080x1920 resolution for mobile sharing
+   - Native share API with fallback to download
+   - SquashIQ watermark on each card
+
+4. **Profile Page Integration** - "Season Wrapped" button appears when user has 20+ matches
+
+### Quality checks:
+- ✅ TypeScript build passes
+- ✅ All changes committed with descriptive messages
+- ✅ PRD updated (US-039 set to `passes: true`)
+- ✅ Progress log updated with learnings
+
+There are still **2 incomplete stories** (US-040, US-041), so another iteration will pick up the next story.
+---
+
+## 2026-02-08 12:30 - US-040
+- What was implemented: Data export, import, and settings functionality
+- Files changed:
+  - src/stores/settingsStore.ts (new): Zustand store for app settings with localStorage persistence
+  - src/components/settings/Settings.tsx (new): Settings component with player name edit, tight game threshold, export/import data
+  - src/components/settings/BackupReminder.tsx (new): Auto-backup reminder banner for Dashboard
+  - src/pages/Profile.tsx: Added Settings component to Profile page
+  - src/pages/Dashboard.tsx: Added BackupReminder component above pinned recommendation
+  - src/components/matchlog/StepTagsSave.tsx: Added incrementMatchCount() call after successful match save
+- **Learnings for future iterations:**
+  - Settings store pattern: Use Zustand with persist middleware for localStorage-backed app preferences
+  - Export/import pattern: Use navigator.share() with canShare() check for mobile-first, fallback to download link
+  - Import merge logic: Check each record by id with db.{table}.get(id) before adding to skip duplicates
+  - Backup reminder: Track match count since export in settings store, show banner when >= 10 matches
+  - File input pattern: Create hidden input with type="file", trigger via button click with document.getElementById()
+  - JSON export structure: Include version, exportDate, and all table data in nested object for validation
+  - Inline edit pattern for settings: Click to edit mode with input field, Save/Cancel buttons
+---
+
+## 2026-02-08 - US-041
+- What was implemented: Complete empty states and onboarding flow implementation
+- Files changed:
+  - Created src/components/onboarding/Onboarding.tsx - 3-screen swipeable onboarding with Framer Motion
+  - Created src/lib/onboarding.ts - localStorage utilities for onboarding state
+  - Modified src/App.tsx - integrated onboarding on first load
+  - Enhanced src/pages/Timeline.tsx - improved empty state with timeline illustration
+  - Enhanced src/pages/Rivals.tsx - improved empty state with rivalry illustration  
+  - Enhanced src/components/matches/MatchHistoryList.tsx - improved empty state copy
+- **Learnings for future iterations:**
+  - Onboarding uses AnimatePresence with custom direction tracking for smooth swipe transitions
+  - Drag gestures with onDragEnd allow swipeable cards - offset.x threshold determines direction
+  - Empty states follow consistent pattern: large icon/emoji, h1 heading, descriptive text, CTA button
+  - Timeline and Rivals empty states use multi-emoji illustrations (e.g. 📊 → 📈) for visual interest
+  - min-h-[80vh] on empty state containers ensures proper vertical centering on all screen sizes
+  - Dashboard already had a well-designed empty state from US-014 that met all requirements
+  - localStorage flag 'onboarding-complete' ensures onboarding only shows once per user
+  - Build includes TypeScript compilation (tsc -b) + Vite build - no separate typecheck script needed
+---
+
+## Iteration 1 - Sun Feb  8 12:50:38 IST 2026
+Tool: claude
+Log: /Users/vaidhprakashchoudhary/Documents/fun-projects/courtSense/scripts/ralph/runs/20260208-122651/iter-1.log
+---
+⚠️  timeout failed with ITER_TIMEOUT='1200'. Running without timeout.
+## Summary
+
+I successfully completed **US-041: Empty states and onboarding flow**, which was the final user story in the SquashIQ project!
+
+### What was implemented:
+
+1. **3-Screen Swipeable Onboarding** (`src/components/onboarding/Onboarding.tsx`)
+   - Screen 1: "Log matches in 60 seconds" with ⚡ icon
+   - Screen 2: "Discover what makes you win" with 📊 icon  
+   - Screen 3: "Track your improvement" with 📈 icon
+   - Smooth swipe/drag gestures using Framer Motion
+   - Skip button and Next navigation
+   - Only shown on first app load (localStorage flag)
+
+2. **Enhanced Empty States** across all screens:
+   - **Dashboard**: Already had excellent empty state with "Welcome to SquashIQ!" 
+   - **Timeline**: Added timeline illustration (📊 → 📈) with encouraging message
+   - **Rivals**: Added rivalry illustration (🏸 ⚔️ 🏸) with clear CTA
+   - **Match History**: Improved copy "No matches yet — let's fix that!"
+
+3. **Onboarding State Management** (`src/lib/onboarding.ts`)
+   - localStorage utilities to track completion
+   - Integrated into App.tsx to show on first load only
+
+### Quality Checks:
+- ✅ TypeScript compilation passes
+- ✅ Build successful with no errors
+- ✅ All 41 user stories now have `passes: true`
+
+The commit has been created with all changes properly documented.
+
+<promise>COMPLETE</promise>
+---

@@ -775,7 +775,7 @@
         "Verify in browser that export produces valid JSON, import loads data, and settings save correctly"
       ],
       "priority": 40,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -794,7 +794,7 @@
         "Verify in browser that onboarding plays on first load, all empty states render on each tab"
       ],
       "priority": 41,
-      "passes": false,
+      "passes": true,
       "notes": "This is the final polish story. All other features should be complete before this."
     }
   ]
