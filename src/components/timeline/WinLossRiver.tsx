@@ -7,13 +7,16 @@ import {
   YAxis,
   ReferenceLine,
   Tooltip,
+  ReferenceDot,
 } from 'recharts'
 import Card from '@/components/ui/Card'
 import type { Match, Player } from '@/db/types'
+import type { Milestone } from '@/lib/milestones'
 
 interface WinLossRiverProps {
   matches: Match[]
   playersMap: Map<number, Player>
+  milestones?: Milestone[]
 }
 
 interface DataPoint {
@@ -29,7 +32,7 @@ function formatShortDate(date: Date): string {
   return `${months[date.getMonth()]} ${date.getDate()}`
 }
 
-export default function WinLossRiver({ matches, playersMap }: WinLossRiverProps) {
+export default function WinLossRiver({ matches, playersMap, milestones = [] }: WinLossRiverProps) {
   const data = useMemo(() => {
     const sorted = [...matches].sort(
       (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
@@ -167,6 +170,25 @@ export default function WinLossRiver({ matches, playersMap }: WinLossRiverProps)
               }}
               activeDot={{ r: 5, stroke: '#fff', strokeWidth: 1 }}
             />
+
+            {/* Milestone markers */}
+            {milestones.map((milestone, idx) => {
+              const matchIndex = milestone.matchIndex
+              if (matchIndex === undefined || matchIndex >= data.length) return null
+              const dataPoint = data[matchIndex]
+              return (
+                <ReferenceDot
+                  key={`milestone-${idx}`}
+                  x={dataPoint.index}
+                  y={dataPoint.momentum}
+                  r={8}
+                  fill="#FF6D00"
+                  stroke="#FFFFFF"
+                  strokeWidth={2}
+                  opacity={0.9}
+                />
+              )
+            })}
           </AreaChart>
         </ResponsiveContainer>
       </div>

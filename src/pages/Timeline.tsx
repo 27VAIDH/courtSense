@@ -1,12 +1,14 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useMatches, usePlayers } from '@/db/hooks'
+import { useMatches, usePlayers, useGames } from '@/db/hooks'
 import type { Match, Player } from '@/db/types'
 import Button from '@/components/ui/Button'
 import WinLossRiver from '@/components/timeline/WinLossRiver'
 import RollingWinRate from '@/components/timeline/RollingWinRate'
 import ActivityHeatmap from '@/components/timeline/ActivityHeatmap'
 import RegularityStreak from '@/components/timeline/RegularityStreak'
+import MilestoneList from '@/components/timeline/MilestoneList'
+import { detectMilestones } from '@/lib/milestones'
 
 type TimeRange = '30d' | '3m' | '6m' | 'all'
 
@@ -40,6 +42,7 @@ function filterByTimeRange(matches: Match[], range: TimeRange): Match[] {
 export default function Timeline() {
   const matches = useMatches()
   const players = usePlayers()
+  const games = useGames()
   const navigate = useNavigate()
   const [range, setRange] = useState<TimeRange>('all')
 
@@ -57,7 +60,12 @@ export default function Timeline() {
     return filterByTimeRange(matches, range)
   }, [matches, range])
 
-  const isLoading = matches === undefined || players === undefined
+  const milestones = useMemo(() => {
+    if (!matches || !games) return []
+    return detectMilestones(matches, games)
+  }, [matches, games])
+
+  const isLoading = matches === undefined || players === undefined || games === undefined
 
   if (isLoading) {
     return (
@@ -114,7 +122,7 @@ export default function Timeline() {
       </div>
 
       {/* Win/Loss River Chart */}
-      <WinLossRiver matches={filteredMatches} playersMap={playersMap} />
+      <WinLossRiver matches={filteredMatches} playersMap={playersMap} milestones={milestones} />
 
       {/* Rolling Win Rate Chart */}
       <div className="mt-4">
@@ -129,6 +137,11 @@ export default function Timeline() {
       {/* Regularity Streak */}
       <div className="mt-4">
         <RegularityStreak matches={matches} />
+      </div>
+
+      {/* Milestone List */}
+      <div className="mt-4">
+        <MilestoneList milestones={milestones} />
       </div>
     </div>
   )
