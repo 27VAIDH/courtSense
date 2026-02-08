@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Card from '@/components/ui/Card'
 import type { Match, Player } from '@/db/types'
 
@@ -25,6 +26,8 @@ export default function WinRateByOpponent({
   matches,
   players,
 }: WinRateByOpponentProps) {
+  const navigate = useNavigate()
+
   const data = useMemo(() => {
     const statsMap = new Map<
       number,
@@ -128,7 +131,11 @@ export default function WinRateByOpponent({
       </h3>
       <div className="space-y-2">
         {data.map((d) => (
-          <div key={d.opponentId} className="flex items-center gap-2">
+          <div
+            key={d.opponentId}
+            className="flex items-center gap-2 cursor-pointer hover:bg-surface-elevated/50 -mx-2 px-2 py-1 rounded transition-colors active:scale-98"
+            onClick={() => navigate(`/rivals/${d.opponentId}`)}
+          >
             {/* Opponent label */}
             <div className="flex items-center gap-1.5 w-24 flex-shrink-0">
               <span className="text-sm">{d.emoji}</span>

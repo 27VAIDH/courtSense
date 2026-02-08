@@ -7,6 +7,7 @@ import Dashboard from '@/pages/Dashboard'
 import LogMatch from '@/pages/LogMatch'
 import Timeline from '@/pages/Timeline'
 import Rivals from '@/pages/Rivals'
+import RivalryDetail from '@/pages/RivalryDetail'
 import Profile from '@/pages/Profile'
 import PostMatchSaved from '@/pages/PostMatchSaved'
 import MatchDetail from '@/pages/MatchDetail'
@@ -23,6 +24,7 @@ function App() {
         <Route path="/log" element={<LogMatch />} />
         <Route path="/timeline" element={<Timeline />} />
         <Route path="/rivals" element={<Rivals />} />
+        <Route path="/rivals/:opponentId" element={<RivalryDetail />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/match/:id" element={<MatchDetail />} />
         <Route path="/match/:id/saved" element={<PostMatchSaved />} />
