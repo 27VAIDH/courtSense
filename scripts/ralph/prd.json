@@ -311,7 +311,7 @@
         "Test: view friend profile, verify stats visible, change privacy to private, verify stats hidden"
       ],
       "priority": 14,
-      "passes": false,
+      "passes": true,
       "notes": "Privacy is important - users should control who sees their data."
     },
     {
@@ -334,7 +334,7 @@
         "Test: create 5 users with varied stats, run computation, verify rankings correct"
       ],
       "priority": 15,
-      "passes": false,
+      "passes": true,
       "notes": "Leaderboard computation is complex. Start with simple SQL queries, optimize later. Edge Function can be manual for MVP."
     },
     {
