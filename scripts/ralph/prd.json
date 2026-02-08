@@ -243,7 +243,7 @@
         "Verify in browser: fresh localStorage, complete onboarding, sample data generated, banner appears"
       ],
       "priority": 11,
-      "passes": false,
+      "passes": true,
       "notes": "Sample data is critical for new user activation - they see value immediately without logging 20 matches."
     },
     {
